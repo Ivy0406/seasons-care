@@ -45,6 +45,15 @@ jobs:
         with:
           path: './dist'
 
+      - name: Discord Notification (Build)
+        if: always()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: '📦 Seasons Care 專案打包狀態'
+          description: "分支: ${{ github.ref_name }}\n觸發者: ${{ github.actor }}"
+
   # 任務 2：部署
   deploy:
     environment:
@@ -56,3 +65,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Discord Notification （Deploy Job）
+        if: always()
+        # 確保無論部署成功或失敗，這一步都會執行
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: '🚀 Seasons Care 專案部署狀態'
+          description: "分支: ${{ github.ref_name }}\n觸發者: ${{ github.actor }}"
+          # 這個套件會自動根據 job.status 判斷要顯示綠色(成功)還是紅色(失敗)
