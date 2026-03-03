@@ -1,14 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import tailwindcss from '@tailwindcss/vite'
-
-
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  plugins: [react(), tailwindcss()],
   resolve: {
-  alias: {
-    '@': new URL('./src', import.meta.url).pathname,
+    alias: {
+      '@': new URL('./src', import.meta.url).pathname,
+    },
   },
-}
-})
+  base: process.env.GITHUB_ACTIONS === 'true' ? '/seasons-care/' : '/',
+});

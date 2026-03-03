@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: deploy-workflows
+  workflow_dispatch: # 允許手動點擊按鈕部署，以便除錯
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 避免多個部署任務同時進行導致衝突
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  # 任務 1：打包
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+        # 未來若有 API，需新增 env 區塊
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+  # 任務 2：部署
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build # 確保 build 成功後才執行部署
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
