@@ -85,4 +85,4 @@ jobs:
           description: |
             👤 **部署人員:** `${{ github.actor }}`
             🌿 **部署分支:** `${{ github.ref_name }}`
-            🔗 **部署網址:** `${{ steps.deployment.outputs.page_url }}`
+            🔗 **部署網址:** ${{ steps.deployment.outputs.page_url }}
