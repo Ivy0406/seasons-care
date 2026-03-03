@@ -55,7 +55,9 @@ jobs:
           noprefix: true # 隱藏預設的 "Success:" 或 "Failure:" 英文前綴
           # 利用判斷式自動切換 Icon 與文字
           title: "${{ job.status == 'success' && '✅ 打包成功' || '❌ 打包失敗' }}"
-          description: '專案: **Seasons Care** | 分支: `${{ github.ref_name }}`'
+          description: |
+            👤 **部署人員:** `${{ github.actor }}`
+            🌿 **部署分支:** `${{ github.ref_name }}`
 
   # 任務 2：部署
   deploy:
@@ -80,4 +82,7 @@ jobs:
           noprefix: true # 隱藏預設的 "Success:" 或 "Failure:" 英文前綴
           # 利用判斷式自動切換 Icon 與文字
           title: "${{ job.status == 'success' && '✅ 部署成功' || '❌ 部署失敗' }}"
-          description: '專案: **Seasons Care** | 分支: `${{ github.ref_name }}`'
+          description: |
+            👤 **部署人員:** `${{ github.actor }}`
+            🌿 **部署分支:** `${{ github.ref_name }}`
+            🔗 **部署網址:** `${{ steps.deployment.outputs.page_url }}`
