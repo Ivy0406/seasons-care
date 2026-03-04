@@ -56,7 +56,8 @@ jobs:
           # 利用判斷式自動切換 Icon 與文字
           title: "${{ job.status == 'success' && '✅ 打包成功' || '❌ 打包失敗' }}"
           description: |
-            👤 **部署人員:** `${{ github.actor }}`
+            👤 **誰部署的:** `${{ github.event.pusher.name }}`
+            🤓 **誰審核的:** `${{ github.actor }}`
             🌿 **部署分支:** `${{ github.ref_name }}`
 
   # 任務 2：部署
@@ -83,6 +84,7 @@ jobs:
           # 利用判斷式自動切換 Icon 與文字
           title: "${{ job.status == 'success' && '✅ 部署成功' || '❌ 部署失敗' }}"
           description: |
-            👤 **部署人員:** `${{ github.actor }}`
+            👤 **誰部署的:** `${{ github.event.pusher.name }}`
+            🤓 **誰審核的:** `${{ github.actor }}`
             🌿 **部署分支:** `${{ github.ref_name }}`
             🔗 **部署網址:** ${{ steps.deployment.outputs.page_url }}
