@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - update/discord-notification
   workflow_dispatch: # 允許手動點擊按鈕部署，以便除錯
 
 permissions:
