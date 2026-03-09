@@ -1,11 +1,7 @@
 import './assets/styles/index.css';
 
 function App() {
-  return (
-    <>
-      <h1 className="text-red-500 text-5xl">Hello World</h1>
-    </>
-  );
+  return <div className="text-5xl text-red-500">Hello World</div>;
 }
 
 export default App;
