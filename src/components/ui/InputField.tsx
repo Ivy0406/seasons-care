@@ -65,7 +65,7 @@ function InputField({
       <div
         className={cn(
           'flex h-12 w-full items-center overflow-hidden rounded border-2 bg-neutral-200 transition-colors',
-          error ? 'border-error-500' : 'border-neutral-900',
+          error ? 'border-error' : 'border-neutral-900',
           wrapperClassName,
         )}
       >
@@ -84,7 +84,7 @@ function InputField({
         )}
       </div>
 
-      {error && <p className="text-error-500 text-base">{error}</p>}
+      {error && <p className="text-error text-base">{error}</p>}
     </div>
   );
 }
