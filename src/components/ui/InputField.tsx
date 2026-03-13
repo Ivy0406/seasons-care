@@ -21,7 +21,7 @@ type FieldWrapperProps = {
   labelClassName?: string;
 };
 
-export function FieldWrapper({
+function FieldWrapper({
   label,
   htmlFor,
   children,
@@ -40,7 +40,7 @@ export function FieldWrapper({
   );
 }
 
-export function InputField({
+function InputField({
   className,
   wrapperClassName,
   suffix,
@@ -88,13 +88,11 @@ export function InputField({
   );
 }
 
-export function InputFieldEmail(
-  props: Omit<InputFieldProps, 'type' | 'suffix'>,
-) {
+function InputFieldEmail(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return <InputField type="email" placeholder="example@mail.com" {...props} />;
 }
 
-export function InputFieldPassword({
+function InputFieldPassword({
   onChange,
   value,
   ...props
@@ -136,9 +134,7 @@ export function InputFieldPassword({
   );
 }
 
-export function InputFieldName(
-  props: Omit<InputFieldProps, 'type' | 'suffix'>,
-) {
+function InputFieldName(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return (
     <InputField
       type="text"
@@ -148,8 +144,15 @@ export function InputFieldName(
   );
 }
 
-export function InputFieldGroupId(
-  props: Omit<InputFieldProps, 'type' | 'suffix'>,
-) {
+function InputFieldGroupId(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return <InputField type="text" placeholder="請輸入照護群組 ID" {...props} />;
 }
+
+export {
+  FieldWrapper,
+  InputField,
+  InputFieldEmail,
+  InputFieldPassword,
+  InputFieldName,
+  InputFieldGroupId,
+};
