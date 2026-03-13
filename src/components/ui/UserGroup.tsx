@@ -9,9 +9,10 @@ import { AvatarGroup } from './avatar';
 
 type DynamicUserGroupProps = {
   children: ReactNode;
+  onArrowClick?: () => void;
 };
 
-function DynamicUserGroup({ children }: DynamicUserGroupProps) {
+function DynamicUserGroup({ children, onArrowClick }: DynamicUserGroupProps) {
   const childArray = Children.toArray(children).filter(isValidElement);
   const count = childArray.length;
 
@@ -32,13 +33,26 @@ function DynamicUserGroup({ children }: DynamicUserGroupProps) {
       >
         {children}
       </AvatarGroup>
-      <ChevronDown className="text-neutral-100" size={16} strokeWidth={2.5} />
+      <ChevronDown
+        className="text-neutral-100"
+        size={16}
+        strokeWidth={2.5}
+        onClick={onArrowClick}
+      />
     </div>
   );
 }
 
-function UserGroup({ children }: { children?: ReactNode }) {
-  return <DynamicUserGroup>{children}</DynamicUserGroup>;
+function UserGroup({
+  children,
+  onArrowClick,
+}: {
+  children?: ReactNode;
+  onArrowClick?: () => void;
+}) {
+  return (
+    <DynamicUserGroup onArrowClick={onArrowClick}>{children}</DynamicUserGroup>
+  );
 }
 
 export default UserGroup;
