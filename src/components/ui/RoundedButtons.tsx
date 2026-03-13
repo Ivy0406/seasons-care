@@ -2,7 +2,11 @@ import { Button } from '@/components/ui/button';
 
 import ProBadge from './ProBadge';
 
-function RoundedButtonPrimary({ children }: { children: React.ReactNode }) {
+type RoundedButtonProps = {
+  children: React.ReactNode;
+};
+
+function RoundedButtonPrimary({ children }: RoundedButtonProps) {
   return (
     <Button className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-800 py-2 text-neutral-50">
       {children}
@@ -10,7 +14,7 @@ function RoundedButtonPrimary({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RoundedButtonSecondary({ children }: { children: React.ReactNode }) {
+function RoundedButtonSecondary({ children }: RoundedButtonProps) {
   return (
     <Button
       className="font-label-md h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900"
@@ -21,7 +25,7 @@ function RoundedButtonSecondary({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RoundedButtonDisabled({ children }: { children: React.ReactNode }) {
+function RoundedButtonDisabled({ children }: RoundedButtonProps) {
   return (
     <Button
       className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-300 py-2 text-neutral-600"
@@ -32,7 +36,7 @@ function RoundedButtonDisabled({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RoundedButtonPro({ children }: { children: React.ReactNode }) {
+function RoundedButtonPro({ children }: RoundedButtonProps) {
   return (
     <Button className="font-label-md bg-secondary-default h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900">
       <ProBadge />
