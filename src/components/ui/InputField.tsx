@@ -21,6 +21,7 @@ type FieldWrapperProps = {
   labelClassName?: string;
 };
 
+// 提供 label 與 input 的外層欄位容器
 function FieldWrapper({
   label,
   htmlFor,
@@ -39,7 +40,7 @@ function FieldWrapper({
     </div>
   );
 }
-
+// 基底 input 框，統一處理外框、錯誤狀態與右側元素
 function InputField({
   className,
   wrapperClassName,
@@ -87,11 +88,11 @@ function InputField({
     </div>
   );
 }
-
+// Email 專用輸入框
 function InputFieldEmail(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return <InputField type="email" placeholder="example@mail.com" {...props} />;
 }
-
+// 密碼輸入框，輸入內容後顯示切換明碼按鈕
 function InputFieldPassword({
   onChange,
   value,
@@ -133,7 +134,7 @@ function InputFieldPassword({
     />
   );
 }
-
+// 使用者名稱輸入框
 function InputFieldName(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return (
     <InputField
@@ -143,7 +144,7 @@ function InputFieldName(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
     />
   );
 }
-
+// 照護群組 ID 輸入框
 function InputFieldGroupId(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return <InputField type="text" placeholder="請輸入照護群組 ID" {...props} />;
 }
