@@ -10,11 +10,11 @@
   --color-neutral-800: #2d2d2d;
   --color-neutral-900: #212529;
 
-  --color-primary-500: #52ae96;
-  --color-primary-600: #4a9581;
+  --color-primary-default: #85C6B5;
+  --color-primary-dark: #4a9581;
 
-  --color-secondary-500: #e8d8dc;
-  --color-secondary-600: #e88888;
+  --color-secondary-default: #FFE4E4;
+  --color-secondary-dark: #e88888;
 
-  --color-error-500: #ff6767;
+  --color-error: #ff6767;
 }
