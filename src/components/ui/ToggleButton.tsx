@@ -3,18 +3,12 @@ import cn from '@/lib/utils';
 import Switch from './switch';
 
 type ToggleButtonProps = {
-  children: React.ReactNode;
   thumbClassName?: string;
   className?: string;
   size?: 'sm' | 'default';
 };
 
-function ToggleButton({
-  children,
-  thumbClassName,
-  className,
-  size,
-}: ToggleButtonProps) {
+function ToggleButton({ thumbClassName, className, size }: ToggleButtonProps) {
   return (
     <Switch
       className={cn(
@@ -26,9 +20,7 @@ function ToggleButton({
         thumbClassName,
       )}
       size={size}
-    >
-      {children}
-    </Switch>
+    />
   );
 }
 
