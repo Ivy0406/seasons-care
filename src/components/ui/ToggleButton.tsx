@@ -1,0 +1,35 @@
+import cn from '@/lib/utils';
+
+import Switch from './switch';
+
+type ToggleButtonProps = {
+  children: React.ReactNode;
+  thumbClassName?: string;
+  className?: string;
+  size?: 'sm' | 'default';
+};
+
+function ToggleButton({
+  children,
+  thumbClassName,
+  className,
+  size,
+}: ToggleButtonProps) {
+  return (
+    <Switch
+      className={cn(
+        `py-0.5 data-checked:bg-neutral-800 data-unchecked:border data-unchecked:border-neutral-800 data-unchecked:bg-neutral-50 data-[size=default]:h-5 data-[size=default]:w-10.5`,
+        className,
+      )}
+      thumbClassName={cn(
+        `data-unchecked:bg-neutral-800 data-checked:bg-neutral-50 data-[size=default]:size-4 data-unchecked:translate-x-0.5! data-checked: translate-x-[23px]!`,
+        thumbClassName,
+      )}
+      size={size}
+    >
+      {children}
+    </Switch>
+  );
+}
+
+export default ToggleButton;
