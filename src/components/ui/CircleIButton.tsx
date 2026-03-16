@@ -10,6 +10,7 @@ type CircleButtonProps = Omit<React.ComponentProps<typeof Button>, 'size'> & {
 };
 
 type CheckBoxButtonProps = CircleButtonProps & {
+  checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
 };
@@ -75,15 +76,22 @@ function CheckBoxButton({
   children,
   className,
   size = 'md',
+  checked,
   defaultChecked = false,
   onCheckedChange,
   ...props
 }: CheckBoxButtonProps) {
-  const [isChecked, setIsChecked] = useState(defaultChecked);
+  const [internalChecked, setInternalChecked] = useState(defaultChecked);
+  const isControlled = checked !== undefined;
+  const isChecked = isControlled ? checked : internalChecked;
 
   const handleToggle = (e: ButtonClickEvent) => {
     const newState = !isChecked;
-    setIsChecked(newState);
+
+    if (!isControlled) {
+      setInternalChecked(newState);
+    }
+
     onCheckedChange?.(newState);
     props.onClick?.(e);
   };
@@ -92,12 +100,13 @@ function CheckBoxButton({
     <Button
       {...props}
       onClick={handleToggle}
+      aria-pressed={isChecked}
       className={cn(
         baseCircleClass,
         sizeClassMap[size],
         isChecked
-          ? 'bg-neutral-400 text-white'
-          : 'bg-primary-default text-neutral-50',
+          ? 'bg-primary-default text-neutral-50'
+          : 'bg-neutral-400 text-white',
         className,
       )}
     >
