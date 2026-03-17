@@ -1,3 +1,5 @@
+import cn from '@/lib/utils';
+
 import { Avatar, AvatarImage, AvatarFallback } from './avatar';
 
 type SingleAvatarProps = {
@@ -5,12 +7,19 @@ type SingleAvatarProps = {
   name: string;
   isSelected?: boolean;
   onClick?: () => void;
+  className?: string;
 };
 
-function SingleAvatar({ src, name, isSelected, onClick }: SingleAvatarProps) {
+function SingleAvatar({
+  src,
+  name,
+  isSelected,
+  onClick,
+  className,
+}: SingleAvatarProps) {
   return (
     <Avatar
-      className="size-20 ring-2 ring-neutral-900"
+      className={cn('size-20 ring-2 ring-neutral-900', className)}
       data-state={isSelected ? 'checked' : 'unchecked'}
       onClick={onClick}
     >

@@ -8,9 +8,15 @@ type ToggleButtonProps = {
   size?: 'sm' | 'default';
 };
 
-function ToggleButton({ thumbClassName, className, size }: ToggleButtonProps) {
+function ToggleButton({
+  thumbClassName,
+  className,
+  size,
+  ...props
+}: ToggleButtonProps & React.ComponentProps<typeof Switch>) {
   return (
     <Switch
+      {...props}
       className={cn(
         `py-0.5 data-checked:bg-neutral-800 data-unchecked:border data-unchecked:border-neutral-800 data-unchecked:bg-neutral-50 data-[size=default]:h-5 data-[size=default]:w-10.5`,
         className,
