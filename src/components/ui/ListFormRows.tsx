@@ -5,10 +5,11 @@ import type {
   TextareaHTMLAttributes,
 } from 'react';
 
-import { ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
-import InputClearButton from '@/components/ui/InputClearButton';
+import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
 import Input from '@/components/ui/input';
+import InputClearButton from '@/components/ui/InputClearButton';
 import SingleAvatar from '@/components/ui/SingleAvatar';
 import ToggleButton from '@/components/ui/ToggleButton';
 import cn from '@/lib/utils';
@@ -113,7 +114,7 @@ function ListFormGenderRow({
       <div className="relative min-w-0">
         <select
           id={htmlFor}
-          className="font-paragraph-md h-auto min-w-0 appearance-none border-0 bg-transparent px-0 py-0 pr-8 text-right text-neutral-900 outline-none"
+          className="font-paragraph-md h-auto min-w-0 appearance-none border-0 bg-transparent px-0 py-0 pr-8 text-right font-bold text-neutral-600 outline-none"
           {...selectProps}
         >
           <option value="">請選擇</option>
@@ -121,10 +122,14 @@ function ListFormGenderRow({
           <option value="female">女</option>
           <option value="other">其他</option>
         </select>
-        <ChevronsUpDown
-          className="pointer-events-none absolute top-1/2 right-0 h-4 w-4 -translate-y-1/2 text-neutral-700"
-          strokeWidth={2.25}
-        />
+        <div className="pointer-events-none absolute top-1/2 right-0 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
+          <img
+            src={chevronsUpDownIcon}
+            alt=""
+            aria-hidden="true"
+            className="h-3 w-3"
+          />
+        </div>
       </div>
     </ListFormRow>
   );
