@@ -1,11 +1,29 @@
+import { useState } from 'react';
+
+import BaseDrawer from '@/components/ui/BaseDrawer';
+
+import GroupEntryDrawer from './components/GroupEntryDrawer';
 import GroupEntranceLayout from './components/GroupEntranceLayout';
 
-type GroupEntrancePageProps = {
-  onGroupEntryClick?: () => void;
-};
+function GroupEntrancePage() {
+  const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
 
-function GroupEntrancePage({ onGroupEntryClick }: GroupEntrancePageProps) {
-  return <GroupEntranceLayout onGroupEntryClick={onGroupEntryClick} />;
+  return (
+    <>
+      <GroupEntranceLayout
+        onGroupEntryClick={() => setIsGroupEntryDrawerOpen(true)}
+      />
+      <BaseDrawer
+        open={isGroupEntryDrawerOpen}
+        onOpenChange={setIsGroupEntryDrawerOpen}
+      >
+        <GroupEntryDrawer
+          open={isGroupEntryDrawerOpen}
+          onClose={() => setIsGroupEntryDrawerOpen(false)}
+        />
+      </BaseDrawer>
+    </>
+  );
 }
 
 export default GroupEntrancePage;
