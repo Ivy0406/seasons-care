@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 import {
   FieldWrapper,
@@ -16,8 +16,11 @@ type RegisterFormValues = {
   password: string;
 };
 
-function RegisterForm() {
-  const navigate = useNavigate();
+type RegisterFormProps = {
+  onNext: (data: RegisterFormValues) => void;
+};
+
+function RegisterAccount({ onNext }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
@@ -27,10 +30,10 @@ function RegisterForm() {
   } = useForm<RegisterFormValues>({ mode: 'onChange' });
 
   const passwordValue = watch('password', '');
-
-  const onSubmit = () => {
-    navigate('/login');
+  const onSubmit = (data: RegisterFormValues) => {
+    onNext(data);
   };
+
   return (
     <form
       className="flex w-full flex-col items-center justify-center"
@@ -91,4 +94,4 @@ function RegisterForm() {
   );
 }
 
-export default RegisterForm;
+export default RegisterAccount;
