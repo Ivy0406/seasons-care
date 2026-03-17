@@ -40,7 +40,6 @@ type NavigationMenuButtonProps = {
 
 type NavigationHeaderRowProps = {
   title: React.ReactNode;
-  onActionClick?: () => void;
   className?: string;
 };
 
@@ -97,7 +96,7 @@ function GroupSwitcher({
   className,
 }: GroupSwitcherProps) {
   return (
-    <div className={cn('flex items-center gap-1 px-6 py-3', className)}>
+    <div className={cn('flex items-center gap-1 py-3', className)}>
       <button
         type="button"
         aria-label="返回"
@@ -128,7 +127,7 @@ function NavigationSubheader({
   className,
 }: NavigationSubheaderProps) {
   return (
-    <div className={cn('flex items-center gap-4 px-6 py-5', className)}>
+    <div className={cn('flex items-center gap-4 py-5', className)}>
       <div className="relative flex min-w-0 flex-1 items-center justify-center">
         <button
           type="button"
@@ -151,7 +150,7 @@ function NavigationTopActions({
   className,
 }: NavigationTopActionsProps) {
   return (
-    <div className={cn('flex justify-end gap-5 px-6 py-3', className)}>
+    <div className={cn('flex justify-end gap-5 py-3', className)}>
       <button
         type="button"
         aria-label={hasNotification ? '查看通知，有未讀項目' : '查看通知'}
@@ -174,20 +173,15 @@ function NavigationTopActions({
   );
 }
 
-function NavigationHeaderRow({
-  title,
-  onActionClick,
-  className,
-}: NavigationHeaderRowProps) {
+function NavigationHeaderRow({ title, className }: NavigationHeaderRowProps) {
   return (
     <div
       className={cn(
-        'text-heading-lg flex items-center justify-between gap-4 px-6 py-3.75',
+        'text-heading-lg flex items-center justify-between gap-4 py-3.75',
         className,
       )}
     >
       <NavigationTitle>{title}</NavigationTitle>
-      <NavigationActionButton onClick={onActionClick} />
     </div>
   );
 }
