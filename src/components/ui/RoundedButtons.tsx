@@ -4,7 +4,7 @@ import ProBadge from './ProBadge';
 
 type RoundedButtonProps = {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 function RoundedButtonPrimary({ children, onClick }: RoundedButtonProps) {
@@ -30,12 +30,14 @@ function RoundedButtonSecondary({ children, onClick }: RoundedButtonProps) {
   );
 }
 
-function RoundedButtonDisabled({ children, onClick }: RoundedButtonProps) {
+function RoundedButtonDisabled({
+  children,
+}: Omit<RoundedButtonProps, 'onClick'>) {
   return (
     <Button
-      className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-300 py-2 text-neutral-600"
+      className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-300 py-2 text-neutral-600 disabled:opacity-100"
       variant="ghost"
-      onClick={onClick}
+      disabled
     >
       {children}
     </Button>
