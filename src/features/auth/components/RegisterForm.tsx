@@ -53,6 +53,7 @@ function RegisterForm() {
         </FieldWrapper>
         <FieldWrapper label="密碼" htmlFor="password">
           <InputFieldPassword
+            id="password"
             placeholder="6-12位數密碼，請區分大小寫"
             value={passwordValue}
             {...register('password', {
