@@ -10,7 +10,7 @@ type RoundedButtonProps = {
 function RoundedButtonPrimary({ children, onClick }: RoundedButtonProps) {
   return (
     <Button
-      className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-800 py-2 text-neutral-50"
+      className="font-label-md h-[45.6px] w-full rounded-full bg-neutral-800 py-2 text-neutral-50 active:bg-neutral-900"
       onClick={onClick}
     >
       {children}
@@ -21,7 +21,7 @@ function RoundedButtonPrimary({ children, onClick }: RoundedButtonProps) {
 function RoundedButtonSecondary({ children, onClick }: RoundedButtonProps) {
   return (
     <Button
-      className="font-label-md h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900"
+      className="font-label-md h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900 active:bg-neutral-200"
       variant="outline"
       onClick={onClick}
     >
@@ -47,7 +47,7 @@ function RoundedButtonDisabled({
 function RoundedButtonPro({ children, onClick }: RoundedButtonProps) {
   return (
     <Button
-      className="font-label-md bg-secondary-default h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900"
+      className="font-label-md bg-secondary-default active:bg-secondary-dark h-[45.6px] w-full rounded-full border-2 border-neutral-900 py-2 text-neutral-900"
       onClick={onClick}
     >
       <ProBadge />
