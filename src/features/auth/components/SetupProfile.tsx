@@ -47,7 +47,7 @@ const mockAvatars = [
   },
   {
     id: 6,
-    src: 'https://p3-pc-sign.douyinpic.com/tos-cn-i-0813c000-ce/osaBgQcMgiAEQi7X8AQ7JAAeQsfXJvgf2ZkFV8~noop.jpeg?biz_tag=pcweb_cover&card_type=303&column_n=0&from=327834062&lk3s=138a59ce&s=PackSourceEnum_SEARCH&se=false&x-expires=1774634400&x-signature=IhcEPOrnedk0QXM94FXz3uQxVJM%3D',
+    src: 'https://p3-pc-sign.douyinpic.com/tos-cn-i-0813c000-ce/osaBgQcMgiAEQi7X8AQ7JAAeQsfXJvgf2ZkFV8~noop.jpeg?biz_tag=pcweb_cover&card_type=303&column_n=0&from=327834062&lk3s=138a59ce&s=PackSourceEnum_SEARCH&se=false&x-expires=1774634400&x-signature=IhcEPOrnedk0QXM94FXz3uQxVJM%3Dｚ',
     name: '角色 6',
   },
 ];
@@ -76,79 +76,86 @@ const SetupProfile = ({ onSubmit }: SetupProfileProps) => {
 
   return (
     <form
-      className="flex w-full flex-col items-center gap-1"
+      className="flex w-full flex-col items-center"
       onSubmit={handleSubmit(localOnSubmit)}
     >
-      <div className="mb-5 flex flex-col items-center gap-1">
-        <p className="font-heading-md text-neutral-900">
-          我們精心為你打造了數位分身
-        </p>
-        <p className="font-heading-md text-neutral-900">
-          選個角色，準備開始照護！
-        </p>
-      </div>
-      <div className="flex flex-col items-center gap-3">
-        <SingleAvatar
-          src={selectedAvatar.src}
-          className="h-35 w-35"
-          name={currentName || '照護者'}
-          onClick={() => setIsDrawerOpen(true)}
-        />
-        <BaseDrawer
-          open={isDrawerOpen}
-          onOpenChange={setIsDrawerOpen}
-          trigger={
-            <p className="font-label-md text-primary-dark cursor-pointer">
-              更換角色
-            </p>
-          }
-        >
-          <div className="relative flex flex-col items-center gap-5">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex h-10 w-full items-center justify-center">
-                <X
-                  className="absolute left-0 cursor-pointer"
-                  onClick={() => setIsDrawerOpen(false)}
-                />
-                <p className="font-label-lg text-neutral-900">選擇角色</p>
-                <div />
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <p className="font-paragraph-md text-neutral-900">
-                選擇喜歡的角色吧！
+      <div className="flex w-full flex-col pb-27">
+        <div className="mb-5 flex flex-col items-center gap-1">
+          <p className="font-heading-md text-neutral-900">
+            我們精心為你打造了數位分身
+          </p>
+          <p className="font-heading-md text-neutral-900">
+            選個角色，準備開始照護！
+          </p>
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <SingleAvatar
+            src={selectedAvatar.src}
+            className="h-35 w-35"
+            name={currentName || '照護者'}
+            onClick={() => setIsDrawerOpen(true)}
+          />
+          <BaseDrawer
+            open={isDrawerOpen}
+            onOpenChange={setIsDrawerOpen}
+            trigger={
+              <p className="font-label-md text-primary-dark mb-10 cursor-pointer">
+                更換角色
               </p>
-              <div className="grid grid-cols-3 gap-5 pt-5 pb-8">
-                {mockAvatars.map((avatar) => (
-                  <SingleAvatar
-                    key={avatar.id}
-                    src={avatar.src}
-                    name={currentName || avatar.name}
-                    isSelected={tempSelectedAvatar.id === avatar.id}
-                    onClick={() => setTempSelectedAvatar(avatar)}
+            }
+          >
+            <div className="relative flex flex-col items-center gap-5">
+              <div className="flex w-full items-center justify-between">
+                <div className="flex h-10 w-full items-center justify-center">
+                  <X
+                    className="absolute left-0 cursor-pointer"
+                    onClick={() => setIsDrawerOpen(false)}
                   />
-                ))}
+                  <p className="font-label-lg text-neutral-900">選擇角色</p>
+                  <div />
+                </div>
               </div>
+              <div className="flex flex-col items-center">
+                <p className="font-paragraph-md text-neutral-900">
+                  選擇喜歡的角色吧！
+                </p>
+                <div className="grid grid-cols-3 gap-5 pt-5 pb-8">
+                  {mockAvatars.map((avatar) => (
+                    <SingleAvatar
+                      key={avatar.id}
+                      src={avatar.src}
+                      name={currentName || avatar.name}
+                      isSelected={tempSelectedAvatar.id === avatar.id}
+                      onClick={() => setTempSelectedAvatar(avatar)}
+                    />
+                  ))}
+                </div>
+              </div>
+              <RoundedButtonPrimary
+                className="h-10"
+                onClick={handleConfirmAvatar}
+                type="button"
+              >
+                確認
+              </RoundedButtonPrimary>
             </div>
-            <RoundedButtonPrimary
-              className="h-10"
-              onClick={handleConfirmAvatar}
-              type="button"
-            >
-              確認
-            </RoundedButtonPrimary>
-          </div>
-        </BaseDrawer>
+          </BaseDrawer>
+        </div>
+
+        <FieldWrapper
+          labelClassName="font-label-md text-neutral-900 text-center mb-3"
+          label="建立使用者名稱"
+          htmlFor="name"
+        >
+          <InputFieldName
+            id="name"
+            {...register('name', { required: '使用者名字是必填' })}
+            error={errors.name?.message}
+          />
+        </FieldWrapper>
       </div>
 
-      <FieldWrapper label="建立使用者名稱" htmlFor="name">
-        <InputFieldName
-          id="name"
-          {...register('name', { required: '使用者名字是必填' })}
-          error={errors.name?.message}
-        />
-      </FieldWrapper>
-      <div className="mt-4 w-full">
+      <div className="w-full">
         {isValid ? (
           <RoundedButtonPrimary onClick={handleSubmit(localOnSubmit)}>
             建立檔案
