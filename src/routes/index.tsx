@@ -1,6 +1,7 @@
 import { createHashRouter } from 'react-router';
 
 import App from '@/App';
+import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import LandingPage from '@/pages/LandingPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 
@@ -20,6 +21,10 @@ const router = createHashRouter([
       {
         path: 'registration',
         Component: RegistrationPage,
+      },
+      {
+        path: 'group-entrance',
+        Component: GroupEntrancePage,
       },
     ],
   },
