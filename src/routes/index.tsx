@@ -3,6 +3,7 @@ import { createHashRouter } from 'react-router';
 import App from '@/App';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import LandingPage from '@/pages/LandingPage';
+import LoginPage from '@/pages/LoginPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 
 const router = createHashRouter([
@@ -16,7 +17,7 @@ const router = createHashRouter([
       },
       {
         path: 'login',
-        element: <div>Login Page (Comming soon)</div>,
+        Component: LoginPage,
       },
       {
         path: 'registration',

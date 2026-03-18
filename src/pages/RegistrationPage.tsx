@@ -1,7 +1,11 @@
 import RegisterForm from '@/features/auth/components/RegisterForm';
 
 function RegistrationPage() {
-  return <RegisterForm />;
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <RegisterForm />
+    </div>
+  );
 }
 
 export default RegistrationPage;
