@@ -11,7 +11,7 @@ import {
   RoundedButtonPrimary,
 } from '@/components/ui/RoundedButtons';
 
-type RegisterFormValues = {
+type LoginFormValues = {
   account: string;
   password: string;
 };
@@ -24,12 +24,12 @@ function LoginForm() {
     setValue,
     watch,
     formState: { errors, isValid },
-  } = useForm<RegisterFormValues>({ mode: 'onChange' });
+  } = useForm<LoginFormValues>({ mode: 'onChange' });
 
   const passwordValue = watch('password', '');
 
   const onSubmit = () => {
-    navigate('/onboarding');
+    navigate('/group-entrance');
   };
   return (
     <form
@@ -91,7 +91,7 @@ function LoginForm() {
         )}
         <div className="flex items-center gap-1">
           <p className="font-paragraph-md text-neutral-600">還沒有帳號？</p>
-          <Link to="../register" className="font-label-md text-primary-dark">
+          <Link to="/registration" className="font-label-md text-primary-dark">
             點此註冊
           </Link>
         </div>
