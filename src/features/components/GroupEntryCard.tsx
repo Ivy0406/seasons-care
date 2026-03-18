@@ -5,9 +5,15 @@ import { Plus } from 'lucide-react';
 import { CircleButtonPrimary } from '@/components/ui/CircleIButton';
 import cn from '@/lib/utils';
 
-type GroupEntryCardProps = HTMLAttributes<HTMLDivElement>;
+type GroupEntryCardProps = HTMLAttributes<HTMLDivElement> & {
+  onActionClick?: () => void;
+};
 
-function GroupEntryCard({ className, ...props }: GroupEntryCardProps) {
+function GroupEntryCard({
+  className,
+  onActionClick,
+  ...props
+}: GroupEntryCardProps) {
   return (
     <div
       className={cn(
@@ -16,7 +22,7 @@ function GroupEntryCard({ className, ...props }: GroupEntryCardProps) {
       )}
       {...props}
     >
-      <CircleButtonPrimary size="md">
+      <CircleButtonPrimary size="md" onClick={onActionClick}>
         <Plus />
       </CircleButtonPrimary>
       <p className="font-label-md">立即新增或建立照護群組</p>

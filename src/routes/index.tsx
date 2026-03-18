@@ -1,13 +1,13 @@
 import { createHashRouter } from 'react-router';
 
 import App from '@/App';
-import HomepagePage from '@/pages/Homepage';
+import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
+import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 
 const router = createHashRouter([
-
   {
     path: '/',
     Component: App,
@@ -23,6 +23,10 @@ const router = createHashRouter([
       {
         path: 'registration',
         Component: RegistrationPage,
+      },
+      {
+        path: 'group-entrance',
+        Component: GroupEntrancePage,
       },
       {
         path: 'homepage',
