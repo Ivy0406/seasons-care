@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import BaseDrawer from '@/components/ui/BaseDrawer';
 
-import GroupEntryDrawer from './components/GroupEntryDrawer';
 import GroupEntranceLayout from './components/GroupEntranceLayout';
+import GroupEntryDrawer from './components/GroupEntryDrawer';
 
 function GroupEntrancePage() {
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
