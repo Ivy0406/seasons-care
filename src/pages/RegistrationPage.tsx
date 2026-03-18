@@ -33,7 +33,7 @@ function RegistrationPage() {
       ...profileData,
     };
     console.log('完成註冊，打 API 送出資料：', finalData);
-    navigate('/login');
+    navigate('/onboarding');
   };
 
   return (
@@ -43,7 +43,5 @@ function RegistrationPage() {
     </div>
   );
 }
-
-// 範例邏輯
 
 export default RegistrationPage;
