@@ -5,6 +5,7 @@ import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
+import OnboardingPage from '@/pages/OnboardingPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 
 const router = createHashRouter([
@@ -23,6 +24,10 @@ const router = createHashRouter([
       {
         path: 'registration',
         Component: RegistrationPage,
+      },
+      {
+        path: 'onboarding',
+        Component: OnboardingPage,
       },
       {
         path: 'group-entrance',
