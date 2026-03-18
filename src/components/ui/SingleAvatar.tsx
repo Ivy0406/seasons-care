@@ -19,7 +19,12 @@ function SingleAvatar({
 }: SingleAvatarProps) {
   return (
     <Avatar
-      className={cn('size-20 ring-2 ring-neutral-900', className)}
+      className={cn(
+        'size-20 ring-2 ring-neutral-900 transition-all',
+        isSelected && 'ring-primary-dark ring-4',
+        onClick && 'cursor-pointer',
+        className,
+      )}
       data-state={isSelected ? 'checked' : 'unchecked'}
       onClick={onClick}
     >
