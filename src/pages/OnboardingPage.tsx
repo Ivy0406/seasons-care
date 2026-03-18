@@ -32,7 +32,7 @@ const OnboardingPage = () => {
       description: 'AI 整合各類照護紀錄，\n產出關鍵指標統計報告。',
       buttonText: '好酷！',
       image:
-        'https://img.ltn.com.tw/Upload/health/page/800/2022/07/13/phps6VEfF.jpg',
+        'https://blog.tpisoftware.com/wp-content/uploads/2023/02/%E6%96%B0%E8%81%9E%E7%A8%BF_%E7%A4%BE%E7%BE%A41920x1080px-%E8%A4%87%E6%9C%AC.jpg',
     },
     {
       id: 2,
