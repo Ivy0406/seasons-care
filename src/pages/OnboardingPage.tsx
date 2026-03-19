@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router';
 
-import { RoundedButtonPrimary } from '@/components/ui/RoundedButtons';
+import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();

@@ -6,11 +6,11 @@ import {
   ListFormBirthDateRow,
   ListFormGenderRow,
   ListFormNameRow,
-} from '@/components/ui/ListFormRows';
+} from '@/components/common/ListFormRows';
 import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
-} from '@/components/ui/RoundedButtons';
+} from '@/components/common/RoundedButtons';
 import cn from '@/lib/utils';
 
 type GroupEntryDrawerProps = {

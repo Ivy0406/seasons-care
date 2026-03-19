@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 
 import { Plus } from 'lucide-react';
 
-import { CircleButtonPrimary } from '@/components/ui/CircleIButton';
+import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import cn from '@/lib/utils';
 
 type GroupEntryCardProps = HTMLAttributes<HTMLDivElement> & {

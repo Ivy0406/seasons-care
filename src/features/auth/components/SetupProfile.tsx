@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
-import BaseDrawer from '@/components/ui/BaseDrawer';
-import { FieldWrapper, InputFieldName } from '@/components/ui/InputField';
+import BaseDrawer from '@/components/common/BaseDrawer';
+import { FieldWrapper, InputFieldName } from '@/components/common/InputField';
 import {
   RoundedButtonDisabled,
   RoundedButtonPrimary,
-} from '@/components/ui/RoundedButtons';
-import SingleAvatar from '@/components/ui/SingleAvatar';
+} from '@/components/common/RoundedButtons';
+import SingleAvatar from '@/components/common/SingleAvatar';
 
 type SetupProfileFormValues = {
   name: string;

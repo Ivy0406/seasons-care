@@ -3,9 +3,8 @@ import type { ReactNode } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 
+import { AvatarGroup } from '@/components/ui/avatar';
 import cn from '@/lib/utils';
-
-import { AvatarGroup } from './avatar';
 
 type DynamicUserGroupProps = {
   children: ReactNode;

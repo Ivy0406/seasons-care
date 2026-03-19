@@ -1,4 +1,4 @@
-import GroupEntryCard from '@/features/components/GroupEntryCard';
+import GroupEntryCard from '@/features/groups/components/GroupEntryCard';
 
 type GroupEntranceLayoutProps = {
   onGroupEntryClick?: () => void;
