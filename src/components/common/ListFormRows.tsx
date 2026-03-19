@@ -8,10 +8,10 @@ import type {
 import { ChevronRight } from 'lucide-react';
 
 import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
+import InputClearButton from '@/components/common/InputClearButton';
+import SingleAvatar from '@/components/common/SingleAvatar';
+import ToggleButton from '@/components/common/ToggleButton';
 import Input from '@/components/ui/input';
-import InputClearButton from '@/components/ui/InputClearButton';
-import SingleAvatar from '@/components/ui/SingleAvatar';
-import ToggleButton from '@/components/ui/ToggleButton';
 import cn from '@/lib/utils';
 
 type ListFormRowProps = {

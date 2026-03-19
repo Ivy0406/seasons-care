@@ -1,9 +1,9 @@
 import { ChevronDown, Mic } from 'lucide-react';
 
-import { CircleButtonPrimary } from '@/components/ui/CircleIButton';
-import { NavigationTopActions } from '@/components/ui/NavigationBar';
-import SingleAvatar from '@/components/ui/SingleAvatar';
-import UserGroup from '@/components/ui/UserGroup';
+import { CircleButtonPrimary } from '@/components/common/CircleIButton';
+import { NavigationTopActions } from '@/components/common/NavigationBar';
+import SingleAvatar from '@/components/common/SingleAvatar';
+import UserGroup from '@/components/common/UserGroup';
 
 function HomepageLayout() {
   return (
@@ -30,22 +30,22 @@ function HomepageLayout() {
             <SingleAvatar
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png"
               name="Amy"
-              className="bg-neutral-300 size-8"
+              className="size-8 bg-neutral-300"
             />
             <SingleAvatar
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipUJt5ufuYdkpMS8MbIkWE_zDCxYe3inh3TTB7DVH37W_z8zPS_IU1-2J074kzv0wpHwLbe-pGVyxleTDTORHHUUWZmwkJJKxC4xIrwONn1eslfC_2_gzKACafQwFZjG1NelxBcpzZoTde/s400/nigaoe_masaoka_shiki.png"
               name="Ben"
-              className="bg-neutral-300 size-8"
+              className="size-8 bg-neutral-300"
             />
             <SingleAvatar
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjl69uVfqLnrYRJTq45_yeYNwVdGPDOg6qFgbZz9pp7P83ki1MYzMreZG6YLR12gF89m6dpSppmJesyF4gNG_X6EWyLliOqcejs7ZFYZm-gy7WKvty5G0gaYp8egXBL3HfjrNZJUL2f9SXU/s400/nigaoe_tekla_badarzewska.png"
               name="Chloe"
-              className="bg-neutral-300 size-8"
+              className="size-8 bg-neutral-300"
             />
             <SingleAvatar
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoTl4DxRR5CVuFrHVzaA1D7FpTp_W0jmAQzf89GfkAYaAJL-CipobWEhm-QwSrw9BW01kTyx2tVHChs-3KjZqKCIkjfl7mivcChR4bhFe4Ek22AV7zsCv_0aV19_G-wCfZOS_NYsKTBO0/s400/13_Mussorgsky.png"
               name="David"
-              className="bg-neutral-300 size-8"
+              className="size-8 bg-neutral-300"
             />
           </UserGroup>
         </div>

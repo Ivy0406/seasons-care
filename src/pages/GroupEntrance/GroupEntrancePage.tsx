@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import BaseDrawer from '@/components/ui/BaseDrawer';
+import BaseDrawer from '@/components/common/BaseDrawer';
 
 import GroupEntranceLayout from './components/GroupEntranceLayout';
 import GroupEntryDrawer from './components/GroupEntryDrawer';
