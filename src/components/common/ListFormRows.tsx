@@ -9,7 +9,7 @@ import { ChevronRight } from 'lucide-react';
 
 import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
 import Input from '@/components/ui/input';
-import InputClearButton from '@/components/ui/InputClearButton';
+import InputClearButton from '@/components/common/InputClearButton';
 import SingleAvatar from '@/components/ui/SingleAvatar';
 import ToggleButton from '@/components/ui/ToggleButton';
 import cn from '@/lib/utils';

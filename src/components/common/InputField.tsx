@@ -4,7 +4,7 @@ import type { ChangeEvent, ReactNode } from 'react';
 import { Eye, EyeClosed } from 'lucide-react';
 
 import Input from '@/components/ui/input';
-import InputClearButton from '@/components/ui/InputClearButton';
+import InputClearButton from '@/components/common/InputClearButton';
 import cn from '@/lib/utils';
 
 type InputFieldProps = React.ComponentProps<typeof Input> & {
