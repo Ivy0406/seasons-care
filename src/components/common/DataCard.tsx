@@ -37,7 +37,7 @@ function BaseCard({
   return (
     <div
       className={cn(
-        'flex min-h-40 w-fit flex-col gap-2 rounded-[4px] border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
+        'flex min-h-40 w-fit min-w-[166px] flex-col gap-2 rounded-[4px] border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
         className,
       )}
     >
@@ -149,7 +149,11 @@ function DataCardBloodSugar({
   night,
 }: BloodSugarCardProps) {
   return (
-    <BaseCard category={category} time={time} className={cn('w-64', className)}>
+    <BaseCard
+      category={category}
+      time={time}
+      className={cn('w-62.5', className)}
+    >
       <div className="grid w-full grid-cols-3 gap-2">
         <div className="flex flex-col items-center gap-2">
           <p className="font-paragraph-sm text-neutral-900">早上</p>
