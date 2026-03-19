@@ -1,6 +1,5 @@
+import Switch from '@/components/ui/switch';
 import cn from '@/lib/utils';
-
-import Switch from './switch';
 
 type ToggleButtonProps = {
   thumbClassName?: string;

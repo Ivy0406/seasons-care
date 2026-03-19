@@ -1,8 +1,7 @@
 import { useState, type ReactNode } from 'react';
 
+import { Button } from '@/components/ui/button';
 import cn from '@/lib/utils';
-
-import { Button } from './button';
 
 type CircleButtonProps = Omit<React.ComponentProps<typeof Button>, 'size'> & {
   children: ReactNode;

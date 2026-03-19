@@ -5,11 +5,11 @@ import {
   FieldWrapper,
   InputFieldEmail,
   InputFieldPassword,
-} from '@/components/ui/InputField';
+} from '@/components/common/InputField';
 import {
   RoundedButtonDisabled,
   RoundedButtonPrimary,
-} from '@/components/ui/RoundedButtons';
+} from '@/components/common/RoundedButtons';
 
 type LoginFormValues = {
   account: string;

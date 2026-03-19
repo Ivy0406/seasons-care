@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
-} from '@/components/ui/RoundedButtons';
+} from '@/components/common/RoundedButtons';
 import { LandingKeyVisual } from '@/features/auth';
 
 function LandingPage() {
