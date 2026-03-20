@@ -1,10 +1,21 @@
 import './assets/styles/index.css';
 
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
+
+import cn from '@/lib/utils';
 
 function App() {
+  const { pathname } = useLocation();
+  const isCalendarRoute = pathname === '/calendar-page';
+
   return (
-    <div className="mx-auto flex max-w-200 flex-col items-center justify-center px-6 text-5xl">
+    <div
+      className={cn(
+        'flex min-h-screen w-full flex-col',
+        isCalendarRoute ? '' : 'mx-auto max-w-200',
+        isCalendarRoute ? '' : 'px-6',
+      )}
+    >
       {/* 可放header */}
       <Outlet />
       {/* 可放footer */}
