@@ -9,9 +9,14 @@ import cn from '@/lib/utils';
 type DynamicUserGroupProps = {
   children: ReactNode;
   onArrowClick?: () => void;
+  showArrow?: boolean;
 };
 
-function DynamicUserGroup({ children, onArrowClick }: DynamicUserGroupProps) {
+function DynamicUserGroup({
+  children,
+  onArrowClick,
+  showArrow = true,
+}: DynamicUserGroupProps) {
   const childArray = Children.toArray(children).filter(isValidElement);
   const count = childArray.length;
 
@@ -32,12 +37,14 @@ function DynamicUserGroup({ children, onArrowClick }: DynamicUserGroupProps) {
       >
         {children}
       </AvatarGroup>
-      <ChevronDown
-        className="text-neutral-100"
-        size={16}
-        strokeWidth={2.5}
-        onClick={onArrowClick}
-      />
+      {showArrow ? (
+        <ChevronDown
+          className="text-neutral-100"
+          size={16}
+          strokeWidth={2.5}
+          onClick={onArrowClick}
+        />
+      ) : null}
     </div>
   );
 }
@@ -45,12 +52,16 @@ function DynamicUserGroup({ children, onArrowClick }: DynamicUserGroupProps) {
 function UserGroup({
   children,
   onArrowClick,
+  showArrow = true,
 }: {
   children?: ReactNode;
   onArrowClick?: () => void;
+  showArrow?: boolean;
 }) {
   return (
-    <DynamicUserGroup onArrowClick={onArrowClick}>{children}</DynamicUserGroup>
+    <DynamicUserGroup onArrowClick={onArrowClick} showArrow={showArrow}>
+      {children}
+    </DynamicUserGroup>
   );
 }
 
