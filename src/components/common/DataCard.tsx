@@ -10,7 +10,9 @@ type DataCardBaseProps = {
   className?: string;
 };
 
-type SummaryCardProps = DataCardBaseProps;
+type SummaryCardProps = DataCardBaseProps & {
+  content: string;
+};
 type BloodPressureCardProps = DataCardBaseProps & {
   systolic: number | '--';
   diastolic: number | '--';
@@ -50,7 +52,12 @@ function BaseCard({
   );
 }
 
-function DataCardSummary({ category, time, className }: SummaryCardProps) {
+function DataCardSummary({
+  category,
+  time,
+  className,
+  content,
+}: SummaryCardProps) {
   return (
     <div
       className={cn(
@@ -58,15 +65,14 @@ function DataCardSummary({ category, time, className }: SummaryCardProps) {
         className,
       )}
     >
-      <div className="flex h-9 w-full items-center justify-between border-b border-neutral-900">
+      <div className="flex h-9 w-full justify-between border-b border-neutral-900">
         <CardLabelPrimary>{category}</CardLabelPrimary>
         <p className="font-paragraph-sm self-center text-neutral-900">{time}</p>
       </div>
-      <div className="relative flex">
-        <Sparkles size={16} className="absolute left-1" />
-        <p className="font-paragraph-md pb-4 pl-8 text-neutral-900">
-          下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
-          80%，再加油一點點！
+      <div className="flex gap-1.5">
+        <Sparkles size={16} className="mt-1 shrink-0" />
+        <p className="font-paragraph-md pb-4 text-justify leading-relaxed text-neutral-900">
+          {content}
         </p>
       </div>
     </div>
