@@ -10,7 +10,7 @@ type DataCardBaseProps = {
   className?: string;
 };
 
-type SummaryCardProps = DataCardBaseProps & {
+type SummaryCardProps = Omit<DataCardBaseProps, 'time'> & {
   content: string;
 };
 type BloodPressureCardProps = DataCardBaseProps & {
@@ -52,12 +52,7 @@ function BaseCard({
   );
 }
 
-function DataCardSummary({
-  category,
-  time,
-  className,
-  content,
-}: SummaryCardProps) {
+function DataCardSummary({ category, className, content }: SummaryCardProps) {
   return (
     <div
       className={cn(
@@ -65,9 +60,8 @@ function DataCardSummary({
         className,
       )}
     >
-      <div className="flex h-9 w-full justify-between border-b border-neutral-900">
+      <div className="flex h-9 w-full justify-between border-b border-neutral-900 pb-2">
         <CardLabelPrimary>{category}</CardLabelPrimary>
-        <p className="font-paragraph-sm self-center text-neutral-900">{time}</p>
       </div>
       <div className="flex gap-1.5">
         <Sparkles size={16} className="mt-1 shrink-0" />
