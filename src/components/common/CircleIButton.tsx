@@ -12,6 +12,8 @@ type CheckBoxButtonProps = CircleButtonProps & {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  checkedClassName?: string;
+  uncheckedClassName?: string;
 };
 
 type ButtonClickEvent = Parameters<
@@ -78,6 +80,8 @@ function CheckBoxButton({
   checked,
   defaultChecked = false,
   onCheckedChange,
+  checkedClassName,
+  uncheckedClassName,
   ...props
 }: CheckBoxButtonProps) {
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
@@ -104,8 +108,8 @@ function CheckBoxButton({
         baseCircleClass,
         sizeClassMap[size],
         isChecked
-          ? 'bg-primary-default text-neutral-50'
-          : 'bg-neutral-400 text-white',
+          ? (checkedClassName ?? 'bg-primary-default text-neutral-50')
+          : (uncheckedClassName ?? 'bg-neutral-400 text-white'),
         className,
       )}
     >
