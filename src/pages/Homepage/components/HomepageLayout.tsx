@@ -5,6 +5,8 @@ import { NavigationTopActions } from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 
+import HealthSummary from './HealthSummary';
+
 function HomepageLayout() {
   return (
     <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
@@ -64,6 +66,7 @@ function HomepageLayout() {
           </CircleButtonPrimary>
         </div>
       </section>
+      <HealthSummary />
     </main>
   );
 }
