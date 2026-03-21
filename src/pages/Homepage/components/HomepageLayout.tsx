@@ -5,7 +5,7 @@ import { NavigationTopActions } from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 
-import HealthSummary from './HealthSummary';
+import HealthSummary from '../../../features/health/HealthSummary';
 
 function HomepageLayout() {
   return (
