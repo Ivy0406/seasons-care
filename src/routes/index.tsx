@@ -1,6 +1,8 @@
 import { createHashRouter } from 'react-router';
 
 import App from '@/App';
+import Calendar from '@/components/ui/calendar';
+import CalendarPage from '@/pages/CalendarPage';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
@@ -36,6 +38,14 @@ const router = createHashRouter([
       {
         path: 'homepage',
         Component: HomepagePage,
+      },
+      {
+        path: 'calendar',
+        Component: Calendar,
+      },
+      {
+        path: 'calendar-page',
+        Component: CalendarPage,
       },
     ],
   },
