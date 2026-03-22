@@ -2,7 +2,8 @@
 @import './_typography.css';
 @import './_colors.css';
 @import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
+@import 'swiper/css';
+@import 'swiper/css/pagination';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,4 +128,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     }
+}
+
+.custom-pagination .swiper-pagination-bullet {
+    @apply w-1.5 h-1.5 bg-neutral-200 opacity-100;
+}
+
+.custom-pagination .swiper-pagination-bullet-active {
+    @apply bg-neutral-900;
 }
