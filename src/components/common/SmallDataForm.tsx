@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState } from 'react';
 
 import {
   ListFormDateTimeRow,
@@ -11,18 +11,15 @@ import {
 import cn from '@/lib/utils';
 
 type BaseFormCardProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
 };
 
-/**
- * Base container for small data forms
- */
 function BaseFormCard({ children, className }: BaseFormCardProps) {
   return (
     <div
       className={cn(
-        'w-full max-w-md overflow-hidden rounded-[2rem] border-2 border-neutral-900 bg-neutral-100 p-6 shadow-sm',
+        'h-119 w-full rounded-[8px] border-2 border-neutral-900 bg-neutral-100 p-4',
         className,
       )}
     >
@@ -31,10 +28,7 @@ function BaseFormCard({ children, className }: BaseFormCardProps) {
   );
 }
 
-/**
- * Image 1: Health Metric Form
- */
-export function HealthMetricSmallForm({ className }: { className?: string }) {
+function HealthDataSmallForm({ className }: { className?: string }) {
   return (
     <BaseFormCard className={className}>
       <ListFormDateTimeRow
@@ -83,10 +77,9 @@ export function HealthMetricSmallForm({ className }: { className?: string }) {
   );
 }
 
-/**
- * Image 2: Journal Entry Form
- */
-export function JournalEntrySmallForm({ className }: { className?: string }) {
+function JournalDataSmallForm({ className }: { className?: string }) {
+  const [isImportant, setIsImportant] = useState(true);
+
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
@@ -108,8 +101,8 @@ export function JournalEntrySmallForm({ className }: { className?: string }) {
       <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
       <ListFormImportantRow
         label="是否標記為重要"
-        checked
-        onCheckedChange={() => {}}
+        checked={isImportant}
+        onCheckedChange={setIsImportant}
         className="border-neutral-900"
       />
       <ListFormNoteRow
@@ -121,10 +114,9 @@ export function JournalEntrySmallForm({ className }: { className?: string }) {
   );
 }
 
-/**
- * Image 3: Accounting Form
- */
-export function AccountingSmallForm({ className }: { className?: string }) {
+function MoneyDataSmallForm({ className }: { className?: string }) {
+  const [needsSplit, setNeedsSplit] = useState(false);
+
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
@@ -145,13 +137,19 @@ export function AccountingSmallForm({ className }: { className?: string }) {
       />
       <ListFormSelectRow
         label="類別"
-        options={[{ value: 'none', label: '無' }]}
+        options={[
+          { value: 'none', label: '無' },
+          { value: 'medical', label: '醫療支出' },
+          { value: 'food', label: '飲食支出' },
+          { value: 'traffic', label: '交通費用' },
+          { value: 'other', label: '生活支出' },
+        ]}
         className="border-neutral-900"
       />
       <ListFormImportantRow
         label="是否需分帳"
-        checked={false}
-        onCheckedChange={() => {}}
+        checked={needsSplit}
+        onCheckedChange={setNeedsSplit}
         className="border-neutral-900"
       />
       <ListFormNoteRow
@@ -162,3 +160,5 @@ export function AccountingSmallForm({ className }: { className?: string }) {
     </BaseFormCard>
   );
 }
+
+export { HealthDataSmallForm, JournalDataSmallForm, MoneyDataSmallForm };
