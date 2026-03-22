@@ -5,8 +5,6 @@ import type {
   TextareaHTMLAttributes,
 } from 'react';
 
-import { ChevronRight } from 'lucide-react';
-
 import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
 import InputClearButton from '@/components/common/InputClearButton';
 import SingleAvatar from '@/components/common/SingleAvatar';
@@ -204,7 +202,6 @@ function ListFormParticipantsRow({
           name="David"
           className="size-7 ring-1"
         />
-        <ChevronRight className="size-4 text-neutral-600" strokeWidth={2.5} />
       </div>
     </ListFormRow>
   );
@@ -239,13 +236,13 @@ function ListFormNoteRow({
     <ListFormRow
       label={label}
       htmlFor={htmlFor}
-      className={cn('items-start border-b-0', className)}
+      className={cn('items-start border-b-0 pt-4', className)}
     >
       <div className="relative w-full">
         <textarea
           id={htmlFor}
           rows={1}
-          className="font-label-md block min-h-12 w-full resize-none overflow-hidden bg-transparent py-0 pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
+          className="font-label-md block min-h-49 w-full resize-none overflow-hidden pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
           style={{ fieldSizing: 'content' }}
           {...textareaProps}
         />
@@ -270,11 +267,11 @@ function ListFormInputRow({
     <ListFormRow label={label} htmlFor={htmlFor} className={className}>
       <div className="flex flex-1 items-center justify-end gap-1">
         <Input
-          className="font-paragraph-md h-auto border-0 bg-transparent px-0 py-0 text-right font-bold text-neutral-900 shadow-none placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="font-label-md zpy-0 h-auto border-0 bg-transparent px-0 text-right text-neutral-900 placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           {...inputProps}
         />
         {unit && (
-          <span className="font-paragraph-md shrink-0 text-neutral-900">
+          <span className="font-paragraph-sm shrink-0 text-neutral-900">
             {unit}
           </span>
         )}
