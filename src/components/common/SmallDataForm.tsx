@@ -79,12 +79,13 @@ function HealthDataSmallForm({ className }: { className?: string }) {
 
 function JournalDataSmallForm({ className }: { className?: string }) {
   const [isImportant, setIsImportant] = useState(true);
+  const [note, setNote] = useState('');
 
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="日誌名稱"
-        inputProps={{ defaultValue: 'XXXXX' }}
+        inputProps={{ defaultValue: '' }}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
@@ -95,7 +96,11 @@ function JournalDataSmallForm({ className }: { className?: string }) {
       />
       <ListFormSelectRow
         label="是否標示為重複"
-        options={[{ value: 'daily', label: '每天' }]}
+        options={[
+          { value: 'daily', label: '每天' },
+          { value: 'weekly', label: '每週' },
+          { value: 'monthly', label: '每月' },
+        ]}
         className="border-neutral-900"
       />
       <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
@@ -107,7 +112,11 @@ function JournalDataSmallForm({ className }: { className?: string }) {
       />
       <ListFormNoteRow
         label="備註"
-        textareaProps={{ defaultValue: 'XXXXXXXXX' }}
+        textareaProps={{
+          value: note,
+          onChange: (e) => setNote(e.target.value),
+        }}
+        onClear={() => setNote('')}
         className="border-b-0"
       />
     </BaseFormCard>
@@ -116,6 +125,7 @@ function JournalDataSmallForm({ className }: { className?: string }) {
 
 function MoneyDataSmallForm({ className }: { className?: string }) {
   const [needsSplit, setNeedsSplit] = useState(false);
+  const [note, setNote] = useState('');
 
   return (
     <BaseFormCard className={className}>
@@ -154,7 +164,12 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
       />
       <ListFormNoteRow
         label="備註"
-        textareaProps={{ placeholder: '' }}
+        textareaProps={{
+          value: note,
+          onChange: (e) => setNote(e.target.value),
+          placeholder: '',
+        }}
+        onClear={() => setNote('')}
         className="border-b-0"
       />
     </BaseFormCard>
