@@ -177,14 +177,14 @@ npx shadcn@latest docs button dialog select
 
 ## 更新元件 (Updating Components)
 
-當使用者請求依據上遊更新而想要保留本地修改的時候，利用 `--dry-run` 與 `--diff` 智能合併。**絕不手動從 GitHub抓原始檔案 — 永遠都用 CLI**。
+當使用者請求依據上游更新而想要保留本地修改的時候，利用 `--dry-run` 與 `--diff` 智能合併。**絕不手動從 GitHub抓原始檔案 — 永遠都用 CLI**。
 
 1. 執行 `npx shadcn@latest add <component> --dry-run` 檢視影響到的全數檔案。
 2. 分別對各別檔案跑 `npx shadcn@latest add <component> --diff <file>` 查看與上游的原始差異。
 3. 分析差異後來決定：
    - 如果無本地改動 → 安心直接覆寫。
    - 包含本地客製 → 請打開本地檔了解意圖並且合併上游的新邏輯，而非破壞原本的東西。
-   - 若使用者明確指出「直接暴力更新」 → 這個時候就可以加 `--overwrite`，但你得事先得他同意。
+   - 若使用者明確指出「直接暴力更新」 → 這個時候就可以加 `--overwrite`，但你得事先取得他同意。
 4. **絕不允許你在未獲使用者同意下使用 `--overwrite`。**
 
 ## 常用捷徑指令 (Quick Reference)
