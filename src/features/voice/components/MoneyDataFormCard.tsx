@@ -4,7 +4,7 @@ import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
 function MoneyDataFormCard() {
   return (
     <DataFormCard
-      title="支出記錄"
+      title="新帳目"
       className="bg-secondary-default"
       toneClassName="bg-secondary-default"
     >
