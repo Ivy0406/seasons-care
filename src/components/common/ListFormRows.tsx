@@ -5,8 +5,6 @@ import type {
   TextareaHTMLAttributes,
 } from 'react';
 
-import { ChevronRight } from 'lucide-react';
-
 import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
 import InputClearButton from '@/components/common/InputClearButton';
 import SingleAvatar from '@/components/common/SingleAvatar';
@@ -55,6 +53,30 @@ type ListFormNoteRowProps = {
   label: string;
   textareaProps?: TextareaHTMLAttributes<HTMLTextAreaElement>;
   onClear?: () => void;
+  className?: string;
+};
+
+type ListFormInputRowProps = {
+  label: string;
+  unit?: string;
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  className?: string;
+};
+
+type ListFormSelectRowProps = {
+  label: string;
+  value?: string;
+  options?: { value: string; label: string }[];
+  selectProps?: SelectHTMLAttributes<HTMLSelectElement>;
+  className?: string;
+};
+
+type ListFormDateTimeRowProps = {
+  label: string;
+  dateValue: string;
+  timeValue: string;
+  onDateClick?: () => void;
+  onTimeClick?: () => void;
   className?: string;
 };
 
@@ -180,7 +202,6 @@ function ListFormParticipantsRow({
           name="David"
           className="size-7 ring-1"
         />
-        <ChevronRight className="size-4 text-neutral-600" strokeWidth={2.5} />
       </div>
     </ListFormRow>
   );
@@ -215,13 +236,13 @@ function ListFormNoteRow({
     <ListFormRow
       label={label}
       htmlFor={htmlFor}
-      className={cn('items-start border-b-0', className)}
+      className={cn('items-start border-b-0 pt-4', className)}
     >
       <div className="relative w-full">
         <textarea
           id={htmlFor}
           rows={1}
-          className="font-label-md block min-h-12 w-full resize-none overflow-hidden bg-transparent py-0 pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
+          className="font-label-md block min-h-49 w-full resize-none overflow-hidden pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
           style={{ fieldSizing: 'content' }}
           {...textareaProps}
         />
@@ -229,6 +250,96 @@ function ListFormNoteRow({
           className="absolute top-0 right-0"
           onClick={onClear}
         />
+      </div>
+    </ListFormRow>
+  );
+}
+
+function ListFormInputRow({
+  label,
+  unit,
+  inputProps,
+  className,
+}: ListFormInputRowProps) {
+  const htmlFor = inputProps?.id ?? inputProps?.name ?? label;
+
+  return (
+    <ListFormRow label={label} htmlFor={htmlFor} className={className}>
+      <div className="flex flex-1 items-center justify-end gap-1">
+        <Input
+          className="font-label-md zpy-0 h-auto border-0 bg-transparent px-0 text-right text-neutral-900 placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          {...inputProps}
+        />
+        {unit && (
+          <span className="font-paragraph-sm shrink-0 text-neutral-900">
+            {unit}
+          </span>
+        )}
+      </div>
+    </ListFormRow>
+  );
+}
+
+function ListFormSelectRow({
+  label,
+  options,
+  selectProps,
+  className,
+}: ListFormSelectRowProps) {
+  const htmlFor = selectProps?.id ?? selectProps?.name ?? label;
+
+  return (
+    <ListFormRow label={label} htmlFor={htmlFor} className={className}>
+      <div className="relative min-w-0">
+        <select
+          id={htmlFor}
+          className="font-paragraph-md h-auto min-w-0 appearance-none border-0 bg-transparent px-0 py-0 pr-8 text-right font-bold text-neutral-600 outline-none"
+          {...selectProps}
+        >
+          {options?.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute top-1/2 right-0 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
+          <img
+            src={chevronsUpDownIcon}
+            alt=""
+            aria-hidden="true"
+            className="h-3 w-3"
+          />
+        </div>
+      </div>
+    </ListFormRow>
+  );
+}
+
+function ListFormDateTimeRow({
+  label,
+  dateValue,
+  timeValue,
+  onDateClick,
+  onTimeClick,
+  className,
+}: ListFormDateTimeRowProps) {
+  return (
+    <ListFormRow label={label} htmlFor={label} className={className}>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onDateClick}
+          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+        >
+          {dateValue}
+        </button>
+        <button
+          type="button"
+          onClick={onTimeClick}
+          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+        >
+          {timeValue}
+        </button>
       </div>
     </ListFormRow>
   );
@@ -242,4 +353,7 @@ export {
   ListFormParticipantsRow,
   ListFormImportantRow,
   ListFormNoteRow,
+  ListFormInputRow,
+  ListFormSelectRow,
+  ListFormDateTimeRow,
 };
