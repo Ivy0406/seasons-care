@@ -5,8 +5,8 @@ function DiaryDataFormCard() {
   return (
     <DataFormCard
       title="新日誌"
-      className="bg-primary-dark"
-      toneClassName="bg-primary-dark"
+      className="bg-primary-default"
+      toneClassName="bg-primary-default"
     >
       <DataFormCard.Content>
         <JournalDataSmallForm className="w-full border-0 bg-neutral-50 px-0 pt-3" />
