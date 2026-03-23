@@ -1,15 +1,15 @@
-import * as React from 'react';
+import { useState } from 'react';
 
 import { Check, ChevronDownIcon } from 'lucide-react';
 
 import SingleAvatar from '@/components/common/SingleAvatar';
 import cn from '@/lib/utils';
 
-interface Member {
+type Member = {
   id: string;
   name: string;
   avatar: string;
-}
+};
 
 const members: Member[] = [
   {
@@ -38,18 +38,18 @@ const members: Member[] = [
   },
 ];
 
-interface MemberSelectorProps {
+type MemberSelectorProps = {
   selectedIds?: string[];
   onSelectedChange?: (ids: string[]) => void;
   className?: string;
-}
+};
 
-export function MemberSelector({
+function MemberSelector({
   selectedIds = [],
   onSelectedChange,
   className,
 }: MemberSelectorProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const toggleMember = (id: string) => {
     const newIds = selectedIds.includes(id)
