@@ -4,6 +4,7 @@ import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import { NavigationTopActions } from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
+import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 import HealthSummary from '../../../features/health/HealthSummary';
 
@@ -61,9 +62,13 @@ function HomepageLayout() {
 
         <div className="mt-3 flex items-center justify-between gap-3 px-3 pb-3">
           <p className="font-paragraph-md text-neutral-700">今日要去回診...</p>
-          <CircleButtonPrimary size="md" aria-label="開始語音輸入">
-            <Mic />
-          </CircleButtonPrimary>
+          <RecordingDrawer
+            trigger={
+              <CircleButtonPrimary size="md" aria-label="開始語音輸入">
+                <Mic />
+              </CircleButtonPrimary>
+            }
+          />
         </div>
       </section>
       <HealthSummary />
