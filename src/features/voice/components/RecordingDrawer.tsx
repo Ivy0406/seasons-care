@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { RotateCw, AudioLines } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
@@ -16,6 +17,8 @@ function RecordingDrawer({
   open,
   onOpenChange,
 }: RecordingDrawerProps) {
+  const navigate = useNavigate();
+
   // 模擬即將實作的語音辨識狀態。
   const [mockTranscript] = useState([
     '今日上午十點生命徵象穩定，血壓量測收縮壓 128、舒張壓 84，心率每分鐘 72 ...',
@@ -27,13 +30,11 @@ function RecordingDrawer({
 
   const handleOpenChange = (isOpen: boolean) => {
     onOpenChange?.(isOpen);
-    if (!isOpen) {
-      handleReset();
-    }
   };
 
   const handleFinish = () => {
     handleOpenChange(false);
+    setTimeout(() => navigate('/data-form'), 150);
   };
 
   return (
