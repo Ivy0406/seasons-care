@@ -32,21 +32,21 @@ function CategorySelector({
 }: CategorySelectorProps) {
   const [internalValue, setInternalValue] = useState<Category>(defaultValue);
   const isControlled = valueProp !== undefined;
-  const value = isControlled ? valueProp : internalValue;
+  const selectedValue = isControlled ? valueProp : internalValue;
 
-  const handleValueChange = (val: string | null) => {
-    if (!val) return;
-    const categoryVal = val as Category;
+  const handleValueChange = (value: string | null) => {
+    if (!value) return;
+    const categoryVal = value as Category;
     if (!isControlled) {
       setInternalValue(categoryVal);
     }
     onValueChangeProp?.(categoryVal);
   };
 
-  const activeCategory = categories.find((c) => c.value === value);
+  const activeCategory = categories.find((c) => c.value === selectedValue);
 
   return (
-    <Select value={value} onValueChange={handleValueChange}>
+    <Select value={selectedValue} onValueChange={handleValueChange}>
       <SelectTrigger
         className={cn(
           'font-paragraph-md h-auto w-fit border-none bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0',
