@@ -39,13 +39,13 @@ function HealthDataSmallForm({ className }: { className?: string }) {
       />
       <ListFormInputRow
         label="血壓 (收縮壓)"
-        unit="mg/dL"
+        unit="mmHg"
         inputProps={{ defaultValue: '155' }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (舒張壓)"
-        unit="mg/dL"
+        unit="mmHg"
         inputProps={{ defaultValue: '92' }}
         className="border-neutral-900"
       />
