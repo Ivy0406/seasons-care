@@ -6,14 +6,15 @@ import cn from '@/lib/utils';
 
 function App() {
   const { pathname } = useLocation();
-  const isCalendarRoute = pathname === '/calendar-page';
+  const isFullWidthRoute =
+    pathname === '/calendar-page' || pathname === '/data-form';
 
   return (
     <div
       className={cn(
         'flex min-h-screen w-full flex-col',
-        isCalendarRoute ? '' : 'mx-auto max-w-200',
-        isCalendarRoute ? '' : 'px-6',
+        isFullWidthRoute ? '' : 'mx-auto max-w-200',
+        isFullWidthRoute ? '' : 'px-6',
       )}
     >
       {/* 可放header */}
