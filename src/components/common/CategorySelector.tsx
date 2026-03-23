@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Select,
   SelectContent,
@@ -16,25 +18,35 @@ const categories: { value: Category; label: string }[] = [
 ];
 
 interface CategorySelectorProps {
+  defaultValue?: Category;
   value?: Category;
   onValueChange?: (value: Category) => void;
   className?: string;
 }
 
 function CategorySelector({
-  value,
-  onValueChange,
+  defaultValue = 'medication',
+  value: valueProp,
+  onValueChange: onValueChangeProp,
   className,
 }: CategorySelectorProps) {
+  const [internalValue, setInternalValue] = useState<Category>(defaultValue);
+  const isControlled = valueProp !== undefined;
+  const value = isControlled ? valueProp : internalValue;
+
+  const handleValueChange = (val: string | null) => {
+    if (!val) return;
+    const categoryVal = val as Category;
+    if (!isControlled) {
+      setInternalValue(categoryVal);
+    }
+    onValueChangeProp?.(categoryVal);
+  };
+
   const activeCategory = categories.find((c) => c.value === value);
 
   return (
-    <Select
-      value={value}
-      onValueChange={(val) => {
-        if (val) onValueChange?.(val as Category);
-      }}
-    >
+    <Select value={value} onValueChange={handleValueChange}>
       <SelectTrigger
         className={cn(
           'font-paragraph-md h-auto w-fit border-none bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0',
@@ -49,7 +61,7 @@ function CategorySelector({
             <div key={cat.value} className="w-full">
               <SelectItem
                 value={cat.value}
-                className="font-paragraph-md h-full cursor-pointer px-3 py-2 focus:bg-neutral-300 data-selected:bg-neutral-300"
+                className="font-paragraph-md h-full cursor-pointer px-3 py-2 transition-colors focus:bg-neutral-300 data-selected:bg-neutral-300"
               >
                 {cat.label}
               </SelectItem>
