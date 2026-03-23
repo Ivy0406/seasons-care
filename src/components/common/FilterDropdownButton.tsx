@@ -28,8 +28,7 @@ function FilterDropdownButton<T extends string>({
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
 
-  const selectedOption =
-    options.find((option) => option.value === value) ?? options[0];
+  const selectedOption = options.find((option) => option.value === value);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -65,7 +64,7 @@ function FilterDropdownButton<T extends string>({
         aria-controls={menuId}
         onClick={() => setOpen((previous) => !previous)}
       >
-        <span className="truncate pl-2">{selectedOption.label}</span>
+        <span className="truncate pl-2">{selectedOption?.label}</span>
         <div className="flex size-4 shrink-0 items-center justify-center">
           {open ? (
             <ChevronUp className="size-2 text-neutral-800" strokeWidth={5} />
