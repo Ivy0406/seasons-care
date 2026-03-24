@@ -32,6 +32,7 @@ type ModalProps = {
   onConfirm?: () => void;
   onClose: () => void;
   className?: string;
+  bodyClassName?: string;
 };
 
 function StatusIcon({
@@ -81,6 +82,7 @@ function Modal({
   onConfirm,
   onClose,
   className,
+  bodyClassName,
 }: ModalProps) {
   const isConfirmVariant = variant === 'confirm';
   const handleCancel = onCancel ?? onClose;
@@ -121,6 +123,7 @@ function Modal({
             className={cn(
               'flex flex-col items-center',
               isConfirmVariant ? 'gap-10' : 'gap-3 py-5 pb-2',
+              bodyClassName,
             )}
           >
             <div className="font-heading-sm flex flex-col items-center gap-1">
