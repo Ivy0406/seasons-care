@@ -2,7 +2,7 @@ import { createHashRouter } from 'react-router';
 
 import App from '@/App';
 import Calendar from '@/components/ui/calendar';
-import CalendarPage from '@/pages/CalendarPage';
+import CalendarPage from '@/pages/CareLog/CalendarPage';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
