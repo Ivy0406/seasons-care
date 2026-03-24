@@ -3,6 +3,7 @@ import { createHashRouter } from 'react-router';
 import App from '@/App';
 import Calendar from '@/components/ui/calendar';
 import CalendarPage from '@/pages/CareLog/CalendarPage';
+import CareLogCreatePage from '@/pages/CareLog/CareLogCreatePage';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
@@ -46,6 +47,10 @@ const router = createHashRouter([
       {
         path: 'calendar-page',
         Component: CalendarPage,
+      },
+      {
+        path: 'calendar-page/new',
+        Component: CareLogCreatePage,
       },
     ],
   },
