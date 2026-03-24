@@ -1,25 +1,64 @@
 import { useState } from 'react';
 
-import { ArrowRight, ArrowUpRight, ChevronDown, Plus } from 'lucide-react';
+import {
+  ChevronDown,
+  ArrowUpRight,
+  ArrowRight,
+  Plus,
+  Minimize2,
+} from 'lucide-react';
 
 import { CardLabelPrimary } from '@/components/common/CardLabel';
 import {
   CircleButtonPrimary,
   CircleButtonSecondary,
 } from '@/components/common/CircleIButton';
-import DairyCard from '@/components/common/DairyCard';
+import DairyCard, { type DairyCardItem } from '@/components/common/DairyCard';
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogPopup,
+  AlertDialogPortal,
+} from '@/components/ui/alert-dialog';
 import mockDiaryCards from '@/pages/Calendar/mockDiaryCards';
 
-function getStatusText(checked?: boolean) {
+type StatusGroup = '進行中' | '未完成' | '已完成';
+
+function getStatusText(checked?: boolean): StatusGroup {
   if (checked === true) return '已完成';
   if (checked === false) return '未完成';
   return '進行中';
 }
 
-function DiarySummary() {
+const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
+
+function groupByStatus(
+  cards: DairyCardItem[],
+): Record<StatusGroup, DairyCardItem[]> {
+  return cards.reduce(
+    (totalCards, card) => {
+      const status = getStatusText(card.checked);
+      totalCards[status].push(card);
+      return totalCards;
+    },
+    { 進行中: [], 未完成: [], 已完成: [] } as Record<
+      StatusGroup,
+      DairyCardItem[]
+    >,
+  );
+}
+
+type DiarySummaryProps = {
+  onSwitchToMoney: () => void;
+};
+
+function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
+  const [modalOpen, setModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
   const firstCard = mockDiaryCards[0];
   const remainingCount = mockDiaryCards.length - 1;
+  const grouped = groupByStatus(mockDiaryCards);
 
   return (
     <section className="pt-3">
@@ -28,20 +67,24 @@ function DiarySummary() {
         <CircleButtonPrimary
           size="md"
           aria-label="切換成今日帳目"
-          onClick={() => {}}
+          onClick={onSwitchToMoney}
         >
           <ArrowRight />
         </CircleButtonPrimary>
       </div>
 
-      <div className="max-h-96 overflow-y-auto rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-9">
+      <div className="max-h-96 overflow-y-auto rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
         <div className="mb-3 flex items-center justify-between pb-3">
           <CardLabelPrimary>今日日誌</CardLabelPrimary>
           <div className="flex items-center gap-3">
-            <CircleButtonSecondary size="md" aria-label="展開日誌列表">
+            <CircleButtonSecondary
+              size="md"
+              aria-label="展開日誌列表"
+              onClick={() => setModalOpen(true)}
+            >
               <ArrowUpRight />
             </CircleButtonSecondary>
-            <CircleButtonPrimary size="md" aria-label="前往日誌頁面">
+            <CircleButtonPrimary size="md" aria-label="新增日誌">
               <Plus />
             </CircleButtonPrimary>
           </div>
@@ -50,13 +93,12 @@ function DiarySummary() {
         <p className="font-label-md mb-5 text-neutral-700">
           {getStatusText(firstCard.checked)}
         </p>
-
         <DairyCard item={firstCard} />
 
         {isExpanded &&
           mockDiaryCards.slice(1).map((item) => (
             <div key={item.id} className="mt-3">
-              <p className="font-label-md mb-5 text-neutral-700">
+              <p className="font-label-md mb-3 text-neutral-700">
                 {getStatusText(item.checked)}
               </p>
               <DairyCard item={item} className="flex flex-col gap-5" />
@@ -77,6 +119,44 @@ function DiarySummary() {
           </button>
         )}
       </div>
+
+      <AlertDialog open={modalOpen} onOpenChange={(o) => setModalOpen(o)}>
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="max-h-[80vh] w-[calc(100vw-48px)] max-w-lg overflow-y-auto bg-neutral-100 px-5 pt-5 pb-3">
+            <div className="mb-3 flex items-center justify-between pb-3">
+              <CardLabelPrimary>今日日誌</CardLabelPrimary>
+              <div className="flex items-center gap-3">
+                <CircleButtonSecondary
+                  size="md"
+                  aria-label="收起日誌列表"
+                  onClick={() => setModalOpen(false)}
+                >
+                  <Minimize2 />
+                </CircleButtonSecondary>
+                <CircleButtonPrimary size="md" aria-label="新增日誌">
+                  <Plus />
+                </CircleButtonPrimary>
+              </div>
+            </div>
+
+            {STATUS_ORDER.map((status) => {
+              const cards = grouped[status];
+              if (cards.length === 0) return null;
+              return (
+                <div key={status}>
+                  <p className="font-label-md mb-3 text-neutral-700">
+                    {status}
+                  </p>
+                  {cards.map((item) => (
+                    <DairyCard key={item.id} item={item} className="mb-3" />
+                  ))}
+                </div>
+              );
+            })}
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
     </section>
   );
 }
