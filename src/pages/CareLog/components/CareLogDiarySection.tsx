@@ -1,17 +1,21 @@
 import { useState } from 'react';
+
 import { parseISO } from 'date-fns';
 
+import DairyCard from '@/components/common/DairyCard';
+import FilterDropdownButton from '@/components/common/FilterDropdownButton';
+import UpdateDeleteDrawer from '@/components/common/UpdateDeleteDrawer';
 import {
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import CareLogDeleteModal from '@/pages/CareLog/components/CareLogDeleteModal';
-import CareLogDeleteResultModal from '@/pages/CareLog/components/CareLogDeleteResultModal';
 import CareLogDetailCard from '@/pages/CareLog/components/CareLogDetailCard';
-import DairyCard from '@/components/common/DairyCard';
-import FilterDropdownButton from '@/components/common/FilterDropdownButton';
+import CareLogEditFormCard from '@/pages/CareLog/components/CareLogEditFormCard';
+import CareLogModal, {
+  type CareLogModalVariant,
+} from '@/pages/CareLog/components/CareLogModal';
 import type {
   CareLogEntry,
   CareLogFilterValue,
@@ -20,6 +24,8 @@ import type {
 type CareLogDiarySectionProps = {
   items: CareLogEntry[];
   selectedDate?: Date;
+  onUpdateEntry: (entry: CareLogEntry) => void;
+  onDeleteEntry: (entryId: string) => void;
 };
 
 const statusFilterOptions = [
@@ -32,17 +38,22 @@ const statusFilterOptions = [
 function CareLogDiarySection({
   items,
   selectedDate,
+  onUpdateEntry,
+  onDeleteEntry,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deletedEntryIds, setDeletedEntryIds] = useState<string[]>([]);
-  const [deleteResult, setDeleteResult] = useState<'success' | 'error' | null>(
-    null,
-  );
+  const [selectedActionEntryId, setSelectedActionEntryId] = useState<
+    string | null
+  >(null);
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [pendingDeleteEntryId, setPendingDeleteEntryId] = useState<
+    string | null
+  >(null);
+  const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const now = new Date();
-  const filteredItems = [...items]
-    .filter((item) => !deletedEntryIds.includes(item.id))
+  const activeItems = items;
+  const filteredItems = [...activeItems]
     .filter((item) => {
       const startTime = parseISO(item.startsAt).getTime();
 
@@ -59,23 +70,41 @@ function CareLogDiarySection({
       }
     })
     .sort(
-      (a, b) =>
-        parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
+      (a, b) => parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
     );
   const selectedEntry =
     selectedEntryId === null
       ? null
-      : (filteredItems.find((item) => item.id === selectedEntryId) ?? null);
+      : (activeItems.find((item) => item.id === selectedEntryId) ?? null);
+  const selectedActionEntry =
+    selectedActionEntryId === null
+      ? null
+      : (activeItems.find((item) => item.id === selectedActionEntryId) ?? null);
+  const editingEntry =
+    editingEntryId === null
+      ? null
+      : (activeItems.find((item) => item.id === editingEntryId) ?? null);
+  const openDeleteConfirm = (entryId: string | null) => {
+    if (entryId === null) return;
+
+    setPendingDeleteEntryId(entryId);
+    setModalKey('deleteConfirm');
+  };
   const handleDeleteConfirm = () => {
-    if (selectedEntryId === null) {
-      setIsDeleteModalOpen(false);
+    const entryId =
+      pendingDeleteEntryId ?? selectedActionEntryId ?? selectedEntryId;
+
+    if (entryId === null) {
+      setPendingDeleteEntryId(null);
+      setModalKey(null);
       return;
     }
 
-    setDeletedEntryIds((currentIds) => [...currentIds, selectedEntryId]);
+    onDeleteEntry(entryId);
     setSelectedEntryId(null);
-    setIsDeleteModalOpen(false);
-    setDeleteResult('success');
+    setSelectedActionEntryId(null);
+    setPendingDeleteEntryId(null);
+    setModalKey('deleteSuccess');
   };
 
   return (
@@ -99,6 +128,7 @@ function CareLogDiarySection({
             key={item.id}
             item={item}
             onClick={() => setSelectedEntryId(item.id)}
+            onMoreClick={() => setSelectedActionEntryId(item.id)}
           />
         ))
       ) : (
@@ -106,6 +136,27 @@ function CareLogDiarySection({
           <p className="font-paragraph-md">目前沒有符合條件的日誌紀錄。</p>
         </div>
       )}
+
+      <UpdateDeleteDrawer
+        open={selectedActionEntry !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedActionEntryId(null);
+          }
+        }}
+        onEdit={() => {
+          if (selectedActionEntryId === null) return;
+
+          setEditingEntryId(selectedActionEntryId);
+        }}
+        onDelete={() => {
+          if (selectedActionEntryId === null) return;
+
+          openDeleteConfirm(selectedActionEntryId);
+        }}
+        editLabel="編輯日誌"
+        deleteLabel="刪除日誌"
+      />
 
       <AlertDialog
         open={selectedEntry !== null}
@@ -122,24 +173,56 @@ function CareLogDiarySection({
               <CareLogDetailCard
                 entry={selectedEntry}
                 onClose={() => setSelectedEntryId(null)}
-                onDelete={() => setIsDeleteModalOpen(true)}
+                onEdit={() => {
+                  if (selectedEntryId === null) return;
+
+                  setEditingEntryId(selectedEntryId);
+                  setSelectedEntryId(null);
+                }}
+                onDelete={() => openDeleteConfirm(selectedEntryId)}
               />
             ) : null}
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
 
-      <CareLogDeleteModal
-        open={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteConfirm}
-      />
+      <AlertDialog
+        open={editingEntry !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingEntryId(null);
+          }
+        }}
+      >
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
+            {editingEntry ? (
+              <CareLogEditFormCard
+                entry={editingEntry}
+                onClose={() => setEditingEntryId(null)}
+                onSubmit={(entry) => {
+                  onUpdateEntry(entry);
+                  setEditingEntryId(null);
+                  setModalKey('updateSuccess');
+                }}
+              />
+            ) : null}
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
 
-      {deleteResult ? (
-        <CareLogDeleteResultModal
+      {modalKey ? (
+        <CareLogModal
           open
-          variant={deleteResult}
-          onClose={() => setDeleteResult(null)}
+          variant={modalKey}
+          onClose={() => {
+            setModalKey(null);
+            setPendingDeleteEntryId(null);
+          }}
+          onConfirm={
+            modalKey === 'deleteConfirm' ? handleDeleteConfirm : undefined
+          }
         />
       ) : null}
     </section>

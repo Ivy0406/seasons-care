@@ -6,23 +6,23 @@ import { Plus } from 'lucide-react';
 
 import Calendar from '@/components/common/Calendar';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
+import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
 import mockCareLogEntries from '@/pages/CareLog/data/mockCareLogEntries';
 
 const defaultSelectedDate = new Date();
 
 function CalendarPage() {
+  const [entries, setEntries] = useState<CareLogEntry[]>(mockCareLogEntries);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     defaultSelectedDate,
   );
   const [visibleMonth, setVisibleMonth] = useState<Date>(defaultSelectedDate);
 
-  const markedDates = mockCareLogEntries.map((entry) =>
-    parseISO(entry.startsAt),
-  );
+  const markedDates = entries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
     selectedDate === undefined
       ? []
-      : mockCareLogEntries.filter((entry) =>
+      : entries.filter((entry) =>
           isSameDay(parseISO(entry.startsAt), selectedDate),
         );
 
@@ -65,6 +65,18 @@ function CalendarPage() {
         <CareLogDiarySection
           items={selectedEntries}
           selectedDate={selectedDate}
+          onUpdateEntry={(updatedEntry) => {
+            setEntries((currentEntries) =>
+              currentEntries.map((entry) =>
+                entry.id === updatedEntry.id ? updatedEntry : entry,
+              ),
+            );
+          }}
+          onDeleteEntry={(entryId) => {
+            setEntries((currentEntries) =>
+              currentEntries.filter((entry) => entry.id !== entryId),
+            );
+          }}
         />
       </section>
     </main>
