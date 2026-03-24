@@ -14,6 +14,7 @@ import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
 import MoneyDataFormCard from './MoneyDataFormCard';
+import RecordingDrawer from './RecordingDrawer';
 
 import type { Swiper as SwiperClass } from 'swiper';
 
@@ -36,6 +37,7 @@ function DataFormCardCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const isLastSlide = activeIndex === 2;
 
@@ -91,12 +93,17 @@ function DataFormCardCarousel() {
         <button
           type="button"
           className="font-label-sm flex items-center gap-2 px-4 py-2 text-neutral-50"
-          onClick={() => navigate(-1)}
+          onClick={() => setShowRecordingDrawer(true)}
         >
           <RotateCw className="size-4" strokeWidth={2.5} />
           重新錄製
         </button>
       </div>
+
+      <RecordingDrawer
+        open={showRecordingDrawer}
+        onOpenChange={setShowRecordingDrawer}
+      />
 
       <Modal
         open={showSuccessModal}
