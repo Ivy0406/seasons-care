@@ -49,7 +49,7 @@ function CategorySelector({
     <Select value={selectedValue} onValueChange={handleValueChange}>
       <SelectTrigger
         className={cn(
-          'font-paragraph-md h-auto w-fit border-none bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0',
+          'font-paragraph-md h-auto w-fit border-none bg-transparent p-0 shadow-none hover:bg-transparent',
           className,
         )}
       >
