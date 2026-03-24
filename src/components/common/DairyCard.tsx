@@ -1,3 +1,4 @@
+import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { Check, EllipsisVertical } from 'lucide-react';
@@ -6,39 +7,56 @@ import { CheckBoxButton } from '@/components/common/CircleIButton';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import cn from '@/lib/utils';
 
-type CalendarDiaryCardParticipant = {
+export type CalendarDiaryCardParticipant = {
   id: string;
   name: string;
   src: string;
 };
 
+export type DairyCardStatus = 'pending' | 'completed';
+
 export type DairyCardItem = {
   id: string;
   title: string;
   description: string;
-  time: string;
+  startsAt: string;
   participants: CalendarDiaryCardParticipant[];
-  checked?: boolean;
+  status: DairyCardStatus;
+  isImportant?: boolean;
 };
 
 type DairyCardProps = {
   item: DairyCardItem;
   className?: string;
+  onClick?: () => void;
 };
 
-function DairyCard({ item, className }: DairyCardProps) {
-  const [isChecked, setIsChecked] = useState(item.checked ?? false);
+function DairyCard({ item, className, onClick }: DairyCardProps) {
+  const [isChecked, setIsChecked] = useState(item.status === 'completed');
+  const displayTime = format(parseISO(item.startsAt), 'HH:mm');
 
   useEffect(() => {
-    setIsChecked(item.checked ?? false);
-  }, [item.checked]);
+    setIsChecked(item.status === 'completed');
+  }, [item.status]);
 
   return (
     <article
       className={cn(
         'flex w-full flex-col gap-5 border-l-2 border-neutral-900 bg-neutral-100 py-4 pr-4 pl-3 text-neutral-900',
+        onClick && 'cursor-pointer transition-colors hover:bg-neutral-200/70',
         className,
       )}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (!onClick) return;
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <div className="flex w-full items-start justify-between">
         <div className="min-w-0 flex-1">
@@ -49,7 +67,7 @@ function DairyCard({ item, className }: DairyCardProps) {
                 isChecked ? 'bg-primary-default' : 'bg-neutral-800',
               )}
             />
-            <p className="font-label-lg">{item.time}</p>
+            <p className="font-label-lg">{displayTime}</p>
           </div>
           <div className="pl-4.5">
             <h2 className="font-heading-sm">{item.title}</h2>
@@ -62,6 +80,7 @@ function DairyCard({ item, className }: DairyCardProps) {
           type="button"
           aria-label="更多選項"
           className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-600"
+          onClick={(event) => event.stopPropagation()}
         >
           <EllipsisVertical className="size-4" strokeWidth={2.5} />
         </button>
@@ -82,6 +101,7 @@ function DairyCard({ item, className }: DairyCardProps) {
           size="md"
           checked={isChecked}
           onCheckedChange={setIsChecked}
+          onClick={(event) => event.stopPropagation()}
           aria-label={`標記${item.title}完成`}
           checkedClassName="bg-neutral-900 text-neutral-50  "
           uncheckedClassName="border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
