@@ -71,7 +71,9 @@ function HomepageLayout() {
           />
         </div>
       </section>
-      <HealthSummary />
+      <section className="bg-secondary-default -mx-6 mt-5 rounded-t-xl border-2 border-neutral-900 px-6 py-5">
+        <HealthSummary />
+      </section>
     </main>
   );
 }
