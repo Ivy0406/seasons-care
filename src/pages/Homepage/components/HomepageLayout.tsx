@@ -11,10 +11,12 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import HealthSummary from '../../../features/health/HealthSummary';
 
 import DiarySummary from './DiarySummary';
+import MoneySummary from './MoneySummary';
 import WeekStrip from './WeekStrip';
 
 function HomepageLayout() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showMoney, setShowMoney] = useState(false);
 
   return (
     <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
@@ -80,7 +82,11 @@ function HomepageLayout() {
       </section>
       <section className="bg-secondary-default -mx-6 mt-5 rounded-t-xl border-2 border-neutral-900 px-6 py-5">
         <WeekStrip selected={selectedDate} onSelect={setSelectedDate} />
-        <DiarySummary />
+        {showMoney ? (
+          <MoneySummary onSwitchToDiary={() => setShowMoney(false)} />
+        ) : (
+          <DiarySummary onSwitchToMoney={() => setShowMoney(true)} />
+        )}
         <HealthSummary />
       </section>
     </main>
