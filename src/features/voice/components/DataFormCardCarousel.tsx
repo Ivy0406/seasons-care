@@ -8,11 +8,13 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
+import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 
 import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
 import MoneyDataFormCard from './MoneyDataFormCard';
+import RecordingDrawer from './RecordingDrawer';
 
 import type { Swiper as SwiperClass } from 'swiper';
 
@@ -33,6 +35,9 @@ function DataFormCardCarousel() {
   const navigate = useNavigate();
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const isLastSlide = activeIndex === 2;
 
@@ -68,35 +73,58 @@ function DataFormCardCarousel() {
           </SwiperSlide>
         </Swiper>
 
-        {/* 分頁點 */}
         <div className="form-carousel-pagination mt-4 flex justify-center gap-2 px-4 [--swiper-pagination-bullet-inactive-color:#adb5bd] [--swiper-theme-color:#ffffff]" />
       </div>
 
-      {/* 底部按鈕 */}
       <div className="mt-6 flex flex-col items-center gap-3 px-4">
         <RoundedButtonSecondary
           className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800"
           onClick={() => {
             if (isLastSlide) {
-              // 模擬儲存資料並返回首頁
-              navigate('/homepage');
+              setShowSuccessModal(true);
             } else {
               swiper?.slideNext();
             }
           }}
         >
-          {isLastSlide ? '儲存資料' : '確認'}
+          {isLastSlide ? '儲存全部' : '確認'}
         </RoundedButtonSecondary>
 
         <button
           type="button"
           className="font-label-sm flex items-center gap-2 px-4 py-2 text-neutral-50"
-          onClick={() => navigate(-1)}
+          onClick={() => setShowRecordingDrawer(true)}
         >
           <RotateCw className="size-4" strokeWidth={2.5} />
           重新錄製
         </button>
       </div>
+
+      <RecordingDrawer
+        open={showRecordingDrawer}
+        onOpenChange={setShowRecordingDrawer}
+      />
+
+      <Modal
+        open={showSuccessModal}
+        variant="success"
+        title="新增成功！"
+        autoCloseMs={1500}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate('/homepage');
+        }}
+      />
+
+      <Modal
+        open={showErrorModal}
+        variant="error"
+        title="新增失敗！"
+        onClose={() => {
+          setShowErrorModal(false);
+          navigate('/homepage');
+        }}
+      />
     </div>
   );
 }
