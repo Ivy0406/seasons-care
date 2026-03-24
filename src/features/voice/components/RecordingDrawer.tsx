@@ -10,12 +10,14 @@ type RecordingDrawerProps = {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onFinish?: () => void;
 };
 
 function RecordingDrawer({
   trigger,
   open,
   onOpenChange,
+  onFinish,
 }: RecordingDrawerProps) {
   const navigate = useNavigate();
 
@@ -34,6 +36,12 @@ function RecordingDrawer({
 
   const handleFinish = () => {
     handleOpenChange(false);
+
+    if (onFinish) {
+      onFinish();
+      return;
+    }
+
     setTimeout(() => navigate('/data-form'), 150);
   };
 
