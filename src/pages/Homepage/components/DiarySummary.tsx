@@ -34,7 +34,7 @@ function DiarySummary() {
         </CircleButtonPrimary>
       </div>
 
-      <div className="max-h-96 overflow-y-auto rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5">
+      <div className="max-h-96 overflow-y-auto rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-9">
         <div className="mb-3 flex items-center justify-between pb-3">
           <CardLabelPrimary>今日日誌</CardLabelPrimary>
           <div className="flex items-center gap-3">
@@ -66,12 +66,12 @@ function DiarySummary() {
         {remainingCount > 0 && (
           <button
             type="button"
-            className="font-label-sm flex w-full items-center justify-center gap-1 py-3 text-neutral-700"
+            className="font-label-md mt-3 flex w-full items-center justify-center gap-1 text-neutral-700"
             onClick={() => setIsExpanded((prev) => !prev)}
           >
             {isExpanded ? '收起' : `查看其他 ${remainingCount} 則日誌`}
             <ChevronDown
-              className={`size-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+              className={`size-5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
               strokeWidth={2}
             />
           </button>
