@@ -6,7 +6,9 @@ import {
   ListFormInputRow,
   ListFormNoteRow,
   ListFormParticipantsRow,
+  ListFormRepeatRow,
   ListFormSelectRow,
+  type RepeatPatternValue,
 } from '@/components/common/ListFormRows';
 import cn from '@/lib/utils';
 
@@ -78,6 +80,8 @@ function HealthDataSmallForm({ className }: { className?: string }) {
 }
 
 function JournalDataSmallForm({ className }: { className?: string }) {
+  const [repeatPattern, setRepeatPattern] =
+    useState<RepeatPatternValue>('none');
   const [isImportant, setIsImportant] = useState(true);
   const [note, setNote] = useState('');
 
@@ -94,13 +98,9 @@ function JournalDataSmallForm({ className }: { className?: string }) {
         timeValue="10:00"
         className="border-neutral-900"
       />
-      <ListFormSelectRow
-        label="是否標示為重複"
-        options={[
-          { value: 'daily', label: '每天' },
-          { value: 'weekly', label: '每週' },
-          { value: 'monthly', label: '每月' },
-        ]}
+      <ListFormRepeatRow
+        value={repeatPattern}
+        onChange={setRepeatPattern}
         className="border-neutral-900"
       />
       <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
@@ -124,6 +124,7 @@ function JournalDataSmallForm({ className }: { className?: string }) {
 }
 
 function MoneyDataSmallForm({ className }: { className?: string }) {
+  const [category, setCategory] = useState('none');
   const [needsSplit, setNeedsSplit] = useState(false);
   const [note, setNote] = useState('');
 
@@ -147,6 +148,7 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
       />
       <ListFormSelectRow
         label="類別"
+        value={category}
         options={[
           { value: 'none', label: '無' },
           { value: 'medical', label: '醫療支出' },
@@ -154,6 +156,7 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
           { value: 'traffic', label: '交通費用' },
           { value: 'other', label: '生活支出' },
         ]}
+        onChange={setCategory}
         className="border-neutral-900"
       />
       <ListFormImportantRow
