@@ -1,5 +1,4 @@
 import './assets/styles/index.css';
-
 import { Outlet, useLocation } from 'react-router';
 
 import cn from '@/lib/utils';
