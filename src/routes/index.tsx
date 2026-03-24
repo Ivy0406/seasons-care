@@ -3,7 +3,8 @@ import { createHashRouter } from 'react-router';
 import App from '@/App';
 import Calendar from '@/components/ui/calendar';
 import DataFormCardCarousel from '@/features/voice/components/DataFormCardCarousel';
-import CalendarPage from '@/pages/CalendarPage';
+import CalendarPage from '@/pages/CareLog/CalendarPage';
+import CareLogCreatePage from '@/pages/CareLog/CareLogCreatePage';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
@@ -51,6 +52,10 @@ const router = createHashRouter([
       {
         path: 'data-form',
         Component: DataFormCardCarousel,
+      },
+      {
+        path: 'calendar-page/new',
+        Component: CareLogCreatePage,
       },
     ],
   },

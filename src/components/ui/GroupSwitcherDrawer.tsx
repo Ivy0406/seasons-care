@@ -24,7 +24,7 @@ type GroupSwitcherDrawerProps = {
   onCreateGroup?: () => void;
 };
 
-export function GroupSwitcherDrawer({
+function GroupSwitcherDrawer({
   trigger,
   groups,
   activeGroupId,
@@ -97,3 +97,5 @@ export function GroupSwitcherDrawer({
     </Drawer>
   );
 }
+
+export default GroupSwitcherDrawer;

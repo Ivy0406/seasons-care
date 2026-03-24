@@ -1,55 +1,67 @@
 import { useEffect, useState } from 'react';
 
+import { format, parseISO } from 'date-fns';
 import { Check, EllipsisVertical } from 'lucide-react';
 
 import { CheckBoxButton } from '@/components/common/CircleIButton';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import cn from '@/lib/utils';
 
-type CalendarDiaryCardParticipant = {
+export type CalendarDiaryCardParticipant = {
   id: string;
   name: string;
   src: string;
 };
 
+export type DairyCardStatus = 'pending' | 'completed';
+
 export type DairyCardItem = {
   id: string;
   title: string;
   description: string;
-  time: string;
+  startsAt: string;
+  repeatPattern?: 'none' | 'daily' | 'weeklyDay' | 'monthly';
   participants: CalendarDiaryCardParticipant[];
-  checked?: boolean;
+  status: DairyCardStatus;
+  isImportant?: boolean;
 };
 
 type DairyCardProps = {
   item: DairyCardItem;
   className?: string;
+  onClick?: () => void;
+  onMoreClick?: () => void;
 };
 
-function DairyCard({ item, className }: DairyCardProps) {
-  const [isChecked, setIsChecked] = useState(item.checked ?? false);
+function DairyCardContent({
+  item,
+  isChecked,
+  setIsChecked,
+  onMoreClick,
+}: {
+  item: DairyCardItem;
+  isChecked: boolean;
+  setIsChecked: (v: boolean) => void;
+  onMoreClick?: () => void;
+}) {
+  const startTime = parseISO(item.startsAt);
+  const displayTime = format(startTime, 'HH:mm');
+  const isNotStarted =
+    item.status !== 'completed' && startTime.getTime() > Date.now();
 
-  useEffect(() => {
-    setIsChecked(item.checked ?? false);
-  }, [item.checked]);
+  const getDotColor = () => {
+    if (isChecked) return 'bg-primary-default';
+    if (isNotStarted) return 'bg-neutral-500';
+    return 'bg-neutral-800';
+  };
 
   return (
-    <article
-      className={cn(
-        'flex w-full flex-col gap-5 border-l-2 border-neutral-900 bg-neutral-100 py-4 pr-4 pl-3 text-neutral-900',
-        className,
-      )}
-    >
+    <>
       <div className="flex w-full items-start justify-between">
         <div className="min-w-0 flex-1">
           <div className="mb-2 flex items-center gap-2 text-neutral-900">
-            <span
-              className={cn(
-                'size-1.5 rounded-full',
-                isChecked ? 'bg-primary-default' : 'bg-neutral-800',
-              )}
-            />
-            <p className="font-label-lg">{item.time}</p>
+            <span className={cn('size-3 rounded-full', getDotColor())} />
+            <p className="font-label-lg">{displayTime}</p>
           </div>
           <div className="pl-4.5">
             <h2 className="font-heading-sm">{item.title}</h2>
@@ -61,9 +73,13 @@ function DairyCard({ item, className }: DairyCardProps) {
         <button
           type="button"
           aria-label="更多選項"
-          className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-600"
+          className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
+          onClick={(event) => {
+            event.stopPropagation();
+            onMoreClick?.();
+          }}
         >
-          <EllipsisVertical className="size-4" strokeWidth={2.5} />
+          <EllipsisVertical className="size-4" strokeWidth={1.5} />
         </button>
       </div>
 
@@ -82,6 +98,7 @@ function DairyCard({ item, className }: DairyCardProps) {
           size="md"
           checked={isChecked}
           onCheckedChange={setIsChecked}
+          onClick={(event) => event.stopPropagation()}
           aria-label={`標記${item.title}完成`}
           checkedClassName="bg-neutral-900 text-neutral-50  "
           uncheckedClassName="border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
@@ -89,7 +106,58 @@ function DairyCard({ item, className }: DairyCardProps) {
           <Check />
         </CheckBoxButton>
       </div>
-    </article>
+    </>
+  );
+}
+
+function DairyCard({ item, className, onClick, onMoreClick }: DairyCardProps) {
+  const [isChecked, setIsChecked] = useState(item.status === 'completed');
+
+  useEffect(() => {
+    setIsChecked(item.status === 'completed');
+  }, [item.status]);
+
+  const sharedClassName = cn(
+    'flex w-full flex-col gap-5 border-l-2 border-neutral-900 bg-neutral-100 py-1 pr-4 pl-3 text-neutral-900 text-left',
+    className,
+  );
+
+  if (onClick) {
+    return (
+      <div
+        className={cn(
+          sharedClassName,
+          'cursor-pointer transition-colors active:bg-neutral-200',
+        )}
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onClick();
+          }
+        }}
+      >
+        <DairyCardContent
+          item={item}
+          isChecked={isChecked}
+          setIsChecked={setIsChecked}
+          onMoreClick={onMoreClick}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={sharedClassName}>
+      <DairyCardContent
+        item={item}
+        isChecked={isChecked}
+        setIsChecked={setIsChecked}
+        onMoreClick={onMoreClick}
+      />
+    </div>
   );
 }
 

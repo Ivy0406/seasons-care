@@ -153,10 +153,14 @@ function GroupEntryDrawer({ open = false, onClose }: GroupEntryDrawerProps) {
             />
             <ListFormGenderRow
               label="被照護者性別"
-              selectProps={{
-                value: gender,
-                onChange: (event) => setGender(event.target.value),
-              }}
+              value={gender}
+              options={[
+                { value: '', label: '請選擇' },
+                { value: 'male', label: '男' },
+                { value: 'female', label: '女' },
+                { value: 'other', label: '其他' },
+              ]}
+              onChange={setGender}
             />
             <ListFormBirthDateRow label="出生年月日" value={birthDate} />
           </div>
