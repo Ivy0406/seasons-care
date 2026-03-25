@@ -4,7 +4,9 @@ import App from '@/App';
 import Calendar from '@/components/ui/calendar';
 import CalendarPage from '@/pages/CareLog/CalendarPage';
 import CareLogCreatePage from '@/pages/CareLog/CareLogCreatePage';
+import DataFormCardCarousel from '@/features/voice/components/DataFormCardCarousel';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
+import HealthReportPage from '@/pages/HealthReport/HealthReportPage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
@@ -41,6 +43,10 @@ const router = createHashRouter([
         Component: HomepagePage,
       },
       {
+        path: 'health-report',
+        Component: HealthReportPage,
+      },
+      {
         path: 'calendar',
         Component: Calendar,
       },
@@ -51,6 +57,10 @@ const router = createHashRouter([
       {
         path: 'calendar-page/new',
         Component: CareLogCreatePage,
+      },
+      {
+        path: 'data-form',
+        Component: DataFormCardCarousel,
       },
     ],
   },

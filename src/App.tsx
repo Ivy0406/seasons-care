@@ -9,7 +9,8 @@ function App() {
   const isFullWidthRoute =
     pathname === '/calendar-page' ||
     pathname === '/calendar-page/new' ||
-    pathname === '/data-form';
+    pathname === '/data-form' ||
+    pathname === '/health-report';
 
   return (
     <div
