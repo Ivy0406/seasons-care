@@ -5,6 +5,7 @@ import Calendar from '@/components/ui/calendar';
 import DataFormCardCarousel from '@/features/voice/components/DataFormCardCarousel';
 import CalendarPage from '@/pages/CalendarPage';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
+import HealthReportPage from '@/pages/HealthReport/HealthReportPage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
@@ -39,6 +40,10 @@ const router = createHashRouter([
       {
         path: 'homepage',
         Component: HomepagePage,
+      },
+      {
+        path: 'health-report',
+        Component: HealthReportPage,
       },
       {
         path: 'calendar',
