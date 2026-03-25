@@ -1,18 +1,49 @@
 import { useState } from 'react';
 
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { register, type RegisterPayload } from '@/api/endpoints/auth';
 
-const useRegister = () => {
-  const [isLoading, setIsLoading] = useState(false);
+type AccountData = {
+  account: string;
+  password: string;
+};
 
-  const handleRegister = async (payload: RegisterPayload) => {
+type ProfileData = {
+  name: string;
+  avatar: string;
+};
+
+type RegistrationStep = 'account' | 'profile';
+
+const useRegister = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<RegistrationStep>('account');
+  const [accountData, setAccountData] = useState<Partial<AccountData>>({});
+
+  const handleAccountNext = (data: AccountData) => {
+    setAccountData(data);
+    setStep('profile');
+  };
+
+  const handleProfileSubmit = async (profileData: ProfileData) => {
+    const { account, password } = accountData;
+    if (!account || !password) return;
+
+    const payload: RegisterPayload = {
+      userName: profileData.name,
+      email: account,
+      password,
+      avatar: profileData.avatar,
+    };
+
     setIsLoading(true);
     try {
-      const response = await register(payload);
-      return response.data;
+      await register(payload);
+      navigate('/onboarding');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
@@ -26,13 +57,12 @@ const useRegister = () => {
             break;
         }
       }
-      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { handleRegister, isLoading };
+  return { step, isLoading, handleAccountNext, handleProfileSubmit };
 };
 
 export default useRegister;
