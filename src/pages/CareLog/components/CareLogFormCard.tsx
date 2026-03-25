@@ -27,6 +27,9 @@ type CareLogFormCardProps = {
   submitLabel: string;
   onClose: () => void;
   onSubmit: (entry: CareLogEntry) => void;
+  cardClassName?: string;
+  toneClassName?: string;
+  footerMode?: 'default' | 'submitOnly';
 };
 
 function CareLogFormCard({
@@ -35,6 +38,9 @@ function CareLogFormCard({
   submitLabel,
   onClose,
   onSubmit,
+  cardClassName = 'bg-neutral-800',
+  toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
+  footerMode = 'default',
 }: CareLogFormCardProps) {
   const [titleValue, setTitleValue] = useState(entry.title);
   const [dateValue, setDateValue] = useState('');
@@ -78,8 +84,8 @@ function CareLogFormCard({
     <>
       <DataFormCard
         title={title}
-        className="bg-neutral-800"
-        toneClassName="-mt-0.5 bg-neutral-800 text-neutral-50"
+        className={cardClassName}
+        toneClassName={toneClassName}
         contentClassName="overflow-hidden px-0 py-0"
       >
         <DataFormCard.Content>
@@ -177,20 +183,29 @@ function CareLogFormCard({
         </DataFormCard.Content>
 
         <DataFormCard.Footer>
-          <div className="grid grid-cols-2 gap-4">
-            <RoundedButtonSecondary
-              onClick={onClose}
-              className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
-            >
-              捨棄變更
-            </RoundedButtonSecondary>
+          {footerMode === 'submitOnly' ? (
             <RoundedButtonPrimary
               onClick={handleSubmit}
-              className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900"
+              className="bg-primary-default font-label-md active:bg-primary-dark w-full border-neutral-900 text-neutral-900"
             >
               {submitLabel}
             </RoundedButtonPrimary>
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <RoundedButtonSecondary
+                onClick={onClose}
+                className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
+              >
+                捨棄變更
+              </RoundedButtonSecondary>
+              <RoundedButtonPrimary
+                onClick={handleSubmit}
+                className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900"
+              >
+                {submitLabel}
+              </RoundedButtonPrimary>
+            </div>
+          )}
         </DataFormCard.Footer>
       </DataFormCard>
 

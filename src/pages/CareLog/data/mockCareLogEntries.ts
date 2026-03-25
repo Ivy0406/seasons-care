@@ -1,6 +1,6 @@
-import type { DairyCardItem } from '@/components/common/DairyCard';
+import type { DiaryCardItem } from '@/components/common/DiaryCard';
 
-export type CareLogEntry = DairyCardItem;
+export type CareLogEntry = DiaryCardItem;
 
 export type CareLogFilterValue = 'all' | 'notStarted' | 'started' | 'completed';
 

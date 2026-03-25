@@ -26,7 +26,7 @@ function BaseDrawer({
   className,
 }: BaseDrawerProps) {
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
       <DrawerContent
