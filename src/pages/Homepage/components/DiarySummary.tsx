@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import {
   ChevronDown,
   ArrowUpRight,
@@ -59,6 +61,7 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
   const firstCard = mockDiaryCards[0];
   const remainingCount = mockDiaryCards.length - 1;
   const grouped = groupByStatus(mockDiaryCards);
+  const navigate = useNavigate();
 
   return (
     <section className="pt-3">
@@ -84,7 +87,11 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
             >
               <ArrowUpRight />
             </CircleButtonSecondary>
-            <CircleButtonPrimary size="md" aria-label="新增日誌">
+            <CircleButtonPrimary
+              size="md"
+              aria-label="前往日誌頁面"
+              onClick={() => navigate('/calendar-page')}
+            >
               <Plus />
             </CircleButtonPrimary>
           </div>
