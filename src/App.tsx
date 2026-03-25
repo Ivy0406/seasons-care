@@ -6,7 +6,9 @@ import cn from '@/lib/utils';
 function App() {
   const { pathname } = useLocation();
   const isFullWidthRoute =
-    pathname === '/calendar-page' || pathname === '/data-form';
+    pathname === '/calendar-page' ||
+    pathname === '/data-form' ||
+    pathname === '/health-report';
 
   return (
     <div
