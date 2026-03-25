@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -30,6 +31,7 @@ const swiperConfig = {
 };
 
 function HealthSummary() {
+  const navigate = useNavigate();
   const healthData = useHealth();
 
   const {
@@ -46,7 +48,11 @@ function HealthSummary() {
     <section className="pt-3">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="font-heading-md text-neutral-900">健康摘要</h2>
-        <CircleButtonPrimary size="md" aria-label="查看更多">
+        <CircleButtonPrimary
+          size="md"
+          aria-label="查看AI健康報告"
+          onClick={() => navigate('/health-report')}
+        >
           <Plus />
         </CircleButtonPrimary>
       </div>
