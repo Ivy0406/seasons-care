@@ -4,6 +4,7 @@ type RegisterPayload = {
   userName: string;
   email: string;
   password: string;
+  avatar: string;
 };
 
 const register = (payload: RegisterPayload) =>
