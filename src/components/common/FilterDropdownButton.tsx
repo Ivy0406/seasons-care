@@ -73,7 +73,7 @@ function FilterDropdownButton<T extends string>({
         onClick={() => setOpen((previous) => !previous)}
       >
         <span className="invisible pl-2">{widestOptionLabel}</span>
-        <span className="pointer-events-none absolute inset-y-0 left-0 right-5 flex items-center justify-center px-3 text-center">
+        <span className="pointer-events-none absolute inset-y-0 right-5 left-0 flex items-center justify-center px-3 text-center">
           {selectedOption?.label}
         </span>
         <div className="flex size-4 shrink-0 items-center justify-center">
