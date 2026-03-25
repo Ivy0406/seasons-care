@@ -17,6 +17,7 @@ type SetupProfileFormValues = {
 
 type SetupProfileProps = {
   onSubmit: (data: SetupProfileFormValues & { avatar: string }) => void;
+  isLoading?: boolean;
 };
 
 const mockAvatars = [
@@ -52,7 +53,7 @@ const mockAvatars = [
   },
 ];
 
-const SetupProfile = ({ onSubmit }: SetupProfileProps) => {
+const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState(mockAvatars[0]);
   const [tempSelectedAvatar, setTempSelectedAvatar] = useState(mockAvatars[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -156,12 +157,14 @@ const SetupProfile = ({ onSubmit }: SetupProfileProps) => {
       </div>
 
       <div className="w-full">
-        {isValid ? (
+        {isValid && !isLoading ? (
           <RoundedButtonPrimary onClick={handleSubmit(localOnSubmit)}>
             建立檔案
           </RoundedButtonPrimary>
         ) : (
-          <RoundedButtonDisabled>建立檔案</RoundedButtonDisabled>
+          <RoundedButtonDisabled>
+            {isLoading ? '建立中...' : '建立檔案'}
+          </RoundedButtonDisabled>
         )}
       </div>
     </form>
