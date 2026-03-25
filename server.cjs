@@ -24,7 +24,7 @@ server.post('/auth/register/409', (req, res) =>
   res.status(409).json({ message: '資料衝突' }),
 );
 server.post('/auth/register', (req, res) =>
-  res.status(409).json({ message: '資料衝突' }),
+  res.status(201).json({ message: '註冊成功' }),
 );
 
 server.listen(3001, () => {
