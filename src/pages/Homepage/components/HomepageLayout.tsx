@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { ChevronDown, Mic } from 'lucide-react';
 
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
@@ -8,7 +10,14 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 import HealthSummary from '../../../features/health/HealthSummary';
 
+import DiarySummary from './DiarySummary';
+import MoneySummary from './MoneySummary';
+import WeekStrip from './WeekStrip';
+
 function HomepageLayout() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showMoney, setShowMoney] = useState(false);
+
   return (
     <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
       <NavigationTopActions hasNotification className="px-0" />
@@ -71,7 +80,15 @@ function HomepageLayout() {
           />
         </div>
       </section>
-      <HealthSummary />
+      <section className="bg-secondary-default -mx-6 mt-5 rounded-t-xl border-2 border-neutral-900 px-6 py-5">
+        <WeekStrip selected={selectedDate} onSelect={setSelectedDate} />
+        {showMoney ? (
+          <MoneySummary onSwitchToDiary={() => setShowMoney(false)} />
+        ) : (
+          <DiarySummary onSwitchToMoney={() => setShowMoney(true)} />
+        )}
+        <HealthSummary />
+      </section>
     </main>
   );
 }
