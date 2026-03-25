@@ -8,6 +8,7 @@ import {
   Plus,
   Minimize2,
 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import { CardLabelPrimary } from '@/components/common/CardLabel';
 import {
@@ -60,6 +61,7 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
   const firstCard = mockCareLogEntries[0];
   const remainingCount = mockCareLogEntries.length - 1;
   const grouped = groupByStatus(mockCareLogEntries);
+  const navigate = useNavigate();
 
   return (
     <section className="pt-3">
@@ -85,7 +87,11 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
             >
               <ArrowUpRight />
             </CircleButtonSecondary>
-            <CircleButtonPrimary size="md" aria-label="新增日誌">
+            <CircleButtonPrimary
+              size="md"
+              aria-label="前往日誌頁面"
+              onClick={() => navigate('/calendar-page')}
+            >
               <Plus />
             </CircleButtonPrimary>
           </div>
