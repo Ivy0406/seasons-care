@@ -1,12 +1,14 @@
 import type {
   InputHTMLAttributes,
   ReactNode,
-  SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
 
-import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
+import FormDiaryRepeatSelector, {
+  type FormDiaryRepeatValue,
+} from '@/components/common/FormDiaryRepeatSelector';
 import InputClearButton from '@/components/common/InputClearButton';
+import ListFormOptionSelector from '@/components/common/ListFormOptionSelector';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import ToggleButton from '@/components/common/ToggleButton';
 import Input from '@/components/ui/input';
@@ -27,7 +29,9 @@ type ListFormTextRowProps = {
 
 type ListFormGenderRowProps = {
   label: string;
-  selectProps?: SelectHTMLAttributes<HTMLSelectElement>;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
   className?: string;
 };
 
@@ -65,9 +69,17 @@ type ListFormInputRowProps = {
 
 type ListFormSelectRowProps = {
   label: string;
-  value?: string;
-  options?: { value: string; label: string }[];
-  selectProps?: SelectHTMLAttributes<HTMLSelectElement>;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+  className?: string;
+};
+
+type RepeatPatternValue = FormDiaryRepeatValue;
+
+type ListFormRepeatRowProps = {
+  value: RepeatPatternValue;
+  onChange: (value: RepeatPatternValue) => void;
   className?: string;
 };
 
@@ -126,32 +138,19 @@ function ListFormNameRow({
 
 function ListFormGenderRow({
   label,
-  selectProps,
+  value,
+  options,
+  onChange,
   className,
 }: ListFormGenderRowProps) {
-  const htmlFor = selectProps?.id ?? selectProps?.name ?? label;
-
   return (
-    <ListFormRow label={label} htmlFor={htmlFor} className={className}>
+    <ListFormRow label={label} htmlFor={label} className={className}>
       <div className="relative min-w-0">
-        <select
-          id={htmlFor}
-          className="font-paragraph-md h-auto min-w-0 appearance-none border-0 bg-transparent px-0 py-0 pr-8 text-right font-bold text-neutral-600 outline-none"
-          {...selectProps}
-        >
-          <option value="">請選擇</option>
-          <option value="male">男</option>
-          <option value="female">女</option>
-          <option value="other">其他</option>
-        </select>
-        <div className="pointer-events-none absolute top-1/2 right-0 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
-          <img
-            src={chevronsUpDownIcon}
-            alt=""
-            aria-hidden="true"
-            className="h-3 w-3"
-          />
-        </div>
+        <ListFormOptionSelector
+          value={value}
+          options={options}
+          onChange={onChange}
+        />
       </div>
     </ListFormRow>
   );
@@ -282,34 +281,37 @@ function ListFormInputRow({
 
 function ListFormSelectRow({
   label,
+  value,
   options,
-  selectProps,
+  onChange,
   className,
 }: ListFormSelectRowProps) {
-  const htmlFor = selectProps?.id ?? selectProps?.name ?? label;
-
   return (
-    <ListFormRow label={label} htmlFor={htmlFor} className={className}>
+    <ListFormRow label={label} htmlFor={label} className={className}>
       <div className="relative min-w-0">
-        <select
-          id={htmlFor}
-          className="font-paragraph-md h-auto min-w-0 appearance-none border-0 bg-transparent px-0 py-0 pr-8 text-right font-bold text-neutral-600 outline-none"
-          {...selectProps}
-        >
-          {options?.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute top-1/2 right-0 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
-          <img
-            src={chevronsUpDownIcon}
-            alt=""
-            aria-hidden="true"
-            className="h-3 w-3"
-          />
-        </div>
+        <ListFormOptionSelector
+          value={value}
+          options={options}
+          onChange={onChange}
+        />
+      </div>
+    </ListFormRow>
+  );
+}
+
+function ListFormRepeatRow({
+  value,
+  onChange,
+  className,
+}: ListFormRepeatRowProps) {
+  return (
+    <ListFormRow
+      label="是否標示為重複"
+      htmlFor="是否標示為重複"
+      className={className}
+    >
+      <div className="relative min-w-0">
+        <FormDiaryRepeatSelector value={value} onChange={onChange} />
       </div>
     </ListFormRow>
   );
@@ -355,5 +357,8 @@ export {
   ListFormNoteRow,
   ListFormInputRow,
   ListFormSelectRow,
+  ListFormRepeatRow,
   ListFormDateTimeRow,
 };
+
+export type { RepeatPatternValue };

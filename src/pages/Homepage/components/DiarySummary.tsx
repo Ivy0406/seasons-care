@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { parseISO } from 'date-fns';
 import {
   ChevronDown,
   ArrowUpRight,
@@ -20,14 +21,14 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import mockDiaryCards from '@/pages/Calendar/mockDiaryCards';
+import mockCareLogEntries from '@/pages/CareLog/data/mockCareLogEntries';
 
 type StatusGroup = '進行中' | '未完成' | '已完成';
 
-function getStatusText(checked?: boolean): StatusGroup {
-  if (checked === true) return '已完成';
-  if (checked === false) return '未完成';
-  return '進行中';
+function getStatusText(card: DairyCardItem): StatusGroup {
+  if (card.status === 'completed') return '已完成';
+  if (parseISO(card.startsAt).getTime() <= Date.now()) return '進行中';
+  return '未完成';
 }
 
 const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
@@ -37,7 +38,7 @@ function groupByStatus(
 ): Record<StatusGroup, DairyCardItem[]> {
   return cards.reduce(
     (totalCards, card) => {
-      const status = getStatusText(card.checked);
+      const status = getStatusText(card);
       totalCards[status].push(card);
       return totalCards;
     },
@@ -56,9 +57,9 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const firstCard = mockDiaryCards[0];
-  const remainingCount = mockDiaryCards.length - 1;
-  const grouped = groupByStatus(mockDiaryCards);
+  const firstCard = mockCareLogEntries[0];
+  const remainingCount = mockCareLogEntries.length - 1;
+  const grouped = groupByStatus(mockCareLogEntries);
 
   return (
     <section className="pt-3">
@@ -91,15 +92,15 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
         </div>
 
         <p className="font-label-md mb-5 text-neutral-700">
-          {getStatusText(firstCard.checked)}
+          {getStatusText(firstCard)}
         </p>
         <DairyCard item={firstCard} />
 
         {isExpanded &&
-          mockDiaryCards.slice(1).map((item) => (
+          mockCareLogEntries.slice(1).map((item: DairyCardItem) => (
             <div key={item.id} className="mt-3">
               <p className="font-label-md mb-3 text-neutral-700">
-                {getStatusText(item.checked)}
+                {getStatusText(item)}
               </p>
               <DairyCard item={item} className="flex flex-col gap-5" />
             </div>
