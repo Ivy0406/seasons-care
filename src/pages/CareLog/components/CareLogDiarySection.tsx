@@ -2,20 +2,10 @@ import { useState } from 'react';
 
 import { parseISO } from 'date-fns';
 
-import DairyCard from '@/components/common/DairyCard';
+import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
-import UpdateDeleteDrawer from '@/components/common/UpdateDeleteDrawer';
-import {
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogPopup,
-  AlertDialogPortal,
-} from '@/components/ui/alert-dialog';
-import CareLogDetailCard from '@/pages/CareLog/components/CareLogDetailCard';
-import CareLogEditFormCard from '@/pages/CareLog/components/CareLogEditFormCard';
-import CareLogModal, {
-  type CareLogModalVariant,
-} from '@/pages/CareLog/components/CareLogModal';
+import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
+import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import type {
   CareLogEntry,
   CareLogFilterValue,
@@ -42,15 +32,11 @@ function CareLogDiarySection({
   onDeleteEntry,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
-  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
-  const [selectedActionEntryId, setSelectedActionEntryId] = useState<
-    string | null
-  >(null);
-  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
-  const [pendingDeleteEntryId, setPendingDeleteEntryId] = useState<
-    string | null
-  >(null);
-  const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
+  const diaryCardActions = useDiaryCardActions({
+    items,
+    onUpdateEntry,
+    onDeleteEntry,
+  });
   const now = new Date();
   const activeItems = items;
   const filteredItems = [...activeItems]
@@ -72,40 +58,6 @@ function CareLogDiarySection({
     .sort(
       (a, b) => parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
     );
-  const selectedEntry =
-    selectedEntryId === null
-      ? null
-      : (activeItems.find((item) => item.id === selectedEntryId) ?? null);
-  const selectedActionEntry =
-    selectedActionEntryId === null
-      ? null
-      : (activeItems.find((item) => item.id === selectedActionEntryId) ?? null);
-  const editingEntry =
-    editingEntryId === null
-      ? null
-      : (activeItems.find((item) => item.id === editingEntryId) ?? null);
-  const openDeleteConfirm = (entryId: string | null) => {
-    if (entryId === null) return;
-
-    setPendingDeleteEntryId(entryId);
-    setModalKey('deleteConfirm');
-  };
-  const handleDeleteConfirm = () => {
-    const entryId =
-      pendingDeleteEntryId ?? selectedActionEntryId ?? selectedEntryId;
-
-    if (entryId === null) {
-      setPendingDeleteEntryId(null);
-      setModalKey(null);
-      return;
-    }
-
-    onDeleteEntry(entryId);
-    setSelectedEntryId(null);
-    setSelectedActionEntryId(null);
-    setPendingDeleteEntryId(null);
-    setModalKey('deleteSuccess');
-  };
 
   return (
     <section className="flex w-full flex-col gap-5">
@@ -124,11 +76,11 @@ function CareLogDiarySection({
 
       {filteredItems.length > 0 ? (
         filteredItems.map((item) => (
-          <DairyCard
+          <DiaryCard
             key={item.id}
             item={item}
-            onClick={() => setSelectedEntryId(item.id)}
-            onMoreClick={() => setSelectedActionEntryId(item.id)}
+            onClick={() => diaryCardActions.openDetail(item.id)}
+            onMoreClick={() => diaryCardActions.openActions(item.id)}
           />
         ))
       ) : (
@@ -137,94 +89,7 @@ function CareLogDiarySection({
         </div>
       )}
 
-      <UpdateDeleteDrawer
-        open={selectedActionEntry !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedActionEntryId(null);
-          }
-        }}
-        onEdit={() => {
-          if (selectedActionEntryId === null) return;
-
-          setEditingEntryId(selectedActionEntryId);
-        }}
-        onDelete={() => {
-          if (selectedActionEntryId === null) return;
-
-          openDeleteConfirm(selectedActionEntryId);
-        }}
-        editLabel="編輯日誌"
-        deleteLabel="刪除日誌"
-      />
-
-      <AlertDialog
-        open={selectedEntry !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedEntryId(null);
-          }
-        }}
-      >
-        <AlertDialogPortal>
-          <AlertDialogBackdrop />
-          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
-            {selectedEntry ? (
-              <CareLogDetailCard
-                entry={selectedEntry}
-                onClose={() => setSelectedEntryId(null)}
-                onEdit={() => {
-                  if (selectedEntryId === null) return;
-
-                  setEditingEntryId(selectedEntryId);
-                  setSelectedEntryId(null);
-                }}
-                onDelete={() => openDeleteConfirm(selectedEntryId)}
-              />
-            ) : null}
-          </AlertDialogPopup>
-        </AlertDialogPortal>
-      </AlertDialog>
-
-      <AlertDialog
-        open={editingEntry !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditingEntryId(null);
-          }
-        }}
-      >
-        <AlertDialogPortal>
-          <AlertDialogBackdrop />
-          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
-            {editingEntry ? (
-              <CareLogEditFormCard
-                entry={editingEntry}
-                onClose={() => setEditingEntryId(null)}
-                onSubmit={(entry) => {
-                  onUpdateEntry(entry);
-                  setEditingEntryId(null);
-                  setModalKey('updateSuccess');
-                }}
-              />
-            ) : null}
-          </AlertDialogPopup>
-        </AlertDialogPortal>
-      </AlertDialog>
-
-      {modalKey ? (
-        <CareLogModal
-          open
-          variant={modalKey}
-          onClose={() => {
-            setModalKey(null);
-            setPendingDeleteEntryId(null);
-          }}
-          onConfirm={
-            modalKey === 'deleteConfirm' ? handleDeleteConfirm : undefined
-          }
-        />
-      ) : null}
+      <DiaryCardActionLayer actions={diaryCardActions} />
     </section>
   );
 }
