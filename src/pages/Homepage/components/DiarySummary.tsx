@@ -15,7 +15,7 @@ import {
   CircleButtonPrimary,
   CircleButtonSecondary,
 } from '@/components/common/CircleIButton';
-import DairyCard, { type DairyCardItem } from '@/components/common/DairyCard';
+import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -26,7 +26,7 @@ import mockCareLogEntries from '@/pages/CareLog/data/mockCareLogEntries';
 
 type StatusGroup = '進行中' | '未完成' | '已完成';
 
-function getStatusText(card: DairyCardItem): StatusGroup {
+function getStatusText(card: DiaryCardItem): StatusGroup {
   if (card.status === 'completed') return '已完成';
   if (parseISO(card.startsAt).getTime() <= Date.now()) return '進行中';
   return '未完成';
@@ -35,8 +35,8 @@ function getStatusText(card: DairyCardItem): StatusGroup {
 const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
 
 function groupByStatus(
-  cards: DairyCardItem[],
-): Record<StatusGroup, DairyCardItem[]> {
+  cards: DiaryCardItem[],
+): Record<StatusGroup, DiaryCardItem[]> {
   return cards.reduce(
     (totalCards, card) => {
       const status = getStatusText(card);
@@ -45,7 +45,7 @@ function groupByStatus(
     },
     { 進行中: [], 未完成: [], 已完成: [] } as Record<
       StatusGroup,
-      DairyCardItem[]
+      DiaryCardItem[]
     >,
   );
 }
@@ -100,15 +100,15 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
         <p className="font-label-md mb-5 text-neutral-700">
           {getStatusText(firstCard)}
         </p>
-        <DairyCard item={firstCard} />
+        <DiaryCard item={firstCard} />
 
         {isExpanded &&
-          mockCareLogEntries.slice(1).map((item: DairyCardItem) => (
+          mockCareLogEntries.slice(1).map((item: DiaryCardItem) => (
             <div key={item.id} className="mt-3">
               <p className="font-label-md mb-3 text-neutral-700">
                 {getStatusText(item)}
               </p>
-              <DairyCard item={item} className="flex flex-col gap-5" />
+              <DiaryCard item={item} className="flex flex-col gap-5" />
             </div>
           ))}
 
@@ -156,7 +156,7 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
                     {status}
                   </p>
                   {cards.map((item) => (
-                    <DairyCard key={item.id} item={item} className="mb-3" />
+                    <DiaryCard key={item.id} item={item} className="mb-3" />
                   ))}
                 </div>
               );
