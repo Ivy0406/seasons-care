@@ -29,6 +29,11 @@ function FilterDropdownButton<T extends string>({
   const menuId = useId();
 
   const selectedOption = options.find((option) => option.value === value);
+  const widestOptionLabel = options.reduce(
+    (widest, option) =>
+      option.label.length > widest.length ? option.label : widest,
+    selectedOption?.label ?? '',
+  );
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -53,18 +58,24 @@ function FilterDropdownButton<T extends string>({
   }, []);
 
   return (
-    <div ref={rootRef} className={cn('relative inline-flex w-fit', className)}>
+    <div
+      ref={rootRef}
+      className={cn('relative inline-flex w-fit max-w-full', className)}
+    >
       <button
         type="button"
         className={cn(
-          'font-label-md inline-flex items-center justify-between gap-1 rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
+          'font-label-md relative inline-grid max-w-full grid-cols-[1fr_auto] items-center gap-1 rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
           'transition-colors active:bg-neutral-200',
         )}
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((previous) => !previous)}
       >
-        <span className="truncate pl-2">{selectedOption?.label}</span>
+        <span className="invisible pl-2">{widestOptionLabel}</span>
+        <span className="pointer-events-none absolute inset-y-0 left-0 right-5 flex items-center justify-center px-3 text-center">
+          {selectedOption?.label}
+        </span>
         <div className="flex size-4 shrink-0 items-center justify-center">
           {open ? (
             <ChevronUp className="size-2 text-neutral-800" strokeWidth={5} />
@@ -79,7 +90,7 @@ function FilterDropdownButton<T extends string>({
           id={menuId}
           role="menu"
           className={cn(
-            'absolute top-full left-0 z-20 mt-1 overflow-hidden rounded-[4px] border-2 border-neutral-900 bg-neutral-200',
+            'absolute top-full right-0 z-20 mt-1 min-w-full overflow-hidden rounded-[4px] border-2 border-neutral-900 bg-neutral-200',
             menuClassName,
           )}
         >
