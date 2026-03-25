@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import {
   ListFormBirthDateRow,
@@ -81,7 +82,11 @@ function GroupEntryDrawer({ open = false, onClose }: GroupEntryDrawerProps) {
   const [careRecipientName, setCareRecipientName] = useState('');
   const [gender, setGender] = useState('male');
   const [birthDate] = useState('2026/01/12');
+  const navigate = useNavigate();
   const handleClose = () => {
+    if (step === 'success') {
+      navigate('/homepage');
+    }
     onClose?.();
   };
 
