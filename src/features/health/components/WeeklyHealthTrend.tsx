@@ -1,40 +1,122 @@
-import HealthDataChartCard from './HealthDataChartCard';
+import HealthDataChartCard, {
+  type SparklinePoint,
+} from './HealthDataChartCard';
 
-const TREND_DATA = {
+const TREND_DATA: {
+  bloodPressure: {
+    title: string;
+    status: string;
+    systolic: number | '--';
+    diastolic: number | '--';
+    sparklineData: SparklinePoint[];
+    chartDomain: [number, number];
+  };
+  bloodOxygen: {
+    title: string;
+    status: string;
+    value: number | '--';
+    unit: string;
+    sparklineData: SparklinePoint[];
+  };
+  bloodSugar: {
+    title: string;
+    status: string;
+    value: number | '--';
+    unit: string;
+    sparklineData: SparklinePoint[];
+    chartDomain: [number, number];
+  };
+  temperature: {
+    title: string;
+    status: string;
+    value: number | '--';
+    unit: string;
+    sparklineData: SparklinePoint[];
+  };
+  weight: {
+    title: string;
+    status: string;
+    value: number | '--';
+    unit: string;
+    sparklineData: SparklinePoint[];
+  };
+} = {
   bloodPressure: {
     title: '血壓',
-    status: '維持良好',
-    systolic: 142 as number | '--',
-    diastolic: 92 as number | '--',
-    sparklineData: [20, 28, 14, 32, 10, 24, 18, 30, 16, 26, 22, 28],
+    status: '建議觀察',
+    systolic: 142,
+    diastolic: 92,
+    chartDomain: [115, 180],
+    sparklineData: [
+      { day: '週一', value: 135 },
+      { day: '週二', value: 158 },
+      { day: '週三', value: 142 },
+      { day: '週四', value: 168 },
+      { day: '週五', value: 145 },
+      { day: '週六', value: 162 },
+      { day: '週日', value: 142 },
+    ],
   },
   bloodOxygen: {
     title: '血氧',
     status: '逐步改善',
-    value: 98 as number | '--',
+    value: 98,
     unit: '%',
-    sparklineData: [18, 22, 15, 20, 18, 24, 22, 28, 25, 30, 28, 32],
+    sparklineData: [
+      { day: '週一', value: 94 },
+      { day: '週二', value: 95 },
+      { day: '週三', value: 94 },
+      { day: '週四', value: 96 },
+      { day: '週五', value: 97 },
+      { day: '週六', value: 97 },
+      { day: '週日', value: 98 },
+    ],
   },
   bloodSugar: {
     title: '血糖',
     status: '建議觀察',
-    value: 155 as number | '--',
+    value: 155,
     unit: 'mg/dL',
-    sparklineData: [16, 18, 20, 22, 18, 24, 26, 28, 30, 28, 26, 24],
+    chartDomain: [120, 190],
+    sparklineData: [
+      { day: '週一', value: 138 },
+      { day: '週二', value: 155 },
+      { day: '週三', value: 178 },
+      { day: '週四', value: 152 },
+      { day: '週五', value: 185 },
+      { day: '週六', value: 162 },
+      { day: '週日', value: 155 },
+    ],
   },
   temperature: {
     title: '體溫',
     status: '趨於穩定',
-    value: 36.5 as number | '--',
+    value: 36.5,
     unit: '°C',
-    sparklineData: [20, 14, 10, 18, 22, 20, 26, 24, 28, 26, 24, 22],
+    sparklineData: [
+      { day: '週一', value: 36.8 },
+      { day: '週二', value: 36.6 },
+      { day: '週三', value: 36.4 },
+      { day: '週四', value: 36.7 },
+      { day: '週五', value: 36.5 },
+      { day: '週六', value: 36.5 },
+      { day: '週日', value: 36.5 },
+    ],
   },
   weight: {
     title: '體重',
     status: '維持良好',
-    value: 70.1 as number | '--',
+    value: 70.1,
     unit: 'kg',
-    sparklineData: [22, 26, 28, 24, 20, 18, 22, 26, 28, 24, 20, 18],
+    sparklineData: [
+      { day: '週一', value: 70.8 },
+      { day: '週二', value: 70.6 },
+      { day: '週三', value: 70.5 },
+      { day: '週四', value: 70.4 },
+      { day: '週五', value: 70.3 },
+      { day: '週六', value: 70.2 },
+      { day: '週日', value: 70.1 },
+    ],
   },
 };
 
@@ -44,7 +126,9 @@ function WeeklyHealthTrend() {
 
   return (
     <section className="pt-3">
-      <h2 className="font-heading-md mb-3 text-neutral-900">近7天健康趨勢</h2>
+      <h2 className="font-heading-sm mb-3 pt-5 text-neutral-900">
+        近7天健康趨勢
+      </h2>
       <div className="flex flex-col gap-3">
         <HealthDataChartCard
           title={bloodPressure.title}
@@ -52,6 +136,7 @@ function WeeklyHealthTrend() {
           systolic={bloodPressure.systolic}
           diastolic={bloodPressure.diastolic}
           sparklineData={bloodPressure.sparklineData}
+          chartDomain={bloodPressure.chartDomain}
         />
         <HealthDataChartCard
           title={bloodOxygen.title}
@@ -66,6 +151,7 @@ function WeeklyHealthTrend() {
           value={bloodSugar.value}
           unit={bloodSugar.unit}
           sparklineData={bloodSugar.sparklineData}
+          chartDomain={bloodSugar.chartDomain}
         />
         <HealthDataChartCard
           title={temperature.title}
