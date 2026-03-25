@@ -7,13 +7,9 @@ function App() {
   const { pathname } = useLocation();
   const isFullWidthRoute =
     pathname === '/calendar-page' ||
-<<<<<<< HEAD
+    pathname === '/calendar-page/new' ||
     pathname === '/data-form' ||
     pathname === '/health-report';
-=======
-    pathname === '/calendar-page/new' ||
-    pathname === '/data-form';
->>>>>>> f5cbe884bd764a5ec64745a971b3aaff3723eae0
 
   return (
     <div
