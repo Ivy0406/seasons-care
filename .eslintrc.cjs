@@ -79,6 +79,18 @@ module.exports = {
     ],
   },
 
+  overrides: [
+    {
+      files: ['*.cjs'],
+      parserOptions: {
+        sourceType: 'script',
+      },
+      env: {
+        commonjs: true,
+      },
+    },
+  ],
+
   settings: {
     react: {
       version: 'detect',
