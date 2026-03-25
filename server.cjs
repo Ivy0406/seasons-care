@@ -1,4 +1,5 @@
-import jsonServer from 'json-server';
+
+const jsonServer = require('json-server');
 
 const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
@@ -13,6 +14,17 @@ server.get('/test/403', (req, res) =>
 );
 server.get('/test/500', (req, res) =>
   res.status(500).json({ message: '伺服器錯誤，請稍後再試' }),
+);
+
+// 註冊測試路由
+server.post('/auth/register/400', (req, res) =>
+  res.status(400).json({ message: '請求資料錯誤' }),
+);
+server.post('/auth/register/409', (req, res) =>
+  res.status(409).json({ message: '資料衝突' }),
+);
+server.post('/auth/register', (req, res) =>
+  res.status(409).json({ message: '資料衝突' }),
 );
 
 server.listen(3001, () => {
