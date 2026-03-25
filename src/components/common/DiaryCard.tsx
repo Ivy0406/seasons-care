@@ -13,33 +13,33 @@ export type CalendarDiaryCardParticipant = {
   src: string;
 };
 
-export type DairyCardStatus = 'pending' | 'completed';
+export type DiaryCardStatus = 'pending' | 'completed';
 
-export type DairyCardItem = {
+export type DiaryCardItem = {
   id: string;
   title: string;
   description: string;
   startsAt: string;
   repeatPattern?: 'none' | 'daily' | 'weeklyDay' | 'monthly';
   participants: CalendarDiaryCardParticipant[];
-  status: DairyCardStatus;
+  status: DiaryCardStatus;
   isImportant?: boolean;
 };
 
-type DairyCardProps = {
-  item: DairyCardItem;
+type DiaryCardProps = {
+  item: DiaryCardItem;
   className?: string;
   onClick?: () => void;
   onMoreClick?: () => void;
 };
 
-function DairyCardContent({
+function DiaryCardContent({
   item,
   isChecked,
   setIsChecked,
   onMoreClick,
 }: {
-  item: DairyCardItem;
+  item: DiaryCardItem;
   isChecked: boolean;
   setIsChecked: (v: boolean) => void;
   onMoreClick?: () => void;
@@ -110,7 +110,7 @@ function DairyCardContent({
   );
 }
 
-function DairyCard({ item, className, onClick, onMoreClick }: DairyCardProps) {
+function DiaryCard({ item, className, onClick, onMoreClick }: DiaryCardProps) {
   const [isChecked, setIsChecked] = useState(item.status === 'completed');
 
   useEffect(() => {
@@ -139,7 +139,7 @@ function DairyCard({ item, className, onClick, onMoreClick }: DairyCardProps) {
           }
         }}
       >
-        <DairyCardContent
+        <DiaryCardContent
           item={item}
           isChecked={isChecked}
           setIsChecked={setIsChecked}
@@ -151,7 +151,7 @@ function DairyCard({ item, className, onClick, onMoreClick }: DairyCardProps) {
 
   return (
     <div className={sharedClassName}>
-      <DairyCardContent
+      <DiaryCardContent
         item={item}
         isChecked={isChecked}
         setIsChecked={setIsChecked}
@@ -161,4 +161,4 @@ function DairyCard({ item, className, onClick, onMoreClick }: DairyCardProps) {
   );
 }
 
-export default DairyCard;
+export default DiaryCard;
