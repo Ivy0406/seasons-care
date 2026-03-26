@@ -1,39 +1,34 @@
 import { useEffect, useId, useRef, useState } from 'react';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
-
+import chevronsUpDownIcon from '@/assets/icons/chevrons-up-down.svg';
 import cn from '@/lib/utils';
 
-type FilterOption<T extends string> = {
+type ListFormOptionSelectorOption<T extends string> = {
   label: string;
   value: T;
 };
 
-type FilterDropdownButtonProps<T extends string> = {
+type ListFormOptionSelectorProps<T extends string> = {
   value: T;
-  options: FilterOption<T>[];
+  options: ListFormOptionSelectorOption<T>[];
   onChange: (value: T) => void;
   className?: string;
+  triggerClassName?: string;
   menuClassName?: string;
 };
 
-function FilterDropdownButton<T extends string>({
+function ListFormOptionSelector<T extends string>({
   value,
   options,
   onChange,
   className,
+  triggerClassName,
   menuClassName,
-}: FilterDropdownButtonProps<T>) {
+}: ListFormOptionSelectorProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
-
   const selectedOption = options.find((option) => option.value === value);
-  const widestOptionLabel = options.reduce(
-    (widest, option) =>
-      option.label.length > widest.length ? option.label : widest,
-    selectedOption?.label ?? '',
-  );
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -58,39 +53,34 @@ function FilterDropdownButton<T extends string>({
   }, []);
 
   return (
-    <div
-      ref={rootRef}
-      className={cn('relative inline-flex w-fit max-w-full', className)}
-    >
+    <div ref={rootRef} className={cn('relative min-w-0', className)}>
       <button
         type="button"
-        className={cn(
-          'font-label-md relative inline-grid max-w-full grid-cols-[1fr_auto] items-center gap-1 rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
-          'transition-colors active:bg-neutral-200',
-        )}
         aria-expanded={open}
         aria-controls={menuId}
+        className={cn(
+          'font-paragraph-md inline-flex items-center justify-end gap-1 bg-transparent px-0 py-0 text-right font-bold text-neutral-600 outline-none',
+          triggerClassName,
+        )}
         onClick={() => setOpen((previous) => !previous)}
       >
-        <span className="invisible pl-2">{widestOptionLabel}</span>
-        <span className="pointer-events-none absolute inset-y-0 right-5 left-0 flex items-center justify-center px-3 text-center">
-          {selectedOption?.label}
+        <span className="truncate">{selectedOption?.label}</span>
+        <span className="flex size-4 shrink-0 items-center justify-center">
+          <img
+            src={chevronsUpDownIcon}
+            alt=""
+            aria-hidden="true"
+            className="h-3 w-3"
+          />
         </span>
-        <div className="flex size-4 shrink-0 items-center justify-center">
-          {open ? (
-            <ChevronUp className="size-2 text-neutral-800" strokeWidth={5} />
-          ) : (
-            <ChevronDown className="size-2 text-neutral-800" strokeWidth={5} />
-          )}
-        </div>
       </button>
 
-      {open && (
+      {open ? (
         <div
           id={menuId}
           role="menu"
           className={cn(
-            'absolute top-full right-0 z-20 mt-1 min-w-full overflow-hidden rounded-[4px] border-2 border-neutral-900 bg-neutral-200',
+            'absolute top-full right-0 z-20 mt-2 overflow-hidden rounded-[8px] border-2 border-neutral-900 bg-neutral-100 shadow-[0_4px_0_0_rgba(33,37,41,0.08)]',
             menuClassName,
           )}
         >
@@ -104,8 +94,10 @@ function FilterDropdownButton<T extends string>({
                 role="menuitemradio"
                 aria-checked={isSelected}
                 className={cn(
-                  'font-label-md block w-full px-5 py-1.5 text-left whitespace-nowrap text-neutral-600',
-                  isSelected ? 'text-neutral-800' : 'hover:bg-neutral-100',
+                  'font-paragraph-md block w-full px-4 py-2 text-right whitespace-nowrap text-neutral-600',
+                  isSelected
+                    ? 'bg-neutral-200 font-bold text-neutral-900'
+                    : 'hover:bg-neutral-200/70',
                 )}
                 onClick={() => {
                   onChange(option.value);
@@ -117,10 +109,10 @@ function FilterDropdownButton<T extends string>({
             );
           })}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-export type { FilterOption };
-export default FilterDropdownButton;
+export type { ListFormOptionSelectorOption };
+export default ListFormOptionSelector;

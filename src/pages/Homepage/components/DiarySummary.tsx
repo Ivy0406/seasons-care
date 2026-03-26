@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
+import { parseISO } from 'date-fns';
 import {
   ChevronDown,
   ArrowUpRight,
@@ -9,43 +8,44 @@ import {
   Plus,
   Minimize2,
 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import { CardLabelPrimary } from '@/components/common/CardLabel';
 import {
   CircleButtonPrimary,
   CircleButtonSecondary,
 } from '@/components/common/CircleIButton';
-import DairyCard, { type DairyCardItem } from '@/components/common/DairyCard';
+import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import {
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import mockDiaryCards from '@/pages/Calendar/mockDiaryCards';
+import mockCareLogEntries from '@/pages/CareLog/data/mockCareLogEntries';
 
 type StatusGroup = '進行中' | '未完成' | '已完成';
 
-function getStatusText(checked?: boolean): StatusGroup {
-  if (checked === true) return '已完成';
-  if (checked === false) return '未完成';
-  return '進行中';
+function getStatusText(card: DiaryCardItem): StatusGroup {
+  if (card.status === 'completed') return '已完成';
+  if (parseISO(card.startsAt).getTime() <= Date.now()) return '進行中';
+  return '未完成';
 }
 
 const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
 
 function groupByStatus(
-  cards: DairyCardItem[],
-): Record<StatusGroup, DairyCardItem[]> {
+  cards: DiaryCardItem[],
+): Record<StatusGroup, DiaryCardItem[]> {
   return cards.reduce(
     (totalCards, card) => {
-      const status = getStatusText(card.checked);
+      const status = getStatusText(card);
       totalCards[status].push(card);
       return totalCards;
     },
     { 進行中: [], 未完成: [], 已完成: [] } as Record<
       StatusGroup,
-      DairyCardItem[]
+      DiaryCardItem[]
     >,
   );
 }
@@ -58,9 +58,9 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const firstCard = mockDiaryCards[0];
-  const remainingCount = mockDiaryCards.length - 1;
-  const grouped = groupByStatus(mockDiaryCards);
+  const firstCard = mockCareLogEntries[0];
+  const remainingCount = mockCareLogEntries.length - 1;
+  const grouped = groupByStatus(mockCareLogEntries);
   const navigate = useNavigate();
 
   return (
@@ -98,17 +98,17 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
         </div>
 
         <p className="font-label-md mb-5 text-neutral-700">
-          {getStatusText(firstCard.checked)}
+          {getStatusText(firstCard)}
         </p>
-        <DairyCard item={firstCard} />
+        <DiaryCard item={firstCard} />
 
         {isExpanded &&
-          mockDiaryCards.slice(1).map((item) => (
+          mockCareLogEntries.slice(1).map((item) => (
             <div key={item.id} className="mt-3">
               <p className="font-label-md mb-3 text-neutral-700">
-                {getStatusText(item.checked)}
+                {getStatusText(item)}
               </p>
-              <DairyCard item={item} className="flex flex-col gap-5" />
+              <DiaryCard item={item} className="flex flex-col gap-5" />
             </div>
           ))}
 
@@ -156,7 +156,7 @@ function DiarySummary({ onSwitchToMoney }: DiarySummaryProps) {
                     {status}
                   </p>
                   {cards.map((item) => (
-                    <DairyCard key={item.id} item={item} className="mb-3" />
+                    <DiaryCard key={item.id} item={item} className="mb-3" />
                   ))}
                 </div>
               );
