@@ -63,7 +63,14 @@ function CareLogFormCard({
     setNote(entry.description);
   }, [entry]);
 
+  const isSubmitDisabled =
+    titleValue.trim().length === 0 ||
+    dateValue.trim().length === 0 ||
+    timeValue.trim().length === 0;
+
   const handleSubmit = () => {
+    if (isSubmitDisabled) return;
+
     const parsedStartsAt = parse(
       `${dateValue} ${timeValue}`,
       'yyyy/MM/dd HH:mm',
@@ -186,7 +193,8 @@ function CareLogFormCard({
           {footerMode === 'submitOnly' ? (
             <RoundedButtonPrimary
               onClick={handleSubmit}
-              className="bg-primary-default font-label-md active:bg-primary-dark w-full border-neutral-900 text-neutral-900"
+              className="font-label-md active:bg-primary-dark w-full border-neutral-900 bg-neutral-900 text-neutral-50 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+              disabled={isSubmitDisabled}
             >
               {submitLabel}
             </RoundedButtonPrimary>
@@ -200,7 +208,8 @@ function CareLogFormCard({
               </RoundedButtonSecondary>
               <RoundedButtonPrimary
                 onClick={handleSubmit}
-                className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900"
+                className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+                disabled={isSubmitDisabled}
               >
                 {submitLabel}
               </RoundedButtonPrimary>
