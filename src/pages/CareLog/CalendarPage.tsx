@@ -30,14 +30,12 @@ const defaultParticipant = {
   src: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png',
 };
 
-function createDraftCareLogEntry(): CareLogEntry {
-  const startsAt = new Date();
-
+function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`,
     title: '',
     description: '',
-    startsAt: format(startsAt, "yyyy-MM-dd'T'HH:mm:ssxxx"),
+    startsAt: format(selectedDate, "yyyy-MM-dd'T'HH:mm:ssxxx"),
     repeatPattern: 'none',
     participants: [defaultParticipant],
     status: 'pending',
@@ -63,6 +61,11 @@ function CalendarPage() {
       : entries.filter((entry) =>
           isSameDay(parseISO(entry.startsAt), selectedDate),
         );
+  const openCreateEntry = (date?: Date) => {
+    setCreatingEntry(
+      createDraftCareLogEntry(date ?? selectedDate ?? new Date()),
+    );
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col pb-10 text-neutral-900">
@@ -73,7 +76,7 @@ function CalendarPage() {
             type="button"
             aria-label="新增日誌"
             className="inline-flex size-10 items-center justify-center text-neutral-900"
-            onClick={() => setCreatingEntry(createDraftCareLogEntry())}
+            onClick={() => openCreateEntry()}
           >
             <Plus className="size-8" strokeWidth={2} />
           </button>
@@ -104,6 +107,7 @@ function CalendarPage() {
         <CareLogDiarySection
           items={selectedEntries}
           selectedDate={selectedDate}
+          onCreateEntry={openCreateEntry}
           onUpdateEntry={(updatedEntry) => {
             setEntries((currentEntries) => {
               const nextEntries = currentEntries.map((entry) =>

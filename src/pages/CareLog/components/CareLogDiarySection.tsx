@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { parseISO } from 'date-fns';
+import { Plus } from 'lucide-react';
 
 import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
@@ -16,6 +17,7 @@ type CareLogDiarySectionProps = {
   selectedDate?: Date;
   onUpdateEntry: (entry: CareLogEntry) => void;
   onDeleteEntry: (entryId: string) => void;
+  onCreateEntry: (date?: Date) => void;
 };
 
 const statusFilterOptions = [
@@ -30,6 +32,7 @@ function CareLogDiarySection({
   selectedDate,
   onUpdateEntry,
   onDeleteEntry,
+  onCreateEntry,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
@@ -58,7 +61,33 @@ function CareLogDiarySection({
     .sort(
       (a, b) => parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
     );
+  const hasItems = items.length > 0;
+  const hasFilteredItems = filteredItems.length > 0;
 
+  let emptyState: React.ReactNode = null;
+
+  if (!hasFilteredItems) {
+    if (!hasItems) {
+      emptyState = (
+        <button
+          type="button"
+          onClick={() => onCreateEntry(selectedDate)}
+          className="flex w-full flex-col items-center justify-center gap-5 rounded-md border border-neutral-300 bg-neutral-50 px-4 py-10 text-center text-neutral-700"
+        >
+          <p className="font-paragraph-md">當日尚未有紀錄，快來新增吧！</p>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
+            <Plus className="size-6" strokeWidth={2} />
+          </span>
+        </button>
+      );
+    } else {
+      emptyState = (
+        <div className="rounded-md border border-neutral-300 bg-neutral-50 px-4 py-6 text-neutral-700">
+          <p className="font-paragraph-md">目前沒有符合篩選條件的日誌。</p>
+        </div>
+      );
+    }
+  }
   return (
     <section className="flex w-full flex-col gap-5">
       {selectedDate ? (
@@ -74,20 +103,16 @@ function CareLogDiarySection({
         </header>
       ) : null}
 
-      {filteredItems.length > 0 ? (
-        filteredItems.map((item) => (
-          <DiaryCard
-            key={item.id}
-            item={item}
-            onClick={() => diaryCardActions.openDetail(item.id)}
-            onMoreClick={() => diaryCardActions.openActions(item.id)}
-          />
-        ))
-      ) : (
-        <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-neutral-600">
-          <p className="font-paragraph-md">目前沒有符合條件的日誌紀錄。</p>
-        </div>
-      )}
+      {hasFilteredItems
+        ? filteredItems.map((item) => (
+            <DiaryCard
+              key={item.id}
+              item={item}
+              onClick={() => diaryCardActions.openDetail(item.id)}
+              onMoreClick={() => diaryCardActions.openActions(item.id)}
+            />
+          ))
+        : emptyState}
 
       <DiaryCardActionLayer actions={diaryCardActions} />
     </section>
