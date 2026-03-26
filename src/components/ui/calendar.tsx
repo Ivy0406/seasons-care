@@ -48,7 +48,7 @@ function CalendarDayButton({
           aria-hidden="true"
           className={cn(
             'absolute bottom-1 size-1 rounded-full',
-            modifiers.selected ? 'bg-neutral-50' : 'bg-neutral-900',
+            modifiers.selected ? 'bg-neutral-900' : 'bg-neutral-900',
           )}
         />
       ) : null}
