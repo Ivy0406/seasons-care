@@ -22,7 +22,7 @@ const useRegister = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<RegistrationStep>('account');
-  const [accountData, setAccountData] = useState<Partial<AccountData>>({});
+  const [accountData, setAccountData] = useState<AccountData | null>(null);
 
   const handleAccountNext = (data: AccountData) => {
     setAccountData(data);
@@ -30,8 +30,8 @@ const useRegister = () => {
   };
 
   const handleProfileSubmit = async (profileData: ProfileData) => {
+    if (!accountData) return;
     const { account, password } = accountData;
-    if (!account || !password) return;
 
     const payload: RegisterPayload = {
       userName: profileData.name,
