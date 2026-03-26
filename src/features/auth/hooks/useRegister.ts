@@ -34,7 +34,7 @@ const useRegister = () => {
     const { account, password } = accountData;
 
     const payload: RegisterPayload = {
-      userName: profileData.name,
+      username: profileData.name,
       email: account,
       password,
       avatar: profileData.avatar,
