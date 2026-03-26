@@ -2,6 +2,7 @@ import './assets/styles/index.css';
 
 import { Outlet, useLocation } from 'react-router';
 
+import { Toaster } from '@/components/ui/sonner';
 import cn from '@/lib/utils';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
     >
       {/* 可放header */}
       <Outlet />
+      <Toaster />
       {/* 可放footer */}
     </div>
   );
