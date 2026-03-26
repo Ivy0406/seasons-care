@@ -1,13 +1,13 @@
 import apiClient from '@/api/client';
 
 type RegisterPayload = {
-  userName: string;
+  username: string;
   email: string;
   password: string;
   avatar: string;
 };
 
 const register = (payload: RegisterPayload) =>
-  apiClient.post('/auth/register', payload);
+  apiClient.post('/api/auth/register', payload);
 
 export { register, type RegisterPayload };
