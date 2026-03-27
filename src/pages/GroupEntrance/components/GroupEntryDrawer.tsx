@@ -103,7 +103,7 @@ function GroupEntryDrawer({ open = false, onClose }: GroupEntryDrawerProps) {
           <button
             type="button"
             aria-label="關閉建立完成視窗"
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute left-0 inline-flex size-10 items-center justify-center"
           >
             <X className="size-8" strokeWidth={2} />
