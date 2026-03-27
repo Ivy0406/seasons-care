@@ -230,6 +230,7 @@ function ListFormNoteRow({
   className,
 }: ListFormNoteRowProps) {
   const htmlFor = textareaProps?.id ?? textareaProps?.name ?? label;
+  const hasTextareaValue = Boolean(textareaProps?.value?.toString().trim());
 
   return (
     <ListFormRow
@@ -240,15 +241,16 @@ function ListFormNoteRow({
       <div className="relative w-full">
         <textarea
           id={htmlFor}
-          rows={1}
-          className="font-label-md block min-h-49 w-full resize-none overflow-hidden pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
-          style={{ fieldSizing: 'content' }}
+          rows={4}
+          className="font-label-md block max-h-40 min-h-24 w-full resize-none overflow-y-auto pr-12 text-left text-neutral-900 outline-none placeholder:text-neutral-600"
           {...textareaProps}
         />
-        <InputClearButton
-          className="absolute top-0 right-0"
-          onClick={onClear}
-        />
+        {hasTextareaValue ? (
+          <InputClearButton
+            className="absolute top-0 right-0"
+            onClick={onClear}
+          />
+        ) : null}
       </div>
     </ListFormRow>
   );
