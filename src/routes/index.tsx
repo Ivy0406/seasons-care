@@ -2,9 +2,9 @@ import { createHashRouter } from 'react-router';
 
 import App from '@/App';
 import Calendar from '@/components/ui/calendar';
+import DataFormCardCarousel from '@/features/voice/components/DataFormCardCarousel';
 import CalendarPage from '@/pages/CareLog/CalendarPage';
 import CareLogCreatePage from '@/pages/CareLog/CareLogCreatePage';
-import DataFormCardCarousel from '@/features/voice/components/DataFormCardCarousel';
 import GroupEntrancePage from '@/pages/GroupEntrance/GroupEntrancePage';
 import HealthReportPage from '@/pages/HealthReport/HealthReportPage';
 import HomepagePage from '@/pages/Homepage/HomepagePage';

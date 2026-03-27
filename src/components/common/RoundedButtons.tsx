@@ -8,6 +8,7 @@ type RoundedButtonProps = {
   className?: string;
   onClick?: () => void;
   type?: 'button' | 'submit';
+  disabled?: boolean;
 };
 
 function RoundedButtonPrimary({
@@ -15,15 +16,17 @@ function RoundedButtonPrimary({
   onClick,
   className,
   type,
+  disabled,
 }: RoundedButtonProps) {
   return (
     <Button
       type={type}
       className={cn(
-        'font-label-md h-[45.6px] w-full rounded-full bg-neutral-800 py-2 text-neutral-50 active:bg-neutral-900',
+        'font-label-md h-[45.6px] w-full rounded-full bg-neutral-800 py-2 text-neutral-50 active:bg-neutral-900 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:opacity-100',
         className,
       )}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </Button>
@@ -35,6 +38,7 @@ function RoundedButtonSecondary({
   onClick,
   className,
   type,
+  disabled,
 }: RoundedButtonProps) {
   return (
     <Button
@@ -45,6 +49,7 @@ function RoundedButtonSecondary({
       )}
       variant="outline"
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </Button>
@@ -70,6 +75,7 @@ function RoundedButtonPro({
   onClick,
   className,
   type,
+  disabled,
 }: RoundedButtonProps) {
   return (
     <Button
@@ -79,6 +85,7 @@ function RoundedButtonPro({
         className,
       )}
       onClick={onClick}
+      disabled={disabled}
     >
       <ProBadge />
       {children}
