@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import {
   ListFormBirthDateRow,
@@ -81,7 +82,11 @@ function GroupEntryDrawer({ open = false, onClose }: GroupEntryDrawerProps) {
   const [careRecipientName, setCareRecipientName] = useState('');
   const [gender, setGender] = useState('male');
   const [birthDate] = useState('2026/01/12');
+  const navigate = useNavigate();
   const handleClose = () => {
+    if (step === 'success') {
+      navigate('/homepage');
+    }
     onClose?.();
   };
 
@@ -98,7 +103,7 @@ function GroupEntryDrawer({ open = false, onClose }: GroupEntryDrawerProps) {
           <button
             type="button"
             aria-label="關閉建立完成視窗"
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute left-0 inline-flex size-10 items-center justify-center"
           >
             <X className="size-8" strokeWidth={2} />
