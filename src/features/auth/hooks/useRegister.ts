@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import { register, type RegisterPayload } from '@/api/endpoints/auth';
+import { login, register } from '@/api/endpoints/auth';
+import setupProfile from '@/api/endpoints/user';
 
 type AccountData = {
   account: string;
@@ -13,7 +15,7 @@ type AccountData = {
 
 type ProfileData = {
   name: string;
-  avatar: string;
+  avatarKey: string;
 };
 
 type RegistrationStep = 'account' | 'profile';
@@ -22,28 +24,17 @@ const useRegister = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<RegistrationStep>('account');
-  const [accountData, setAccountData] = useState<AccountData | null>(null);
 
-  const handleAccountNext = (data: AccountData) => {
-    setAccountData(data);
-    setStep('profile');
-  };
-
-  const handleProfileSubmit = async (profileData: ProfileData) => {
-    if (!accountData) return;
-    const { account, password } = accountData;
-
-    const payload: RegisterPayload = {
-      username: profileData.name,
-      email: account,
-      password,
-      avatar: profileData.avatar,
-    };
-
+  const handleAccountNext = async (data: AccountData) => {
     setIsLoading(true);
     try {
-      await register(payload);
-      navigate('/onboarding');
+      await register({ email: data.account, password: data.password });
+      const loginRes = await login({
+        email: data.account,
+        password: data.password,
+      });
+      Cookies.set('userToken', loginRes.data.data.token);
+      setStep('profile');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
@@ -56,6 +47,23 @@ const useRegister = () => {
           default:
             break;
         }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleProfileSubmit = async (profile: ProfileData) => {
+    setIsLoading(true);
+    try {
+      await setupProfile({
+        userName: profile.name,
+        avatarKey: profile.avatarKey,
+      });
+      navigate('/onboarding');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error('設定個人資料失敗，請稍後再試');
       }
     } finally {
       setIsLoading(false);
