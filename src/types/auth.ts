@@ -1,4 +1,9 @@
-type AuthPayload = {
+type RegisterPayload = {
+  email: string;
+  password: string;
+};
+
+type LoginPayload = {
   email: string;
   password: string;
 };
@@ -8,7 +13,7 @@ type SetupProfilePayload = {
   avatarKey: string;
 };
 
-type AuthUser = {
+type UserInfo = {
   id: string;
   email: string;
   userName: string;
@@ -20,9 +25,15 @@ type LoginResponse = {
   success: boolean;
   data: {
     token: string;
-    user: AuthUser;
+    user: UserInfo;
   };
   traceId: string;
 };
 
-export type { AuthPayload, SetupProfilePayload, AuthUser, LoginResponse };
+export type {
+  RegisterPayload,
+  LoginPayload,
+  SetupProfilePayload,
+  UserInfo,
+  LoginResponse,
+};
