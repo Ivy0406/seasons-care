@@ -17,10 +17,11 @@ type RegisterFormValues = {
 };
 
 type RegisterFormProps = {
-  onNext: (data: RegisterFormValues) => void;
+  onNext: (data: RegisterFormValues) => Promise<void>;
+  isLoading?: boolean;
 };
 
-function RegisterAccount({ onNext }: RegisterFormProps) {
+function RegisterAccount({ onNext, isLoading }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
@@ -76,12 +77,14 @@ function RegisterAccount({ onNext }: RegisterFormProps) {
         </FieldWrapper>
       </div>
       <div className="flex w-full flex-col items-center gap-3">
-        {isValid ? (
+        {isValid && !isLoading ? (
           <RoundedButtonPrimary onClick={handleSubmit(onSubmit)}>
             註冊帳號
           </RoundedButtonPrimary>
         ) : (
-          <RoundedButtonDisabled>註冊帳號</RoundedButtonDisabled>
+          <RoundedButtonDisabled>
+            {isLoading ? '註冊中...' : '註冊帳號'}
+          </RoundedButtonDisabled>
         )}
         <div className="flex items-center gap-1">
           <p className="font-paragraph-md text-neutral-600">已有帳號？</p>
