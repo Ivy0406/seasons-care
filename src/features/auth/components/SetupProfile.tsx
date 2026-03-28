@@ -11,51 +11,24 @@ import {
 } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
 
+import useAvatars from '../hooks/useAvatars';
+
 type SetupProfileFormValues = {
   name: string;
 };
 
 type SetupProfileProps = {
-  onSubmit: (data: SetupProfileFormValues & { avatar: string }) => void;
+  onSubmit: (data: SetupProfileFormValues & { avatarKey: string }) => void;
   isLoading?: boolean;
 };
 
-const mockAvatars = [
-  {
-    id: 1,
-    src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2gbduGx3PLhooclj5FTu26kXR2mFU-e6RHw&s',
-    name: '角色 1',
-  },
-  {
-    id: 2,
-    src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLwmfCSSY4cz2MRwxWp7LkpG9fiiYwrd4a6A&s',
-    name: '角色 2',
-  },
-  {
-    id: 3,
-    src: 'https://media.gq.com.tw/photos/5f610be207ee6a88a9ff4511/16:9/w_2560%2Cc_limit/S__21971252.jpg',
-    name: '角色 3',
-  },
-  {
-    id: 4,
-    src: 'https://preview.qiantucdn.com/58pic/7D/UR/Xx/Wj3owH57aGsDqXVrzQ7TSFT9YtNYfIjZ3h_PIC2018.png!qt_h320_webp',
-    name: '角色 4',
-  },
-  {
-    id: 5,
-    src: 'https://p3-pc-sign.douyinpic.com/tos-cn-i-0813c000-ce/oUEAIekfwl6Ej0A9WCGpiAFpNA6DiAwEAxfZbE~tplv-dy-aweme-images-v2:1440:1440:q75.webp?biz_tag=aweme_images&from=327834062&lk3s=138a59ce&s=PackSourceEnum_SEARCH&sc=image&se=false&x-expires=1775433600&x-signature=FsOpzfZmcp%2BS8gaEUXuwDq%2Bx738%3D',
-    name: '角色 5',
-  },
-  {
-    id: 6,
-    src: 'https://p3-pc-sign.douyinpic.com/tos-cn-i-0813c000-ce/osaBgQcMgiAEQi7X8AQ7JAAeQsfXJvgf2ZkFV8~noop.jpeg?biz_tag=pcweb_cover&card_type=303&column_n=0&from=327834062&lk3s=138a59ce&s=PackSourceEnum_SEARCH&se=false&x-expires=1774634400&x-signature=IhcEPOrnedk0QXM94FXz3uQxVJM%3Dｚ',
-    name: '角色 6',
-  },
-];
 
 const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
-  const [selectedAvatar, setSelectedAvatar] = useState(mockAvatars[0]);
-  const [tempSelectedAvatar, setTempSelectedAvatar] = useState(mockAvatars[0]);
+  const avatarOptions = useAvatars();
+  const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
+  const [tempSelectedAvatar, setTempSelectedAvatar] = useState(
+    avatarOptions[0],
+  );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const {
@@ -71,14 +44,14 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
     setIsDrawerOpen(false);
   };
 
-  const localOnSubmit = (data: SetupProfileFormValues) => {
-    onSubmit({ ...data, avatar: selectedAvatar.src });
+  const handleProfileSubmit = (data: SetupProfileFormValues) => {
+    onSubmit({ ...data, avatarKey: selectedAvatar.avatarKey });
   };
 
   return (
     <form
       className="flex w-full flex-col items-center"
-      onSubmit={handleSubmit(localOnSubmit)}
+      onSubmit={handleSubmit(handleProfileSubmit)}
     >
       <div className="flex w-full flex-col pb-27">
         <div className="mb-5 flex flex-col items-center gap-1">
@@ -91,7 +64,7 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
         </div>
         <div className="flex flex-col items-center gap-3">
           <SingleAvatar
-            src={selectedAvatar.src}
+            src={selectedAvatar.url}
             className="h-35 w-35"
             name={currentName || '照護者'}
             onClick={() => setIsDrawerOpen(true)}
@@ -121,10 +94,10 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
                   選擇喜歡的角色吧！
                 </p>
                 <div className="grid grid-cols-3 gap-5 pt-5 pb-8">
-                  {mockAvatars.map((avatar) => (
+                  {avatarOptions.map((avatar) => (
                     <SingleAvatar
                       key={avatar.id}
-                      src={avatar.src}
+                      src={avatar.url}
                       name={currentName || avatar.name}
                       isSelected={tempSelectedAvatar.id === avatar.id}
                       onClick={() => setTempSelectedAvatar(avatar)}
@@ -158,7 +131,7 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
 
       <div className="w-full">
         {isValid && !isLoading ? (
-          <RoundedButtonPrimary onClick={handleSubmit(localOnSubmit)}>
+          <RoundedButtonPrimary onClick={handleSubmit(handleProfileSubmit)}>
             建立檔案
           </RoundedButtonPrimary>
         ) : (
