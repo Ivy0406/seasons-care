@@ -8,7 +8,9 @@ function RegistrationPage() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center">
-      {step === 'account' && <RegisterAccount onNext={handleAccountNext} />}
+      {step === 'account' && (
+        <RegisterAccount onNext={handleAccountNext} isLoading={isLoading} />
+      )}
       {step === 'profile' && (
         <SetupProfile onSubmit={handleProfileSubmit} isLoading={isLoading} />
       )}

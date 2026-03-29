@@ -10,7 +10,7 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = Cookies.get('userToken');
     if (token) {
-      config.headers.set('Authorization', token);
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
     return config;
   },
@@ -24,6 +24,8 @@ apiClient.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           toast.error('登入已過期，請重新登入');
+          Cookies.remove('userToken');
+          window.location.href = '/#/login';
           break;
         case 403:
           toast.error('權限不足，無法執行此操作');
