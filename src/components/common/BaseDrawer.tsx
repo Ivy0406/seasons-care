@@ -12,6 +12,7 @@ import cn from '@/lib/utils';
 type BaseDrawerProps = {
   trigger?: ReactNode;
   open?: boolean;
+  modal?: boolean;
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
@@ -20,13 +21,14 @@ type BaseDrawerProps = {
 function BaseDrawer({
   trigger,
   open,
+  modal,
   onOpenChange,
   children,
   footer,
   className,
 }: BaseDrawerProps) {
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} modal={modal}>
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
       <DrawerContent
