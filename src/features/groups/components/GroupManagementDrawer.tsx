@@ -1,6 +1,5 @@
 import { Plus } from 'lucide-react';
 
-import { CircleButtonSecondary } from '@/components/common/CircleIButton';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import type { CareGroup } from '@/features/groups/data/mockGroups';
 
@@ -12,6 +11,7 @@ type GroupManagementDrawerProps = {
   onSelectGroup: (groupId: string) => void;
   onManageGroup: (groupId: string) => void;
   onJoinGroup: () => void;
+  onCreateGroup: () => void;
 };
 
 function GroupManagementDrawer({
@@ -20,6 +20,7 @@ function GroupManagementDrawer({
   onSelectGroup,
   onManageGroup,
   onJoinGroup,
+  onCreateGroup,
 }: GroupManagementDrawerProps) {
   return (
     <div className="flex min-h-48 flex-col text-neutral-900">
@@ -40,13 +41,9 @@ function GroupManagementDrawer({
           onClick={onJoinGroup}
         >
           <div className="flex items-center gap-2">
-            <CircleButtonSecondary
-              size="md"
-              aria-label="加入其他群組"
-              className="size-8 border-0 bg-neutral-400"
-            >
+            <span className="inline-flex size-8 items-center justify-center rounded-full bg-neutral-400 text-neutral-900">
               <Plus />
-            </CircleButtonSecondary>
+            </span>
             <p className="font-label-md">加入其他群組</p>
           </div>
         </button>
@@ -55,6 +52,7 @@ function GroupManagementDrawer({
       <RoundedButtonPrimary
         className="mt-5 border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
         type="button"
+        onClick={onCreateGroup}
       >
         建立新群組
       </RoundedButtonPrimary>

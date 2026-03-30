@@ -12,6 +12,7 @@ type GroupMemberManagementDrawerProps = {
   group: CareGroup | null;
   onOpenChange: (open: boolean) => void;
   onRequestDeleteMember: (groupId: string, member: GroupMember) => void;
+  onInviteMembers: () => void;
 };
 
 function GroupMemberManagementDrawer({
@@ -19,6 +20,7 @@ function GroupMemberManagementDrawer({
   group,
   onOpenChange,
   onRequestDeleteMember,
+  onInviteMembers,
 }: GroupMemberManagementDrawerProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const isAddMemberDisabled = (group?.members.length ?? 0) >= 4;
@@ -122,6 +124,7 @@ function GroupMemberManagementDrawer({
             type="button"
             className="gap-3"
             disabled={isAddMemberDisabled}
+            onClick={onInviteMembers}
           >
             <Plus className="size-4" strokeWidth={3} />
             邀請成員

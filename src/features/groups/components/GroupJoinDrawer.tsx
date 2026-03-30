@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Check, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { InputFieldGroupId } from '@/components/common/InputField';
@@ -16,7 +16,8 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
   const [isJoinSuccess, setIsJoinSuccess] = useState(false);
   const [hasTouchedGroupId, setHasTouchedGroupId] = useState(false);
   const trimmedGroupId = groupId.trim();
-  const isGroupIdValid = /^\d{8}$/.test(trimmedGroupId);
+  const isGroupIdValid = /^[a-zA-Z0-9]{8}$/.test(trimmedGroupId);
+  const canSubmit = trimmedGroupId.length === 8;
   const showGroupIdError =
     hasTouchedGroupId && trimmedGroupId !== '' && !isGroupIdValid;
 
@@ -39,8 +40,8 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
   return (
     <BaseDrawer open={open} onOpenChange={onOpenChange}>
       {isJoinSuccess ? (
-        <div className="flex flex-col gap-6 text-neutral-900">
-          <div className="relative flex items-center justify-center py-2">
+        <div className="flex flex-col text-neutral-900">
+          <div className="relative mb-5 flex items-center justify-center py-2">
             <button
               type="button"
               aria-label="關閉加入群組視窗"
@@ -49,27 +50,32 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
             >
               <X className="size-8" strokeWidth={1.5} />
             </button>
-            <h2 className="font-heading-sm">加入成功！</h2>
+            <h2 className="font-heading-sm">加入完成！</h2>
           </div>
 
-          <div className="flex flex-col items-center gap-4 pt-2 pb-1">
-            <span className="bg-primary-default inline-flex size-10 items-center justify-center rounded-full text-neutral-900">
-              <Check className="size-4" strokeWidth={3} />
-            </span>
-            <p className="font-paragraph-md text-center text-neutral-700">
-              你已成功加入照護群組。
-            </p>
+          <div className="mx-2 aspect-331/160 overflow-hidden rounded-lg">
+            <img
+              src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"
+              alt="家人陪伴情境示意"
+              className="h-full w-full rounded-lg border-2 border-neutral-900 object-cover"
+            />
           </div>
 
-          <RoundedButtonPrimary
-            type="button"
-            onClick={() => onOpenChange(false)}
-          >
-            完成
-          </RoundedButtonPrimary>
+          <p className="font-paragraph-md mx-auto mt-3 text-center text-neutral-700">
+            群組加入完成，現在開始共同照護！
+          </p>
+
+          <div className="mt-10">
+            <RoundedButtonPrimary
+              type="button"
+              onClick={() => onOpenChange(false)}
+            >
+              完成
+            </RoundedButtonPrimary>
+          </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-6 text-neutral-900">
+        <div className="flex flex-col text-neutral-900">
           <div className="relative flex items-center justify-center py-2">
             <button
               type="button"
@@ -82,7 +88,7 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
             <h2 className="font-label-lg">加入照護群組</h2>
           </div>
 
-          <p className="font-paragraph-md text-center text-neutral-700">
+          <p className="font-paragraph-md mt-17 mb-3 text-center text-neutral-700">
             請輸入要加入的群組 ID
           </p>
 
@@ -100,7 +106,8 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
           <RoundedButtonPrimary
             type="button"
             onClick={handleJoinGroup}
-            disabled={!isGroupIdValid}
+            disabled={!canSubmit}
+            className="mt-22"
           >
             確認加入
           </RoundedButtonPrimary>

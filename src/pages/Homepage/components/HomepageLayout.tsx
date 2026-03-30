@@ -9,9 +9,11 @@ import { NavigationTopActions } from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
+import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
+import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
 import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
-import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
 import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
+import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
 import mockGroups, {
   type CareGroup,
   type GroupMember,
@@ -30,6 +32,11 @@ function HomepageLayout() {
   const [groups, setGroups] = useState<CareGroup[]>(mockGroups);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
+  const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
+  const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
+    'create',
+  );
+  const [isGroupInviteDrawerOpen, setIsGroupInviteDrawerOpen] = useState(false);
   const [isGroupJoinDrawerOpen, setIsGroupJoinDrawerOpen] = useState(false);
   const [isGroupActionDrawerOpen, setIsGroupActionDrawerOpen] = useState(false);
   const [isGroupMemberDrawerOpen, setIsGroupMemberDrawerOpen] = useState(false);
@@ -41,7 +48,9 @@ function HomepageLayout() {
     groupId: string;
     member: GroupMember;
   } | null>(null);
-  const [deletedMemberName, setDeletedMemberName] = useState<string | null>(null);
+  const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
+    null,
+  );
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -69,6 +78,8 @@ function HomepageLayout() {
   const handleOpenGroupActions = (groupId: string) => {
     setActiveGroupId(groupId);
     setIsHomepageGroupDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupInviteDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
     setIsGroupMemberDrawerOpen(false);
     setIsGroupActionDrawerOpen(true);
@@ -76,13 +87,46 @@ function HomepageLayout() {
 
   const handleOpenGroupJoin = () => {
     setIsHomepageGroupDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupInviteDrawerOpen(false);
     setIsGroupActionDrawerOpen(false);
     setIsGroupMemberDrawerOpen(false);
     setIsGroupJoinDrawerOpen(true);
   };
 
+  const handleOpenGroupCreate = () => {
+    setIsHomepageGroupDrawerOpen(false);
+    setGroupEntryMode('create');
+    setIsGroupInviteDrawerOpen(false);
+    setIsGroupJoinDrawerOpen(false);
+    setIsGroupActionDrawerOpen(false);
+    setIsGroupMemberDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(true);
+  };
+
+  const handleOpenGroupEdit = () => {
+    setIsHomepageGroupDrawerOpen(false);
+    setGroupEntryMode('edit');
+    setIsGroupInviteDrawerOpen(false);
+    setIsGroupJoinDrawerOpen(false);
+    setIsGroupActionDrawerOpen(false);
+    setIsGroupMemberDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(true);
+  };
+
+  const handleOpenGroupInvite = () => {
+    setIsHomepageGroupDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupJoinDrawerOpen(false);
+    setIsGroupActionDrawerOpen(false);
+    setIsGroupMemberDrawerOpen(false);
+    setIsGroupInviteDrawerOpen(true);
+  };
+
   const handleOpenGroupMembers = () => {
     setIsGroupActionDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupInviteDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
     setIsGroupMemberDrawerOpen(true);
   };
@@ -195,8 +239,28 @@ function HomepageLayout() {
           onSelectGroup={setSelectedGroupId}
           onManageGroup={handleOpenGroupActions}
           onJoinGroup={handleOpenGroupJoin}
+          onCreateGroup={handleOpenGroupCreate}
         />
       </BaseDrawer>
+
+      <BaseDrawer
+        open={isGroupEntryDrawerOpen}
+        onOpenChange={setIsGroupEntryDrawerOpen}
+      >
+        <GroupEntryDrawer
+          open={isGroupEntryDrawerOpen}
+          onClose={() => setIsGroupEntryDrawerOpen(false)}
+          onInviteMembers={handleOpenGroupInvite}
+          initialStep="create"
+          mode={groupEntryMode}
+          initialGroupName={groupEntryMode === 'edit' ? activeGroup?.name : ''}
+        />
+      </BaseDrawer>
+
+      <GroupInviteDrawer
+        open={isGroupInviteDrawerOpen}
+        onOpenChange={setIsGroupInviteDrawerOpen}
+      />
 
       <GroupJoinDrawer
         open={isGroupJoinDrawerOpen}
@@ -208,6 +272,7 @@ function HomepageLayout() {
         groupName={activeGroup?.name}
         onOpenChange={handleGroupActionDrawerChange}
         onManageMembers={handleOpenGroupMembers}
+        onEditGroup={handleOpenGroupEdit}
       />
 
       <GroupMemberManagementDrawer
@@ -215,6 +280,7 @@ function HomepageLayout() {
         group={activeGroup}
         onOpenChange={handleGroupMemberDrawerChange}
         onRequestDeleteMember={handleRequestDeleteMember}
+        onInviteMembers={handleOpenGroupInvite}
       />
 
       <Modal
