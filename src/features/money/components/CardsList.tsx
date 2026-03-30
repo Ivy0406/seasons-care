@@ -3,8 +3,9 @@ import { useState } from 'react';
 import FilterDropdownButton, {
   type FilterOption,
 } from '@/components/common/FilterDropdownButton';
+import type { ExpenseItem } from '@/features/money/types';
 
-import EntryCard, { type ExpenseItem } from './EntryCard';
+import EntryCard from './EntryCard';
 
 type SplitFilter = 'all' | 'needSplit' | 'isSplit' | 'noNeedSplit';
 
