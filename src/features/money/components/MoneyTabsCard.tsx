@@ -18,7 +18,7 @@ function MoneyTabsCard() {
               value={value}
               className={cn(
                 'font-label-md h-full flex-1 rounded-none border-0 font-bold text-neutral-900 shadow-none transition-none',
-                'data-active:bg-secondary-default data-active data-active:relative data-active:z-10 data-active:-mb-[4.32px] data-active:rounded-t-[8px] data-active:border-2 data-active:border-b-0 data-active:border-neutral-900',
+                'data-active:bg-secondary-default data-active data-active:relative data-active:z-10 data-active:-mb-[4.32px] data-active:rounded-t-lg data-active:border-2 data-active:border-b-0 data-active:border-neutral-900',
                 'data-[state=inactive]:bg-none',
               )}
             >
