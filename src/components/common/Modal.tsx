@@ -25,6 +25,8 @@ type ModalProps = {
   title: string;
   description?: string;
   variant?: ModalVariant;
+  statusIcon?: ReactNode;
+  statusLayout?: 'text-first' | 'icon-first';
   autoCloseMs?: number;
   confirmText?: string;
   cancelText?: string;
@@ -33,15 +35,23 @@ type ModalProps = {
   onClose: () => void;
   className?: string;
   bodyClassName?: string;
+  titleClassName?: string;
+  descriptionClassName?: string;
 };
 
 function StatusIcon({
   variant,
   onClick,
+  customIcon,
 }: {
   variant: Exclude<ModalVariant, 'confirm'>;
   onClick?: () => void;
+  customIcon?: ReactNode;
 }) {
+  if (customIcon) {
+    return customIcon;
+  }
+
   const iconMap: Record<Exclude<ModalVariant, 'confirm'>, ReactNode> = {
     error: (
       <CheckBoxButton
@@ -81,11 +91,68 @@ function Modal({
   onCancel,
   onConfirm,
   onClose,
+  statusIcon,
+  statusLayout = 'text-first',
   className,
   bodyClassName,
+  titleClassName,
+  descriptionClassName,
 }: ModalProps) {
   const isConfirmVariant = variant === 'confirm';
   const handleCancel = onCancel ?? onClose;
+  const textContent = (
+    <div className="font-heading-sm flex flex-col items-center gap-1">
+      <AlertDialogTitle className={titleClassName}>{title}</AlertDialogTitle>
+      {description ? (
+        <AlertDialogDescription
+          className={cn('font-label-md', descriptionClassName)}
+        >
+          {description}
+        </AlertDialogDescription>
+      ) : null}
+    </div>
+  );
+  const statusContent =
+    variant === 'confirm' ? null : (
+      <StatusIcon variant={variant} onClick={onClose} customIcon={statusIcon} />
+    );
+
+  let bodyContent: ReactNode;
+  if (isConfirmVariant) {
+    bodyContent = (
+      <>
+        {textContent}
+        <div className="flex w-full gap-5">
+          <RoundedButtonSecondary
+            className="min-w-0 flex-1 text-base"
+            onClick={handleCancel}
+          >
+            {cancelText}
+          </RoundedButtonSecondary>
+          <RoundedButtonPrimary
+            className="min-w-0 flex-1 text-base"
+            onClick={onConfirm}
+          >
+            {confirmText}
+          </RoundedButtonPrimary>
+        </div>
+      </>
+    );
+  } else if (statusLayout === 'icon-first') {
+    bodyContent = (
+      <>
+        {statusContent}
+        {textContent}
+      </>
+    );
+  } else {
+    bodyContent = (
+      <>
+        {textContent}
+        {statusContent}
+      </>
+    );
+  }
 
   useEffect(() => {
     if (!open || variant !== 'success' || !autoCloseMs) return undefined;
@@ -126,33 +193,7 @@ function Modal({
               bodyClassName,
             )}
           >
-            <div className="font-heading-sm flex flex-col items-center gap-1">
-              <AlertDialogTitle>{title}</AlertDialogTitle>
-              {description ? (
-                <AlertDialogDescription className="font-label-md">
-                  {description}
-                </AlertDialogDescription>
-              ) : null}
-            </div>
-
-            {isConfirmVariant ? (
-              <div className="flex w-full gap-5">
-                <RoundedButtonSecondary
-                  className="min-w-0 flex-1 text-base"
-                  onClick={handleCancel}
-                >
-                  {cancelText}
-                </RoundedButtonSecondary>
-                <RoundedButtonPrimary
-                  className="min-w-0 flex-1 text-base"
-                  onClick={onConfirm}
-                >
-                  {confirmText}
-                </RoundedButtonPrimary>
-              </div>
-            ) : (
-              <StatusIcon variant={variant} onClick={onClose} />
-            )}
+            {bodyContent}
           </div>
         </AlertDialogPopup>
       </AlertDialogPortal>
