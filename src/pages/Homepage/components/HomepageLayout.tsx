@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { ChevronDown, Mic } from 'lucide-react';
 
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
-import { NavigationTopActions } from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
@@ -11,6 +10,7 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import HealthSummary from '../../../features/health/HealthSummary';
 
 import DiarySummary from './DiarySummary';
+import HomepageNavigationBar from './HomepageNavigationBar';
 import MoneySummary from './MoneySummary';
 import WeekStrip from './WeekStrip';
 
@@ -20,7 +20,7 @@ function HomepageLayout() {
 
   return (
     <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
-      <NavigationTopActions hasNotification className="px-0" />
+      <HomepageNavigationBar hasNotification className="px-0" />
 
       <section className="flex flex-col">
         <div className="flex items-center gap-2 py-2">
