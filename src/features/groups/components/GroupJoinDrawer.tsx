@@ -53,11 +53,11 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
             <h2 className="font-heading-sm">加入完成！</h2>
           </div>
 
-          <div className="mx-2 aspect-331/160 overflow-hidden rounded-lg">
+          <div className="mx-auto size-40 rounded-[8px]">
             <img
-              src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"
+              src="https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp"
               alt="家人陪伴情境示意"
-              className="h-full w-full rounded-lg border-2 border-neutral-900 object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
 
@@ -65,12 +65,13 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
             群組加入完成，現在開始共同照護！
           </p>
 
-          <div className="mt-10">
+          <div className="mt-6.75">
             <RoundedButtonPrimary
               type="button"
+              className="bg-neutral-800"
               onClick={() => onOpenChange(false)}
             >
-              完成
+              立即開始照護
             </RoundedButtonPrimary>
           </div>
         </div>
