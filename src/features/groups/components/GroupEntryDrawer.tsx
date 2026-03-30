@@ -29,6 +29,8 @@ type GroupEntryDrawerProps = {
 type DrawerIllustrationProps = {
   src: string;
   alt: string;
+  className?: string;
+  wrapperClassName?: string;
 };
 
 type DrawerActionStepProps = {
@@ -39,16 +41,31 @@ type DrawerActionStepProps = {
   onPrimaryClick: () => void;
   onSecondaryClick: () => void;
   className?: string;
+  imageClassName?: string;
+  imageWrapperClassName?: string;
   descriptionClassName?: string;
 };
 
-function DrawerIllustration({ src, alt }: DrawerIllustrationProps) {
+function DrawerIllustration({
+  src,
+  alt,
+  className,
+  wrapperClassName,
+}: DrawerIllustrationProps) {
   return (
-    <div className="mx-2 aspect-331/160 overflow-hidden rounded-[8px]">
+    <div
+      className={cn(
+        'mx-2 aspect-331/160 overflow-hidden rounded-[8px]',
+        wrapperClassName,
+      )}
+    >
       <img
         src={src}
         alt={alt}
-        className="h-full w-full rounded-[8px] border-2 border-neutral-900 object-cover"
+        className={cn(
+          'h-full w-full rounded-[8px] border-2 border-neutral-900 object-cover',
+          className,
+        )}
       />
     </div>
   );
@@ -62,11 +79,18 @@ function DrawerActionStep({
   onPrimaryClick,
   onSecondaryClick,
   className,
+  imageClassName,
+  imageWrapperClassName,
   descriptionClassName,
 }: DrawerActionStepProps) {
   return (
     <div className={cn('flex flex-col text-neutral-900', className)}>
-      <DrawerIllustration src={image.src} alt={image.alt} />
+      <DrawerIllustration
+        src={image.src}
+        alt={image.alt}
+        className={cn(image.className, imageClassName)}
+        wrapperClassName={cn(image.wrapperClassName, imageWrapperClassName)}
+      />
       <p className={cn('font-paragraph-md mx-auto mt-3', descriptionClassName)}>
         {description}
       </p>
@@ -141,11 +165,11 @@ function GroupEntryDrawer({
             <h2 className="font-heading-sm">{successTitle}</h2>
           </div>
 
-          <div className="mx-2 aspect-331/160 overflow-hidden rounded-[8px]">
+          <div className="mx-auto size-40 rounded-[8px]">
             <img
-              src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"
+              src="https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp"
               alt="家人陪伴情境示意"
-              className="h-full w-full rounded-[8px] border-2 border-neutral-900 object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
 
@@ -153,7 +177,7 @@ function GroupEntryDrawer({
             {successDescription}
           </p>
 
-          <div className="mt-2">
+          <div className="mt-7">
             <RoundedButtonPrimary onClick={handleClose}>
               完成
             </RoundedButtonPrimary>
@@ -179,8 +203,9 @@ function GroupEntryDrawer({
         <div>
           <DrawerActionStep
             image={{
-              src: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80',
+              src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
               alt: '家人陪伴情境示意',
+              className: 'border-0',
             }}
             description={successDescription}
             primaryLabel="分享邀請連結"
@@ -249,9 +274,10 @@ function GroupEntryDrawer({
   return (
     <DrawerActionStep
       image={{
-        src: 'https://plus.unsplash.com/premium_photo-1745485079766-6c6dcbe1df52?auto=format&fit=crop&w=1200&q=80',
+        src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
         alt: '老人摸手',
       }}
+      imageClassName="border-0"
       description="您目前還沒有加入任何群組"
       primaryLabel="建立群組"
       secondaryLabel="加入群組"
