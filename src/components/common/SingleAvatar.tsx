@@ -19,8 +19,8 @@ function SingleAvatar({
   return (
     <Avatar
       className={cn(
-        'size-20 ring-2 ring-neutral-900 transition-all',
-        isSelected && 'ring-primary-dark ring-4',
+        'size-20 ring-2 ring-neutral-500 transition-all',
+        isSelected && 'ring-4 ring-neutral-900',
         onClick && 'cursor-pointer',
         className,
       )}
