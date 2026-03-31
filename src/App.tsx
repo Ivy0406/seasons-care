@@ -1,7 +1,7 @@
 import './assets/styles/index.css';
 import { Outlet, useLocation } from 'react-router';
 
-import { Toaster } from '@/components/ui/sonner';
+import Toaster from '@/components/ui/sonner';
 import cn from '@/lib/utils';
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
   return (
     <div
       className={cn(
-        'flex min-h-screen w-full flex-col',
+        'flex min-h-screen w-full flex-col bg-neutral-200',
         isFullWidthRoute ? '' : 'mx-auto max-w-200',
         isFullWidthRoute ? '' : 'px-6',
       )}
