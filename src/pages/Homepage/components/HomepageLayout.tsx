@@ -1,8 +1,15 @@
 import { useState } from 'react';
 
-import { ChevronDown, Mic } from 'lucide-react';
+import { Mic } from 'lucide-react';
 
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
+import {
+  HomepageGroupNavigationBar,
+  HomepageNavigationBar,
+  NavigationGroupTrigger,
+  NavigationSubheader,
+  PageNavigationBar,
+} from '@/components/common/NavigationBar';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
@@ -10,7 +17,6 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import HealthSummary from '../../../features/health/HealthSummary';
 
 import DiarySummary from './DiarySummary';
-import HomepageNavigationBar from './HomepageNavigationBar';
 import MoneySummary from './MoneySummary';
 import WeekStrip from './WeekStrip';
 
@@ -21,12 +27,8 @@ function HomepageLayout() {
   return (
     <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
       <HomepageNavigationBar hasNotification className="px-0" />
-
       <section className="flex flex-col">
-        <div className="flex items-center gap-2 py-2">
-          <h1 className="font-heading-lg">王爸爸的照護群組</h1>
-          <ChevronDown className="size-6 shrink-0" strokeWidth={2} />
-        </div>
+        <NavigationGroupTrigger groupName="王爸爸的照護群組" />
 
         <div className="flex items-center justify-between gap-4">
           <div className="font-label-md flex items-end gap-1">
