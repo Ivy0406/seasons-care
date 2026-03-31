@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ChevronDown, Mic } from 'lucide-react';
 
+import avatars from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import Modal from '@/components/common/Modal';
@@ -21,10 +22,20 @@ import mockGroups, {
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 import HealthSummary from '../../../features/health/HealthSummary';
+import mockCurrentUser from '../data/mockCurrentUser';
 
 import DiarySummary from './DiarySummary';
 import MoneySummary from './MoneySummary';
 import WeekStrip from './WeekStrip';
+
+const avatarSrcByKey = {
+  'Avatar-01': avatars.avatar01,
+  'Avatar-02': avatars.avatar02,
+  'Avatar-03': avatars.avatar03,
+  'Avatar-04': avatars.avatar04,
+  'Avatar-05': avatars.avatar05,
+  'Avatar-06': avatars.avatar06,
+} as const;
 
 function HomepageLayout() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -58,6 +69,8 @@ function HomepageLayout() {
     activeGroupId === null
       ? selectedGroup
       : (groups.find((group) => group.id === activeGroupId) ?? selectedGroup);
+  const currentUserAvatarSrc =
+    avatarSrcByKey[mockCurrentUser.avatarKey] ?? avatars.avatar01;
 
   const handleGroupActionDrawerChange = (open: boolean) => {
     setIsGroupActionDrawerOpen(open);
@@ -199,26 +212,44 @@ function HomepageLayout() {
           </div>
         </section>
 
-        <section className="mt-5 overflow-hidden rounded-sm border-2 border-neutral-900 bg-neutral-50">
-          <div className="bg-primary-default px-3 py-3">
-            <p className="font-label-md">王希銘，你好</p>
-            <p className="font-paragraph-md">今天想要記錄什麼資訊呢？</p>
-          </div>
-
-          <div className="mt-3 flex items-center justify-between gap-3 px-3 pb-3">
-            <p className="font-paragraph-md text-neutral-700">
-              今日要去回診...
-            </p>
-            <RecordingDrawer
-              trigger={
-                <CircleButtonPrimary size="md" aria-label="開始語音輸入">
-                  <Mic />
-                </CircleButtonPrimary>
-              }
-            />
+        <section className="bg-primary-default mt-5 flex gap-5 overflow-hidden rounded-sm rounded-xl border-2 border-neutral-900 px-3 py-5">
+          <SingleAvatar
+            src={currentUserAvatarSrc}
+            name={mockCurrentUser.userName}
+            className="size-18.25 ring-2 ring-neutral-900"
+          />
+          <div className="flex-1">
+            <div className="flex flex-col">
+              <p className="font-label-md self-start bg-neutral-800 px-2 py-1 text-neutral-50">
+                今日分析摘要
+              </p>
+              <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
+                下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
+                80%，再加油一點點！
+              </p>
+            </div>
           </div>
         </section>
-        <section className="bg-secondary-default -mx-6 mt-5 rounded-t-xl border-2 border-neutral-900 px-6 py-5">
+
+        <section className="mt-8 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
+          <p className="font-label-md pl-6 text-neutral-900">
+            {mockCurrentUser.userName}，你好 <br />
+            今天想要記錄什麼照護資訊呢？
+          </p>
+          <RecordingDrawer
+            trigger={
+              <CircleButtonPrimary
+                size="lg"
+                className="border-0 bg-neutral-800"
+                aria-label="開始語音輸入"
+              >
+                <Mic strokeWidth={1} className="stroke-[1.5]!" />
+              </CircleButtonPrimary>
+            }
+          />
+        </section>
+
+        <section className="bg-secondary-default -mx-6 mt-11 rounded-t-xl border-2 border-neutral-900 px-6 py-5">
           <WeekStrip selected={selectedDate} onSelect={setSelectedDate} />
           {showMoney ? (
             <MoneySummary onSwitchToDiary={() => setShowMoney(false)} />
