@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 import {
   FieldWrapper,
@@ -10,6 +10,7 @@ import {
   RoundedButtonDisabled,
   RoundedButtonPrimary,
 } from '@/components/common/RoundedButtons';
+import useLogin from '@/features/auth/hooks/useLogin';
 
 type LoginFormValues = {
   account: string;
@@ -17,7 +18,7 @@ type LoginFormValues = {
 };
 
 function LoginForm() {
-  const navigate = useNavigate();
+  const { isLoading, handleLogin } = useLogin();
   const {
     register,
     handleSubmit,
@@ -28,13 +29,10 @@ function LoginForm() {
 
   const passwordValue = watch('password', '');
 
-  const onSubmit = () => {
-    navigate('/group-entrance');
-  };
   return (
     <form
       className="flex w-full flex-col items-center justify-center"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleLogin)}
     >
       <div className="mb-10 flex w-full flex-col gap-3 pb-7">
         <FieldWrapper label="帳號" htmlFor="account">
@@ -82,8 +80,8 @@ function LoginForm() {
         </FieldWrapper>
       </div>
       <div className="flex w-full flex-col items-center gap-3">
-        {isValid ? (
-          <RoundedButtonPrimary onClick={handleSubmit(onSubmit)}>
+        {isValid && !isLoading ? (
+          <RoundedButtonPrimary onClick={handleSubmit(handleLogin)}>
             登入
           </RoundedButtonPrimary>
         ) : (

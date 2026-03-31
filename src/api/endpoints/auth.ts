@@ -1,13 +1,14 @@
 import apiClient from '@/api/client';
-
-type RegisterPayload = {
-  username: string;
-  email: string;
-  password: string;
-  avatar: string;
-};
+import type {
+  RegisterPayload,
+  LoginPayload,
+  LoginResponse,
+} from '@/types/auth';
 
 const register = (payload: RegisterPayload) =>
   apiClient.post('/api/auth/register', payload);
 
-export { register, type RegisterPayload };
+const login = (payload: LoginPayload) =>
+  apiClient.post<LoginResponse>('/api/auth/login', payload);
+
+export { register, login };

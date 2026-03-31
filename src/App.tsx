@@ -2,7 +2,7 @@ import './assets/styles/index.css';
 
 import { Outlet, useLocation } from 'react-router';
 
-import { Toaster } from '@/components/ui/sonner';
+import Toaster from '@/components/ui/sonner';
 import cn from '@/lib/utils';
 
 function App() {
