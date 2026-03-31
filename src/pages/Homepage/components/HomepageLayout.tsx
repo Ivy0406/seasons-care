@@ -10,6 +10,7 @@ import {
   HomepageNavigationBar,
   NavigationGroupTrigger,
 } from '@/components/common/NavigationBar';
+import SideMenu from '@/components/common/SideMenu';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
@@ -43,6 +44,7 @@ const avatarSrcByKey = {
 function HomepageLayout() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showMoney, setShowMoney] = useState(false);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [groups, setGroups] = useState<CareGroup[]>(mockGroups);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
@@ -179,7 +181,11 @@ function HomepageLayout() {
   return (
     <>
       <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
-        <HomepageNavigationBar hasNotification className="px-0" />
+        <HomepageNavigationBar
+          hasNotification
+          onMenuClick={() => setIsSideMenuOpen(true)}
+          className="px-0"
+        />
 
         <section className="flex flex-col">
           <NavigationGroupTrigger
@@ -311,6 +317,8 @@ function HomepageLayout() {
         onRequestDeleteMember={handleRequestDeleteMember}
         onInviteMembers={handleOpenGroupInvite}
       />
+
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
 
       <Modal
         open={pendingDeleteMember !== null}

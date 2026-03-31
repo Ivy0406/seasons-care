@@ -4,7 +4,7 @@ import { Bell, ChevronDown, ChevronLeft, Menu } from 'lucide-react';
 import { Link } from 'react-router';
 
 import notificationBellBadge from '@/assets/icons/notification-bell-badge.svg';
-import brandMark from '@/assets/icons/seasons-care-icon.svg';
+import BrandMark from '@/components/common/BrandMark';
 import cn from '@/lib/utils';
 
 type NavigationTitleProps = {
@@ -266,7 +266,7 @@ function HomepageNavigationBar({
           aria-label="回到首頁"
           className="justify-self-center"
         >
-          <img src={brandMark} alt="Seasons Care" className="h-8.25 w-auto" />
+          <BrandMark className="h-8.25 w-auto" />
         </Link>
         <NavigationActionGroup
           hasNotification={hasNotification}
@@ -304,7 +304,7 @@ function PageNavigationBar({
           aria-label="回到首頁"
           className="justify-self-center"
         >
-          <img src={brandMark} alt="Seasons Care" className="h-8.25 w-auto" />
+          <BrandMark className="h-8.25 w-auto" />
         </Link>
         <NavigationMenuButton
           onClick={onMenuClick}

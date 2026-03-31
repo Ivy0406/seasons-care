@@ -1,22 +1,28 @@
 import { Link } from 'react-router-dom';
 
-import { ChevronRight, Menu } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
+import BrandMark from '@/components/common/BrandMark';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet';
 import useLogout from '@/features/auth/hooks/useLogout';
 
 type SideMenuProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+type SideMenuItem = {
   name: string;
   path: string;
 };
-const SIDE_MENU_ITEMS: SideMenuProps[] = [
+
+const SIDE_MENU_ITEMS: SideMenuItem[] = [
   { name: '總覽', path: '/homepage' },
   { name: '日誌', path: '/calendar-page' },
   { name: '帳目', path: '/money' },
@@ -24,16 +30,18 @@ const SIDE_MENU_ITEMS: SideMenuProps[] = [
   { name: '設定', path: '/settings' },
 ];
 
-function SideMenu() {
+function SideMenu({ open, onOpenChange }: SideMenuProps) {
   const handleLogout = useLogout();
 
   return (
-    <Sheet>
-      <SheetTrigger render={<Menu size={32} />} />
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="bg-neutral-800 text-neutral-100 data-[side=right]:w-7/8 data-[side=right]:gap-7 data-[side=right]:rounded-l-xl data-[side=right]:border-0 data-[side=right]:px-2 data-[side=right]:sm:max-w-none">
         <SheetHeader className="pt-16.75 pb-0">
-          <SheetTitle className="bg-primary-default h-12 w-15 text-center">
-            品牌logo
+          <SheetTitle className="h-12 w-15 text-center">
+            <BrandMark
+              className="text-primary-default h-8.25 w-auto"
+              detailClassName="text-neutral-800"
+            />
           </SheetTitle>
         </SheetHeader>
         <div className="grid flex-1 auto-rows-min gap-6 px-4">
