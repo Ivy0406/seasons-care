@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Menu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import useLogout from '@/features/auth/hooks/useLogout';
 
 type SideMenuProps = {
   name: string;
@@ -24,12 +25,16 @@ const SIDE_MENU_ITEMS: SideMenuProps[] = [
 ];
 
 function SideMenu() {
+  const handleLogout = useLogout();
+
   return (
     <Sheet>
-      <SheetTrigger render={<Button variant="outline" />}>Open</SheetTrigger>
+      <SheetTrigger render={<Menu size={32} />} />
       <SheetContent className="bg-neutral-800 text-neutral-100 data-[side=right]:w-7/8 data-[side=right]:gap-7 data-[side=right]:rounded-l-xl data-[side=right]:border-0 data-[side=right]:px-2 data-[side=right]:sm:max-w-none">
         <SheetHeader className="pt-16.75 pb-0">
-          <SheetTitle className="h-12 w-15">品牌logo</SheetTitle>
+          <SheetTitle className="bg-primary-default h-12 w-15 text-center">
+            品牌logo
+          </SheetTitle>
         </SheetHeader>
         <div className="grid flex-1 auto-rows-min gap-6 px-4">
           <ul>
@@ -53,7 +58,9 @@ function SideMenu() {
               </li>
             ))}
           </ul>
-          <p className="text-error font-label-lg">登出</p>
+          <button onClick={handleLogout} className="w-fit pr-3">
+            <p className="text-error font-label-lg">登出</p>
+          </button>
         </div>
       </SheetContent>
     </Sheet>
