@@ -159,15 +159,14 @@ function GroupEntryDrawer({
       return;
     }
 
-    try {
-      await handleCreateGroup({
-        recipientName: careRecipientName,
-        recipientGender: gender,
-        recipientBirthDate: birthDate,
-      });
+    const result = await handleCreateGroup({
+      recipientName: careRecipientName,
+      recipientGender: gender,
+      recipientBirthDate: birthDate,
+    });
+
+    if (result) {
       setStep('success');
-    } catch {
-      // 錯誤已於上一層 hook 處理。
     }
   };
 
