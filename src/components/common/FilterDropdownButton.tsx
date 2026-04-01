@@ -15,6 +15,7 @@ type FilterDropdownButtonProps<T extends string> = {
   onChange: (value: T) => void;
   className?: string;
   menuClassName?: string;
+  buttonClassName?: string;
 };
 
 function FilterDropdownButton<T extends string>({
@@ -23,6 +24,7 @@ function FilterDropdownButton<T extends string>({
   onChange,
   className,
   menuClassName,
+  buttonClassName,
 }: FilterDropdownButtonProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -65,8 +67,9 @@ function FilterDropdownButton<T extends string>({
       <button
         type="button"
         className={cn(
-          'font-label-md relative inline-grid max-w-full grid-cols-[1fr_auto] items-center gap-1 rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
+          'font-label-md relative inline-grid max-w-full grid-cols-[minmax(0,1fr)_auto] items-center justify-between rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
           'transition-colors active:bg-neutral-200',
+          buttonClassName,
         )}
         aria-expanded={open}
         aria-controls={menuId}

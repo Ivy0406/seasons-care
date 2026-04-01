@@ -10,7 +10,6 @@ function AlertDialog({
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root {...props} />;
 }
-// 觸發元件(還沒實作)
 const AlertDialogTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>
@@ -32,7 +31,7 @@ const AlertDialogBackdrop = React.forwardRef<
   <DialogPrimitive.Backdrop
     ref={ref}
     className={cn(
-      'fixed inset-0 z-[70] bg-black/25 transition-opacity duration-400 data-ending-style:opacity-0 data-starting-style:opacity-0',
+      'fixed inset-0 z-70 bg-black/25 transition-opacity duration-400 data-ending-style:opacity-0 data-starting-style:opacity-0',
       className,
     )}
     {...props}
@@ -47,7 +46,7 @@ const AlertDialogPopup = React.forwardRef<
   <DialogPrimitive.Popup
     ref={ref}
     className={cn(
-      'fixed top-1/2 left-1/2 z-[71] w-[calc(100vw-48px)] max-w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-[4px] border-2 border-neutral-900 bg-neutral-50 transition-transform duration-400 data-ending-style:translate-y-[calc(-50%+8px)] data-ending-style:opacity-0 data-starting-style:translate-y-[calc(-50%+8px)]',
+      'fixed top-1/2 left-1/2 z-50 w-[calc(100vw-48px)] max-w-92.25 -translate-x-1/2 -translate-y-1/2 rounded-sm border-2 border-neutral-900 bg-neutral-50 transition-transform duration-400 data-ending-style:translate-y-[calc(-50%+8px)] data-ending-style:opacity-0 data-starting-style:translate-y-[calc(-50%+8px)]',
       className,
     )}
     {...props}
