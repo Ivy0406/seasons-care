@@ -1,12 +1,16 @@
 import { useState } from 'react';
 
-import { ChevronDown, Mic } from 'lucide-react';
+import { Mic } from 'lucide-react';
 
 import avatars from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import Modal from '@/components/common/Modal';
-import { NavigationTopActions } from '@/components/common/NavigationBar';
+import {
+  HomepageNavigationBar,
+  NavigationGroupTrigger,
+} from '@/components/common/NavigationBar';
+import SideMenu from '@/components/common/SideMenu';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
@@ -40,6 +44,7 @@ const avatarSrcByKey = {
 function HomepageLayout() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showMoney, setShowMoney] = useState(false);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [groups, setGroups] = useState<CareGroup[]>(mockGroups);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
@@ -176,18 +181,17 @@ function HomepageLayout() {
   return (
     <>
       <main className="flex min-h-screen w-full flex-col pt-4 pb-10 text-neutral-900">
-        <NavigationTopActions hasNotification className="px-0" />
+        <HomepageNavigationBar
+          hasNotification
+          onMenuClick={() => setIsSideMenuOpen(true)}
+          className="px-0"
+        />
 
         <section className="flex flex-col">
-          <button
-            type="button"
+          <NavigationGroupTrigger
+            groupName={selectedGroup.name}
             onClick={() => setIsHomepageGroupDrawerOpen(true)}
-            className="flex w-fit items-center gap-2 py-2 text-left"
-            aria-label="開啟群組總覽"
-          >
-            <h1 className="font-heading-lg">{selectedGroup.name}</h1>
-            <ChevronDown className="size-6 shrink-0" strokeWidth={2} />
-          </button>
+          />
 
           <div className="flex items-center justify-between gap-4">
             <div className="font-label-md flex items-end gap-1">
@@ -313,6 +317,8 @@ function HomepageLayout() {
         onRequestDeleteMember={handleRequestDeleteMember}
         onInviteMembers={handleOpenGroupInvite}
       />
+
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
 
       <Modal
         open={pendingDeleteMember !== null}
