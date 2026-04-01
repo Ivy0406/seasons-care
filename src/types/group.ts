@@ -17,19 +17,11 @@ type CareGroupInfo = {
   memberCount: number;
 };
 
-type Pagination = {
-  totalCount: number;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
-};
-
 type CreateGroupResponse = {
   success: boolean;
   message: string;
   data: CareGroupInfo;
   traceId: string;
-  pagination: Pagination;
 };
 
 export type { CreateGroupPayload, CareGroupInfo, CreateGroupResponse };
