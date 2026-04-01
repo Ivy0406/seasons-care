@@ -1,5 +1,15 @@
+import { useState } from 'react';
+
+import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { RoundedButtonPro } from '@/components/common/RoundedButtons';
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogPopup,
+  AlertDialogPortal,
+} from '@/components/ui/alert-dialog';
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
+import CreateDataCard from '@/features/health/components/CreateDataCard';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
 
 const REPORT_DATA = {
@@ -12,6 +22,8 @@ const REPORT_DATA = {
 };
 
 function HealthReportPage() {
+  const [showCreateCard, setShowCreateCard] = useState(false);
+
   return (
     <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-10 text-neutral-900">
       <div className="mx-auto mt-14 flex w-full max-w-200 items-center px-6 py-3">
@@ -36,6 +48,22 @@ function HealthReportPage() {
       <div className="mx-auto mt-6 w-full max-w-200 px-6">
         <RoundedButtonPro>輸出成完整PDF</RoundedButtonPro>
       </div>
+
+      <FixedBottomButton label="新增" onClick={() => setShowCreateCard(true)} />
+
+      <AlertDialog
+        open={showCreateCard}
+        onOpenChange={(open) => {
+          if (!open) setShowCreateCard(false);
+        }}
+      >
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
+            <CreateDataCard onClose={() => setShowCreateCard(false)} />
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
     </main>
   );
 }
