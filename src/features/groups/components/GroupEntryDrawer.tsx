@@ -11,6 +11,7 @@ import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
+import useCreateGroup from '@/features/groups/hooks/useCreateGroup';
 import cn from '@/lib/utils';
 
 type DrawerStep = 'entry' | 'create' | 'success';
@@ -115,10 +116,11 @@ function GroupEntryDrawer({
   mode = 'create',
   initialGroupName = '',
 }: GroupEntryDrawerProps) {
+  const { isLoading, handleCreateGroup } = useCreateGroup();
   const [step, setStep] = useState<DrawerStep>(initialStep);
   const [careRecipientName, setCareRecipientName] = useState(initialGroupName);
   const [gender, setGender] = useState('male');
-  const [birthDate] = useState('2026/01/12');
+  const [birthDate] = useState('2026-04-01');
   const isEditMode = mode === 'edit';
   const canSubmit = careRecipientName.trim().length > 0;
   const successTitle = isEditMode ? '編輯完成！' : '創建完成！';
@@ -147,6 +149,26 @@ function GroupEntryDrawer({
     }
 
     onClose?.();
+  };
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+
+    if (isEditMode) {
+      setStep('success');
+      return;
+    }
+
+    try {
+      await handleCreateGroup({
+        recipientName: careRecipientName,
+        recipientGender: gender,
+        recipientBirthDate: birthDate,
+      });
+      setStep('success');
+    } catch {
+      // 錯誤已於上一層 hook 處理。
+    }
   };
 
   if (step === 'success') {
@@ -261,10 +283,10 @@ function GroupEntryDrawer({
           </div>
 
           <RoundedButtonPrimary
-            onClick={() => setStep('success')}
-            disabled={!canSubmit}
+            onClick={handleSubmit}
+            disabled={!canSubmit || isLoading}
           >
-            {submitLabel}
+            {isLoading ? '建立中...' : submitLabel}
           </RoundedButtonPrimary>
         </div>
       </div>
