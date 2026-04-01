@@ -21,7 +21,7 @@ function BaseFormCard({ children, className }: BaseFormCardProps) {
   return (
     <div
       className={cn(
-        'h-119 w-full rounded-[8px] border-2 border-neutral-900 bg-neutral-100 p-4',
+        'h-fit w-full rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4',
         className,
       )}
     >
@@ -39,6 +39,58 @@ function HealthDataSmallForm({ className }: { className?: string }) {
         timeValue="10:00"
         className="border-neutral-900"
       />
+      <ListFormInputRow
+        label="血壓 (收縮壓)"
+        unit="mmHg"
+        inputProps={{ defaultValue: '155' }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="血壓 (舒張壓)"
+        unit="mmHg"
+        inputProps={{ defaultValue: '92' }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="體溫"
+        unit="°C"
+        inputProps={{ defaultValue: '34.5' }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="血氧"
+        unit="%"
+        inputProps={{ defaultValue: '98' }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="體重"
+        unit="kg"
+        inputProps={{ defaultValue: '70' }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="血糖"
+        unit="mg/dL"
+        inputProps={{ defaultValue: '155' }}
+        className="border-b-0"
+      />
+    </BaseFormCard>
+  );
+}
+
+function HealthDataForm({ className }: { className?: string }) {
+  return (
+    <BaseFormCard className={className}>
+      <ListFormDateTimeRow
+        label="時間"
+        dateValue="2026/01/12"
+        timeValue="10:00"
+        className="border-neutral-900"
+      />
+      <p className="font-paragraph-sm pt-5 text-neutral-600">
+        以下至少填寫一項數值
+      </p>
       <ListFormInputRow
         label="血壓 (收縮壓)"
         unit="mmHg"
@@ -179,4 +231,9 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
   );
 }
 
-export { HealthDataSmallForm, JournalDataSmallForm, MoneyDataSmallForm };
+export {
+  HealthDataForm,
+  HealthDataSmallForm,
+  JournalDataSmallForm,
+  MoneyDataSmallForm,
+};
