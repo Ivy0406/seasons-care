@@ -13,6 +13,7 @@ const useCreateGroup = () => {
     setIsLoading(true);
     try {
       const res = await createGroup(payload);
+      window.localStorage.setItem('currentGroupId', res.data.data.id);
       toast.success(res.data.message);
       return res.data.data;
     } catch (error) {
