@@ -12,6 +12,8 @@ import {
 } from '@/components/common/ListFormRows';
 import cn from '@/lib/utils';
 
+import type { UseFormRegister } from 'react-hook-form';
+
 type BaseFormCardProps = {
   children: React.ReactNode;
   className?: string;
@@ -79,13 +81,39 @@ function HealthDataSmallForm({ className }: { className?: string }) {
   );
 }
 
-function HealthDataForm({ className }: { className?: string }) {
+type HealthDataFormField =
+  | 'systolic'
+  | 'diastolic'
+  | 'temperature'
+  | 'spO2'
+  | 'weight'
+  | 'glucoseLevel';
+
+type HealthDataFormProps = {
+  className?: string;
+  register?: UseFormRegister<Record<HealthDataFormField, string>>;
+  recordDate?: string;
+  recordTime?: string;
+  onDateClick?: () => void;
+  onTimeClick?: () => void;
+};
+
+function HealthDataForm({
+  className,
+  register,
+  recordDate = '',
+  recordTime = '',
+  onDateClick,
+  onTimeClick,
+}: HealthDataFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={recordDate}
+        timeValue={recordTime}
+        onDateClick={onDateClick}
+        onTimeClick={onTimeClick}
         className="border-neutral-900"
       />
       <p className="font-paragraph-sm pt-5 text-neutral-600">
@@ -94,37 +122,57 @@ function HealthDataForm({ className }: { className?: string }) {
       <ListFormInputRow
         label="血壓 (收縮壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          type: 'number',
+          placeholder: '—',
+          ...register?.('systolic'),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (舒張壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '92' }}
+        inputProps={{
+          type: 'number',
+          placeholder: '—',
+          ...register?.('diastolic'),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體溫"
         unit="°C"
-        inputProps={{ defaultValue: '34.5' }}
+        inputProps={{
+          type: 'number',
+          placeholder: '—',
+          ...register?.('temperature'),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血氧"
         unit="%"
-        inputProps={{ defaultValue: '98' }}
+        inputProps={{ type: 'number', placeholder: '—', ...register?.('spO2') }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體重"
         unit="kg"
-        inputProps={{ defaultValue: '70' }}
+        inputProps={{
+          type: 'number',
+          placeholder: '—',
+          ...register?.('weight'),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血糖"
         unit="mg/dL"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          type: 'number',
+          placeholder: '—',
+          ...register?.('glucoseLevel'),
+        }}
         className="border-b-0"
       />
     </BaseFormCard>
