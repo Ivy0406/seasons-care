@@ -23,7 +23,7 @@ type UseCreateHealthDataOptions = {
 };
 
 function toISODate(date: string, time: string) {
-  return `${date}T${time}:00`;
+  return `${date.replace(/\//g, '-')}T${time}:00`;
 }
 
 function useCreateHealthData({
