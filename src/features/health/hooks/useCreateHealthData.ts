@@ -23,7 +23,8 @@ type UseCreateHealthDataOptions = {
 };
 
 function toISODate(date: string, time: string) {
-  return `${date.replace(/\//g, '-')}T${time}:00`;
+  const localDateStr = `${date.replace(/\//g, '-')}T${time}:00`;
+  return new Date(localDateStr).toISOString();
 }
 
 function useCreateHealthData({
