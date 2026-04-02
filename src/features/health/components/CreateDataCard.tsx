@@ -1,4 +1,5 @@
 import DataFormCard from '@/components/common/DataFormCard';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import { HealthDataForm } from '@/components/common/SmallDataForm';
 import VoiceCTA from '@/components/common/voiceCTA';
@@ -10,10 +11,18 @@ type CreateDataCardProps = {
 };
 
 function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
-  const { register, handleSubmit, isLoading, recordDate, recordTime } =
-    useCreateHealthData();
+  const {
+    register,
+    handleSubmit,
+    isLoading,
+    recordDate,
+    recordTime,
+    modalState,
+    closeModal,
+  } = useCreateHealthData();
 
   return (
+    <>
     <form onSubmit={handleSubmit}>
       <DataFormCard
         title="健康數值紀錄"
@@ -48,6 +57,15 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
         </DataFormCard.Footer>
       </DataFormCard>
     </form>
+    <Modal
+      open={modalState.open}
+      variant={modalState.variant}
+      title={modalState.title}
+      statusLayout="icon-first"
+      autoCloseMs={modalState.variant === 'success' ? 1500 : undefined}
+      onClose={closeModal}
+    />
+    </>
   );
 }
 
