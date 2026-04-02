@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { format, parse, parseISO } from 'date-fns';
-import { ChevronRight, Sparkles, X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import {
@@ -18,7 +18,7 @@ import {
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import VoiceCTA from '@/components/common/voiceCTA';
 import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
 
 type CareLogFormCardProps = {
@@ -27,6 +27,7 @@ type CareLogFormCardProps = {
   submitLabel: string;
   onClose: () => void;
   onSubmit: (entry: CareLogEntry) => void;
+  onVoiceInput?: () => void;
   cardClassName?: string;
   toneClassName?: string;
   footerMode?: 'default' | 'submitOnly';
@@ -38,6 +39,7 @@ function CareLogFormCard({
   submitLabel,
   onClose,
   onSubmit,
+  onVoiceInput,
   cardClassName = 'bg-neutral-800',
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
   footerMode = 'default',
@@ -50,7 +52,6 @@ function CareLogFormCard({
   );
   const [isImportant, setIsImportant] = useState(entry.isImportant ?? false);
   const [note, setNote] = useState(entry.description);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   useEffect(() => {
     const startedAt = parseISO(entry.startsAt);
@@ -97,34 +98,14 @@ function CareLogFormCard({
       >
         <DataFormCard.Content>
           <div className="flex flex-col text-neutral-900">
-            <div className="flex justify-end px-4 pt-4 pb-3">
-              <button
-                type="button"
-                aria-label={`關閉${title}`}
-                className="inline-flex size-6 items-center justify-center rounded-full text-neutral-900"
-                onClick={onClose}
-              >
-                <X className="size-4" strokeWidth={3} />
-              </button>
-            </div>
-
-            <div className="bg-secondary-default border-y-2 border-neutral-900 px-4 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="size-4 shrink-0" strokeWidth={2.2} />
-                  <p className="font-label-md text-neutral-900">
-                    立即試用語音輸入記帳！
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="font-label-md inline-flex h-10 min-w-24 items-center justify-center rounded-full bg-neutral-800 px-4 text-neutral-50"
-                  onClick={() => setShowRecordingDrawer(true)}
-                >
-                  輸入
-                </button>
-              </div>
-            </div>
+            <VoiceCTA
+              title="日誌"
+              onClose={onClose}
+              onInputClick={() => {
+                onClose();
+                onVoiceInput?.();
+              }}
+            />
 
             <div className="px-4 py-2">
               <ListFormInputRow
@@ -217,12 +198,6 @@ function CareLogFormCard({
           )}
         </DataFormCard.Footer>
       </DataFormCard>
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
-      />
     </>
   );
 }
