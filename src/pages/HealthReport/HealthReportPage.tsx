@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPro } from '@/components/common/RoundedButtons';
 import {
   AlertDialog,
@@ -11,6 +12,12 @@ import {
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
 import CreateDataCard from '@/features/health/components/CreateDataCard';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
+
+type SubmitModalState = {
+  open: boolean;
+  variant: 'success' | 'error';
+  title: string;
+};
 
 const REPORT_DATA = {
   patientName: '王爸爸',
@@ -23,6 +30,11 @@ const REPORT_DATA = {
 
 function HealthReportPage() {
   const [showCreateCard, setShowCreateCard] = useState(false);
+  const [submitModal, setSubmitModal] = useState<SubmitModalState>({
+    open: false,
+    variant: 'success',
+    title: '',
+  });
 
   return (
     <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-10 text-neutral-900">
@@ -60,10 +72,36 @@ function HealthReportPage() {
         <AlertDialogPortal>
           <AlertDialogBackdrop />
           <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
-            <CreateDataCard onClose={() => setShowCreateCard(false)} />
+            <CreateDataCard
+              onClose={() => setShowCreateCard(false)}
+              onSuccess={() => {
+                setShowCreateCard(false);
+                setSubmitModal({
+                  open: true,
+                  variant: 'success',
+                  title: '健康數值新增成功',
+                });
+              }}
+              onError={() =>
+                setSubmitModal({
+                  open: true,
+                  variant: 'error',
+                  title: '新增失敗，請稍後再試',
+                })
+              }
+            />
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
+
+      <Modal
+        open={submitModal.open}
+        variant={submitModal.variant}
+        title={submitModal.title}
+        statusLayout="icon-first"
+        autoCloseMs={submitModal.variant === 'success' ? 1500 : undefined}
+        onClose={() => setSubmitModal((prev) => ({ ...prev, open: false }))}
+      />
     </main>
   );
 }

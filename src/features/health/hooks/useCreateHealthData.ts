@@ -2,12 +2,6 @@ import { useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 
-type ModalState = {
-  open: boolean;
-  variant: 'success' | 'error';
-  title: string;
-};
-
 import useCreateBloodOxygen from './useCreateBloodOxygen';
 import useCreateBloodPressure from './useCreateBloodPressure';
 import useCreateBloodSugar from './useCreateBloodSugar';
@@ -23,24 +17,25 @@ type HealthDataFormValues = {
   glucoseLevel: string;
 };
 
+type UseCreateHealthDataOptions = {
+  onSuccess?: () => void;
+  onError?: () => void;
+};
+
 function toISODate(date: string, time: string) {
   return `${date}T${time}:00`;
 }
 
-function useCreateHealthData() {
+function useCreateHealthData({
+  onSuccess,
+  onError,
+}: UseCreateHealthDataOptions = {}) {
   const today = new Date();
   const defaultDate = today.toISOString().slice(0, 10).replace(/-/g, '/');
   const defaultTime = today.toTimeString().slice(0, 5);
 
   const [recordDate, setRecordDate] = useState(defaultDate);
   const [recordTime, setRecordTime] = useState(defaultTime);
-  const [modalState, setModalState] = useState<ModalState>({
-    open: false,
-    variant: 'success',
-    title: '',
-  });
-
-  const closeModal = () => setModalState((prev) => ({ ...prev, open: false }));
 
   const { register, handleSubmit } = useForm<HealthDataFormValues>({
     defaultValues: {
@@ -109,9 +104,9 @@ function useCreateHealthData() {
 
     try {
       await Promise.all(promises);
-      setModalState({ open: true, variant: 'success', title: '健康數值新增成功' });
+      onSuccess?.();
     } catch {
-      setModalState({ open: true, variant: 'error', title: '新增失敗，請稍後再試' });
+      onError?.();
     }
   };
 
@@ -123,8 +118,6 @@ function useCreateHealthData() {
     recordTime,
     setRecordDate,
     setRecordTime,
-    modalState,
-    closeModal,
   };
 }
 
