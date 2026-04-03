@@ -37,8 +37,9 @@ function useCreateHealthData({
 
   const [recordDate, setRecordDate] = useState(defaultDate);
   const [recordTime, setRecordTime] = useState(defaultTime);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit } = useForm<HealthDataFormValues>({
+  const { register, handleSubmit, watch } = useForm<HealthDataFormValues>({
     defaultValues: {
       systolic: '',
       diastolic: '',
@@ -55,12 +56,13 @@ function useCreateHealthData({
   const temperature = useCreateTemperature();
   const weight = useCreateWeight();
 
-  const isLoading =
-    bloodOxygen.isLoading ||
-    bloodPressure.isLoading ||
-    bloodSugar.isLoading ||
-    temperature.isLoading ||
-    weight.isLoading;
+  const watchedValues = watch();
+  const { systolic, diastolic } = watchedValues;
+  const bloodPressureValid =
+    (systolic === '' && diastolic === '') ||
+    (systolic !== '' && diastolic !== '');
+  const hasAnyValue =
+    Object.values(watchedValues).some((v) => v !== '') && bloodPressureValid;
 
   const onSubmit = async (values: HealthDataFormValues) => {
     const isoDate = toISODate(recordDate, recordTime);
@@ -103,18 +105,27 @@ function useCreateHealthData({
       );
     }
 
+    if (promises.length === 0) return;
+
+    setIsSubmitting(true);
     try {
-      await Promise.all(promises);
-      onSuccess?.();
-    } catch {
-      onError?.();
+      const results = await Promise.allSettled(promises);
+      const hasFailure = results.some((r) => r.status === 'rejected');
+      if (hasFailure) {
+        onError?.();
+      } else {
+        onSuccess?.();
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return {
     register,
     handleSubmit: handleSubmit(onSubmit),
-    isLoading,
+    isLoading: isSubmitting,
+    hasAnyValue,
     recordDate,
     recordTime,
     setRecordDate,
