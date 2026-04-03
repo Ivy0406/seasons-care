@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { RotateCw, AudioLines } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -21,8 +21,7 @@ function RecordingDrawer({
   onFinish,
 }: RecordingDrawerProps) {
   const navigate = useNavigate();
-  const previousTranscriptRef = useRef('');
-  const [inputText, setInputText] = useState('');
+  const transcriptContainerRef = useRef<HTMLDivElement | null>(null);
   const {
     isSupported,
     isListening,
@@ -32,7 +31,7 @@ function RecordingDrawer({
     stopListening,
     resetTranscript,
   } = useSpeechRecognition();
-  const displayText = `${inputText}${
+  const displayText = `${transcript}${
     interimTranscript ? ` ${interimTranscript}` : ''
   }`.trim();
   let recordingStatusText = '錄音已停止';
@@ -44,42 +43,26 @@ function RecordingDrawer({
   }
 
   useEffect(() => {
-    if (!transcript) {
-      previousTranscriptRef.current = '';
-      return;
-    }
+    const container = transcriptContainerRef.current;
 
-    const previousTranscript = previousTranscriptRef.current;
-    const appendedText = transcript.startsWith(previousTranscript)
-      ? transcript.slice(previousTranscript.length)
-      : transcript;
+    if (container === null) return;
 
-    if (appendedText) {
-      setInputText((prev) => `${prev}${appendedText}`.trim());
-    }
-
-    previousTranscriptRef.current = transcript;
-  }, [transcript]);
+    container.scrollTop = container.scrollHeight;
+  }, [displayText]);
 
   const handleReset = () => {
     stopListening();
     resetTranscript();
-    previousTranscriptRef.current = '';
-    setInputText('');
     startListening();
   };
 
   const handleOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       resetTranscript();
-      previousTranscriptRef.current = '';
-      setInputText('');
       startListening();
     } else {
       stopListening();
       resetTranscript();
-      previousTranscriptRef.current = '';
-      setInputText('');
     }
 
     onOpenChange?.(isOpen);
@@ -102,6 +85,8 @@ function RecordingDrawer({
       trigger={trigger}
       open={open}
       onOpenChange={handleOpenChange}
+      handleClassName="bg-neutral-500"
+      className="bg-neutral-200"
       footer={
         <div className="flex w-full flex-col items-center gap-4 px-0 pb-0">
           <RoundedButtonPrimary
@@ -122,37 +107,32 @@ function RecordingDrawer({
         </div>
       }
     >
-      <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center">
         <div className="flex flex-col items-center pt-2 pb-0">
           <p className="font-heading-sm text-neutral-900">
             {recordingStatusText}
           </p>
           <p className="font-paragraph-md mt-5 text-neutral-700">
-            {interimTranscript || '告訴我你今天想要記錄的事'}
+            告訴我你今天想要記錄的事
           </p>
         </div>
 
-        <div className="flex min-h-[220px] w-full flex-col gap-1 rounded-lg border-2 border-neutral-900 bg-white px-3 pt-2">
-          <div className="relative min-h-[140px] w-full px-2 py-1">
-            <div className="pointer-events-none absolute inset-0 px-2 py-12.75">
-              {displayText ? (
-                <p className="font-paragraph-lg text-left leading-10 break-words whitespace-pre-wrap">
-                  <span className="text-primary-default bg-neutral-800 box-decoration-clone px-2 py-1">
-                    {displayText}
-                  </span>
-                </p>
-              ) : (
-                <p className="font-paragraph-lg leading-10 break-words whitespace-pre-wrap text-neutral-400">
-                  請開始說話，或直接輸入想記錄的內容...
-                </p>
-              )}
-            </div>
-
-            <textarea
-              value={inputText}
-              onChange={(event) => setInputText(event.target.value)}
-              className="font-paragraph-lg caret-primary-default relative min-h-[140px] w-full resize-none bg-transparent leading-10 text-transparent outline-none"
-            />
+        <div className="mt-3 mb-5 flex h-[200px] w-full flex-col overflow-hidden rounded-lg border-2 border-neutral-900 bg-white px-5">
+          <div
+            ref={transcriptContainerRef}
+            className="h-full w-full overflow-y-auto px-2 py-4"
+          >
+            {displayText ? (
+              <p className="font-paragraph-lg w-full text-left leading-10 whitespace-pre-wrap">
+                <span className="text-primary-default bg-neutral-800 box-decoration-clone px-2 py-1">
+                  {displayText}
+                </span>
+              </p>
+            ) : (
+              <p className="font-paragraph-lg w-full leading-10 whitespace-pre-wrap text-neutral-400">
+                請開始說話，等待語音內容顯示...
+              </p>
+            )}
           </div>
         </div>
 
