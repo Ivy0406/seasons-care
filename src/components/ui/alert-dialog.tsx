@@ -10,7 +10,6 @@ function AlertDialog({
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root {...props} />;
 }
-// 觸發元件(還沒實作)
 const AlertDialogTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>
@@ -32,7 +31,7 @@ const AlertDialogBackdrop = React.forwardRef<
   <DialogPrimitive.Backdrop
     ref={ref}
     className={cn(
-      'fixed inset-0 z-[70] bg-black/25 transition-opacity duration-400 data-ending-style:opacity-0 data-starting-style:opacity-0',
+      'fixed inset-0 z-70 bg-black/25 transition-opacity duration-400 data-ending-style:opacity-0 data-starting-style:opacity-0',
       className,
     )}
     {...props}
