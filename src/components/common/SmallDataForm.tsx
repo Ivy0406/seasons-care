@@ -124,6 +124,7 @@ function HealthDataForm({
         unit="mmHg"
         inputProps={{
           type: 'number',
+          step: 'any',
           placeholder: '—',
           ...register?.('systolic'),
         }}
@@ -134,6 +135,7 @@ function HealthDataForm({
         unit="mmHg"
         inputProps={{
           type: 'number',
+          step: 'any',
           placeholder: '—',
           ...register?.('diastolic'),
         }}
@@ -144,6 +146,7 @@ function HealthDataForm({
         unit="°C"
         inputProps={{
           type: 'number',
+          step: 'any',
           placeholder: '—',
           ...register?.('temperature'),
         }}
@@ -152,7 +155,12 @@ function HealthDataForm({
       <ListFormInputRow
         label="血氧"
         unit="%"
-        inputProps={{ type: 'number', placeholder: '—', ...register?.('spO2') }}
+        inputProps={{
+          type: 'number',
+          step: 'any',
+          placeholder: '—',
+          ...register?.('spO2'),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -160,6 +168,7 @@ function HealthDataForm({
         unit="kg"
         inputProps={{
           type: 'number',
+          step: 'any',
           placeholder: '—',
           ...register?.('weight'),
         }}
@@ -170,6 +179,18 @@ function HealthDataForm({
         unit="mg/dL"
         inputProps={{
           type: 'number',
+          step: 'any',
+          placeholder: '—',
+          ...register?.('weight'),
+        }}
+        className="border-neutral-900"
+      />
+      <ListFormInputRow
+        label="血糖"
+        unit="mg/dL"
+        inputProps={{
+          type: 'number',
+          step: 'any',
           placeholder: '—',
           ...register?.('glucoseLevel'),
         }}
