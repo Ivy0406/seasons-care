@@ -17,8 +17,14 @@ function CreateDataCard({
   onSuccess,
   onError,
 }: CreateDataCardProps) {
-  const { register, handleSubmit, isLoading, recordDate, recordTime } =
-    useCreateHealthData({ onSuccess, onError });
+  const {
+    register,
+    handleSubmit,
+    isLoading,
+    hasAnyValue,
+    recordDate,
+    recordTime,
+  } = useCreateHealthData({ onSuccess, onError });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -48,7 +54,7 @@ function CreateDataCard({
           <RoundedButtonPrimary
             type="submit"
             className="w-full"
-            disabled={isLoading}
+            disabled={!hasAnyValue || isLoading}
           >
             新增健康數值
           </RoundedButtonPrimary>
