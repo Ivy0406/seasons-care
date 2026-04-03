@@ -11,7 +11,7 @@ type RecordingDrawerProps = {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onFinish?: () => void;
+  onFinish?: (payload: { transcript: string }) => void;
 };
 
 function RecordingDrawer({
@@ -53,7 +53,9 @@ function RecordingDrawer({
   const handleReset = () => {
     stopListening();
     resetTranscript();
-    startListening();
+    window.setTimeout(() => {
+      startListening();
+    }, 150);
   };
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -69,11 +71,13 @@ function RecordingDrawer({
   };
 
   const handleFinish = () => {
+    const finalTranscript = displayText;
+
     stopListening();
     handleOpenChange(false);
 
     if (onFinish) {
-      onFinish();
+      onFinish({ transcript: finalTranscript });
       return;
     }
 

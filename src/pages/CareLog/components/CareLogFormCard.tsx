@@ -221,7 +221,9 @@ function CareLogFormCard({
       <RecordingDrawer
         open={showRecordingDrawer}
         onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
+        onFinish={() => {
+          setShowRecordingDrawer(false);
+        }}
       />
     </>
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Mic } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import avatars from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
@@ -23,9 +24,11 @@ import mockGroups, {
   type CareGroup,
   type GroupMember,
 } from '@/features/groups/data/mockGroups';
+import HealthSummary from '@/features/health/HealthSummary';
+import useHealth from '@/features/health/useHealth';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 
-import HealthSummary from '../../../features/health/HealthSummary';
 import mockCurrentUser from '../data/mockCurrentUser';
 
 import DiarySummary from './DiarySummary';
@@ -42,6 +45,7 @@ const avatarSrcByKey = {
 } as const;
 
 function HomepageLayout() {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showMoney, setShowMoney] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -67,6 +71,8 @@ function HomepageLayout() {
   const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
     null,
   );
+  const { setHealthTranscript } = useVoiceInput();
+  const healthData = useHealth();
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -228,8 +234,7 @@ function HomepageLayout() {
                 今日分析摘要
               </p>
               <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
-                下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
-                80%，再加油一點點！
+                {healthData.summary.content}
               </p>
             </div>
           </div>
@@ -250,6 +255,12 @@ function HomepageLayout() {
                 <Mic strokeWidth={1} className="stroke-[1.5]!" />
               </CircleButtonPrimary>
             }
+            onFinish={({ transcript }) => {
+              if (transcript.trim() === '') return;
+
+              setHealthTranscript(transcript);
+              navigate('/data-form');
+            }}
           />
         </section>
 

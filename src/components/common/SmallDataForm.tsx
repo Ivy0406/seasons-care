@@ -10,6 +10,7 @@ import {
   ListFormSelectRow,
   type RepeatPatternValue,
 } from '@/components/common/ListFormRows';
+import type { HealthDraft } from '@/features/health/types';
 import cn from '@/lib/utils';
 
 type BaseFormCardProps = {
@@ -30,49 +31,83 @@ function BaseFormCard({ children, className }: BaseFormCardProps) {
   );
 }
 
-function HealthDataSmallForm({ className }: { className?: string }) {
+type HealthDataSmallFormProps = {
+  className?: string;
+  value: HealthDraft;
+  onChange: (updates: Partial<HealthDraft>) => void;
+};
+
+function HealthDataSmallForm({
+  className,
+  value,
+  onChange,
+}: HealthDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (收縮壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          value: value.systolic,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ systolic: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (舒張壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '92' }}
+        inputProps={{
+          value: value.diastolic,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ diastolic: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體溫"
         unit="°C"
-        inputProps={{ defaultValue: '34.5' }}
+        inputProps={{
+          value: value.temperature,
+          inputMode: 'decimal',
+          onChange: (event) => onChange({ temperature: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血氧"
         unit="%"
-        inputProps={{ defaultValue: '98' }}
+        inputProps={{
+          value: value.bloodOxygen,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ bloodOxygen: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體重"
         unit="kg"
-        inputProps={{ defaultValue: '70' }}
+        inputProps={{
+          value: value.weight,
+          inputMode: 'decimal',
+          onChange: (event) => onChange({ weight: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血糖"
         unit="mg/dL"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          value: value.bloodSugar,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ bloodSugar: event.target.value }),
+        }}
         className="border-b-0"
       />
     </BaseFormCard>
