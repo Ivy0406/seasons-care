@@ -181,17 +181,6 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
-          ...register?.('weight'),
-        }}
-        className="border-neutral-900"
-      />
-      <ListFormInputRow
-        label="血糖"
-        unit="mg/dL"
-        inputProps={{
-          type: 'number',
-          step: 'any',
-          placeholder: '—',
           ...register?.('glucoseLevel'),
         }}
         className="border-b-0"
