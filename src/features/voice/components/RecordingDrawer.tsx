@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { RotateCw, AudioLines } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -11,7 +11,7 @@ type RecordingDrawerProps = {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onFinish?: (payload: { transcript: string }) => void;
+  onFinish?: (payload: { transcript: string }) => Promise<void> | void;
 };
 
 function RecordingDrawer({
@@ -22,6 +22,7 @@ function RecordingDrawer({
 }: RecordingDrawerProps) {
   const navigate = useNavigate();
   const transcriptContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const {
     isSupported,
     isListening,
@@ -36,7 +37,9 @@ function RecordingDrawer({
   }`.trim();
   let recordingStatusText = '錄音已停止';
 
-  if (!isSupported) {
+  if (isProcessing) {
+    recordingStatusText = '處理中...';
+  } else if (!isSupported) {
     recordingStatusText = '此瀏覽器不支援語音輸入';
   } else if (isListening) {
     recordingStatusText = '語音錄製中...';
@@ -59,6 +62,8 @@ function RecordingDrawer({
   };
 
   const handleOpenChange = (isOpen: boolean) => {
+    if (isProcessing) return;
+
     if (isOpen) {
       resetTranscript();
       startListening();
@@ -70,19 +75,39 @@ function RecordingDrawer({
     onOpenChange?.(isOpen);
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     const finalTranscript = displayText;
 
+    if (finalTranscript === '' || isProcessing) return;
+
     stopListening();
-    handleOpenChange(false);
+    setIsProcessing(true);
 
-    if (onFinish) {
-      onFinish({ transcript: finalTranscript });
-      return;
+    try {
+      if (onFinish) {
+        await onFinish({ transcript: finalTranscript });
+        handleOpenChange(false);
+        return;
+      }
+
+      handleOpenChange(false);
+      setTimeout(() => navigate('/data-form'), 150);
+    } finally {
+      setIsProcessing(false);
     }
-
-    setTimeout(() => navigate('/data-form'), 150);
   };
+
+  const isFinishDisabled = isProcessing || displayText === '';
+
+  useEffect(() => {
+    if (!open) {
+      setIsProcessing(false);
+    }
+  }, [open]);
+
+  const resetButtonClassName = isProcessing
+    ? 'font-label-sm flex items-center justify-center gap-2 text-neutral-500 transition-opacity'
+    : 'font-label-sm flex items-center justify-center gap-2 text-neutral-900 transition-opacity';
 
   return (
     <BaseDrawer
@@ -96,14 +121,16 @@ function RecordingDrawer({
           <RoundedButtonPrimary
             className="h-12 w-[97px] bg-neutral-900 text-neutral-50 active:bg-neutral-800"
             onClick={handleFinish}
+            disabled={isFinishDisabled}
           >
-            完成
+            {isProcessing ? '處理中' : '完成'}
           </RoundedButtonPrimary>
 
           <button
             type="button"
-            className="font-label-sm flex items-center justify-center gap-2 text-neutral-900 transition-opacity"
+            className={resetButtonClassName}
             onClick={handleReset}
+            disabled={isProcessing}
           >
             <RotateCw className="size-4" strokeWidth={3} />
             重新錄製
@@ -142,7 +169,11 @@ function RecordingDrawer({
 
         <div className="flex items-center gap-1.5 pb-2">
           <AudioLines
-            className={isListening ? 'size-10' : 'size-10 text-neutral-500'}
+            className={
+              isListening && !isProcessing
+                ? 'size-10'
+                : 'size-10 text-neutral-500'
+            }
           />
         </div>
       </div>

@@ -255,10 +255,10 @@ function HomepageLayout() {
                 <Mic strokeWidth={1} className="stroke-[1.5]!" />
               </CircleButtonPrimary>
             }
-            onFinish={({ transcript }) => {
+            onFinish={async ({ transcript }) => {
               if (transcript.trim() === '') return;
 
-              setHealthTranscript(transcript);
+              await setHealthTranscript(transcript);
               navigate('/data-form');
             }}
           />

@@ -3,7 +3,7 @@ import type {
   HealthDraft,
   HealthRecord,
 } from '@/features/health/types';
-import { getHealthDraftMetricValue } from '@/features/voice/utils/parseHealthTranscript';
+import { getHealthDraftMetricValue } from '@/features/voice/services/healthParser';
 
 const HEALTH_STORAGE_KEY = 'seasons-care:health-records';
 

@@ -18,7 +18,7 @@ import type { HealthDraft } from '@/features/health/types';
 import {
   createEmptyHealthDraft,
   mergeHealthDraft,
-} from '@/features/voice/utils/parseHealthTranscript';
+} from '@/features/voice/services/healthParser';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 
 import DiaryDataFormCard from './DiaryDataFormCard';
@@ -165,8 +165,8 @@ function DataFormCardCarousel() {
         <RecordingDrawer
           open={showRecordingDrawer}
           onOpenChange={setShowRecordingDrawer}
-          onFinish={({ transcript: nextTranscript }) => {
-            setHealthTranscript(nextTranscript);
+          onFinish={async ({ transcript: nextTranscript }) => {
+            await setHealthTranscript(nextTranscript);
           }}
         />
 
@@ -255,8 +255,8 @@ function DataFormCardCarousel() {
       <RecordingDrawer
         open={showRecordingDrawer}
         onOpenChange={setShowRecordingDrawer}
-        onFinish={({ transcript: nextTranscript }) => {
-          setHealthTranscript(nextTranscript);
+        onFinish={async ({ transcript: nextTranscript }) => {
+          await setHealthTranscript(nextTranscript);
         }}
       />
 

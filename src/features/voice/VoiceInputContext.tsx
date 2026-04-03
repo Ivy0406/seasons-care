@@ -11,7 +11,7 @@ import {
   createEmptyHealthDraft,
   mergeHealthDraft,
   parseHealthTranscript,
-} from '@/features/voice/utils/parseHealthTranscript';
+} from '@/features/voice/services/healthParser';
 
 type VoiceInputKind = 'health' | null;
 
@@ -19,7 +19,7 @@ type VoiceInputContextValue = {
   activeKind: VoiceInputKind;
   transcript: string;
   healthDraft: HealthDraft;
-  setHealthTranscript: (transcript: string) => void;
+  setHealthTranscript: (transcript: string) => Promise<void>;
   updateHealthDraft: (updates: Partial<HealthDraft>) => void;
   clearVoiceInput: () => void;
 };
@@ -33,8 +33,8 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
     createEmptyHealthDraft(),
   );
 
-  const setHealthTranscript = (nextTranscript: string) => {
-    const parsedDraft = parseHealthTranscript(nextTranscript);
+  const setHealthTranscript = async (nextTranscript: string) => {
+    const parsedDraft = await parseHealthTranscript(nextTranscript);
 
     setActiveKind('health');
     setTranscript(nextTranscript.trim());
