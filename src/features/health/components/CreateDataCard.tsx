@@ -56,7 +56,7 @@ function CreateDataCard({
             className="w-full"
             disabled={!hasAnyValue || isLoading}
           >
-            新增健康數值
+            {isLoading ? '新增中...' : '新增健康數值'}
           </RoundedButtonPrimary>
         </DataFormCard.Footer>
       </DataFormCard>
