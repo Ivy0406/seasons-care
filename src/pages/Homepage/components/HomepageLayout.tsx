@@ -25,7 +25,6 @@ import mockGroups, {
   type GroupMember,
 } from '@/features/groups/data/mockGroups';
 import HealthSummary from '@/features/health/HealthSummary';
-import useHealth from '@/features/health/useHealth';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 
@@ -71,8 +70,7 @@ function HomepageLayout() {
   const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
     null,
   );
-  const { setHealthTranscript } = useVoiceInput();
-  const healthData = useHealth();
+  const { setVoiceTranscript } = useVoiceInput();
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -234,7 +232,8 @@ function HomepageLayout() {
                 今日分析摘要
               </p>
               <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
-                {healthData.summary.content}
+                下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
+                80%，再加油一點點！
               </p>
             </div>
           </div>
@@ -258,7 +257,7 @@ function HomepageLayout() {
             onFinish={async ({ transcript }) => {
               if (transcript.trim() === '') return;
 
-              await setHealthTranscript(transcript);
+              await setVoiceTranscript(transcript);
               navigate('/data-form');
             }}
           />
