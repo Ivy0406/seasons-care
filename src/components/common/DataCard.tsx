@@ -4,9 +4,11 @@ import cn from '@/lib/utils';
 
 import { CardLabelPrimary } from './CardLabel';
 
+type Measurement = number | '--';
+
 type DataCardBaseProps = {
-  category: 'AI分析摘要' | '血壓' | '體溫' | '血氧' | '體重' | '血糖';
-  time?: string | '';
+  category: string;
+  time?: string;
   className?: string;
 };
 
@@ -14,20 +16,20 @@ type SummaryCardProps = Omit<DataCardBaseProps, 'time'> & {
   content: string;
 };
 type BloodPressureCardProps = DataCardBaseProps & {
-  systolic: number | '--';
-  diastolic: number | '--';
+  systolic: Measurement;
+  diastolic: Measurement;
 };
 type TemperatureCardProps = DataCardBaseProps & {
-  temperature: number | '--';
+  temperature: Measurement;
 };
 type OxygenCardProps = DataCardBaseProps & {
-  bloodOxygen: number | '--';
+  bloodOxygen: Measurement;
 };
-type WeightCardProps = DataCardBaseProps & { weight: number | '--' };
+type WeightCardProps = DataCardBaseProps & { weight: Measurement };
 type BloodSugarCardProps = DataCardBaseProps & {
-  morning: number | '--';
-  noon: number | '--';
-  night: number | '--';
+  morning: Measurement;
+  noon: Measurement;
+  night: Measurement;
 };
 
 function BaseCard({
@@ -39,7 +41,7 @@ function BaseCard({
   return (
     <div
       className={cn(
-        'flex min-h-40 w-fit min-w-[166px] flex-col gap-2 rounded-[4px] border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
+        'flex min-h-40 w-fit flex-col gap-2 rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
         className,
       )}
     >
@@ -56,7 +58,7 @@ function DataCardSummary({ category, className, content }: SummaryCardProps) {
   return (
     <div
       className={cn(
-        'flex h-40 w-fit flex-col gap-2 rounded-[4px] border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
+        'flex h-40 w-fit flex-col gap-2 rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 py-3',
         className,
       )}
     >
@@ -149,11 +151,7 @@ function DataCardBloodSugar({
   night,
 }: BloodSugarCardProps) {
   return (
-    <BaseCard
-      category={category}
-      time={time}
-      className={cn('w-62.5', className)}
-    >
+    <BaseCard category={category} time={time} className={className}>
       <div className="grid w-full grid-cols-3 gap-2">
         <div className="flex flex-col items-center gap-2">
           <p className="font-paragraph-sm text-neutral-900">早上</p>
