@@ -6,6 +6,7 @@ import {
   normalizeMoneyTitleAndNote,
 } from '@/features/voice/services/moneyParser.shared';
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
+import { hasMoneyIntent } from '@/features/voice/services/voiceIntent';
 
 function extractMoneyCategory(transcript: string): MoneyCategoryValue {
   if (/醫療|掛號|回診|藥費|檢查|住院/.test(transcript)) {
@@ -41,6 +42,14 @@ const parseMoneyTranscriptWithRule: ParseMoneyTranscript = async (
 ) => {
   const emptyDraft = createEmptyMoneyDraft();
   const normalizedTranscript = transcript.trim();
+
+  if (!hasMoneyIntent(normalizedTranscript)) {
+    return {
+      ...emptyDraft,
+      transcript: normalizedTranscript,
+    };
+  }
+
   const { title, note } = normalizeMoneyTitleAndNote(
     '',
     '',

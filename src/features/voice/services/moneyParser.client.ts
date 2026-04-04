@@ -10,6 +10,7 @@ import {
   normalizeMoneyTitleAndNote,
 } from '@/features/voice/services/moneyParser.shared';
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
+import { hasMoneyIntent } from '@/features/voice/services/voiceIntent';
 import type { MoneyExtractionResult } from '@/types/ai';
 
 function getAIProvider() {
@@ -67,6 +68,13 @@ async function fetchMoneyExtractionWithProvider(transcript: string) {
 const parseMoneyTranscriptWithClient: ParseMoneyTranscript = async (
   transcript,
 ) => {
+  if (!hasMoneyIntent(transcript)) {
+    return {
+      ...createEmptyMoneyDraft(),
+      transcript: transcript.trim(),
+    };
+  }
+
   try {
     const extraction = await fetchMoneyExtractionWithProvider(transcript);
 
