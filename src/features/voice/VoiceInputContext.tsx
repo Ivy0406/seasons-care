@@ -8,59 +8,75 @@ import {
 
 import type { HealthDraft } from '@/features/health/types';
 import {
+  createEmptyDiaryDraft,
+  mergeDiaryDraft,
+  parseDiaryTranscript,
+} from '@/features/voice/services/diaryParser';
+import {
   createEmptyHealthDraft,
   mergeHealthDraft,
   parseHealthTranscript,
 } from '@/features/voice/services/healthParser';
-
-type VoiceInputKind = 'health' | null;
+import type { DiaryDraft } from '@/pages/CareLog/types';
 
 type VoiceInputContextValue = {
-  activeKind: VoiceInputKind;
   transcript: string;
   healthDraft: HealthDraft;
-  setHealthTranscript: (transcript: string) => Promise<void>;
+  diaryDraft: DiaryDraft;
+  setVoiceTranscript: (transcript: string) => Promise<void>;
   updateHealthDraft: (updates: Partial<HealthDraft>) => void;
+  updateDiaryDraft: (updates: Partial<DiaryDraft>) => void;
   clearVoiceInput: () => void;
 };
 
 const VoiceInputContext = createContext<VoiceInputContextValue | null>(null);
 
 function VoiceInputProvider({ children }: { children: ReactNode }) {
-  const [activeKind, setActiveKind] = useState<VoiceInputKind>(null);
   const [transcript, setTranscript] = useState('');
   const [healthDraft, setHealthDraft] = useState<HealthDraft>(
     createEmptyHealthDraft(),
   );
+  const [diaryDraft, setDiaryDraft] = useState<DiaryDraft>(
+    createEmptyDiaryDraft(),
+  );
 
-  const setHealthTranscript = async (nextTranscript: string) => {
-    const parsedDraft = await parseHealthTranscript(nextTranscript);
+  const setVoiceTranscript = async (nextTranscript: string) => {
+    const normalizedTranscript = nextTranscript.trim();
+    const [parsedHealthDraft, parsedDiaryDraft] = await Promise.all([
+      parseHealthTranscript(normalizedTranscript),
+      parseDiaryTranscript(normalizedTranscript),
+    ]);
 
-    setActiveKind('health');
-    setTranscript(nextTranscript.trim());
-    setHealthDraft(parsedDraft);
+    setTranscript(normalizedTranscript);
+    setHealthDraft(parsedHealthDraft);
+    setDiaryDraft(parsedDiaryDraft);
   };
 
   const updateHealthDraft = (updates: Partial<HealthDraft>) => {
     setHealthDraft((currentDraft) => mergeHealthDraft(currentDraft, updates));
   };
 
+  const updateDiaryDraft = (updates: Partial<DiaryDraft>) => {
+    setDiaryDraft((currentDraft) => mergeDiaryDraft(currentDraft, updates));
+  };
+
   const clearVoiceInput = () => {
-    setActiveKind(null);
     setTranscript('');
     setHealthDraft(createEmptyHealthDraft());
+    setDiaryDraft(createEmptyDiaryDraft());
   };
 
   const value = useMemo(
     () => ({
-      activeKind,
       transcript,
       healthDraft,
-      setHealthTranscript,
+      diaryDraft,
+      setVoiceTranscript,
       updateHealthDraft,
+      updateDiaryDraft,
       clearVoiceInput,
     }),
-    [activeKind, transcript, healthDraft],
+    [transcript, healthDraft, diaryDraft],
   );
 
   return (

@@ -12,6 +12,7 @@ import {
 } from '@/components/common/ListFormRows';
 import type { HealthDraft } from '@/features/health/types';
 import cn from '@/lib/utils';
+import type { DiaryDraft } from '@/pages/CareLog/types';
 
 type BaseFormCardProps = {
   children: React.ReactNode;
@@ -114,44 +115,52 @@ function HealthDataSmallForm({
   );
 }
 
-function JournalDataSmallForm({ className }: { className?: string }) {
-  const [repeatPattern, setRepeatPattern] =
-    useState<RepeatPatternValue>('none');
-  const [isImportant, setIsImportant] = useState(true);
-  const [note, setNote] = useState('');
+type JournalDataSmallFormProps = {
+  className?: string;
+  value: DiaryDraft;
+  onChange: (updates: Partial<DiaryDraft>) => void;
+};
 
+function JournalDataSmallForm({
+  className,
+  value,
+  onChange,
+}: JournalDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="日誌名稱"
-        inputProps={{ defaultValue: '' }}
+        inputProps={{
+          value: value.title,
+          onChange: (event) => onChange({ title: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormRepeatRow
-        value={repeatPattern}
-        onChange={setRepeatPattern}
+        value={value.repeatPattern as RepeatPatternValue}
+        onChange={(repeatPattern) => onChange({ repeatPattern })}
         className="border-neutral-900"
       />
       <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
       <ListFormImportantRow
         label="是否標記為重要"
-        checked={isImportant}
-        onCheckedChange={setIsImportant}
+        checked={value.isImportant}
+        onCheckedChange={(isImportant) => onChange({ isImportant })}
         className="border-neutral-900"
       />
       <ListFormNoteRow
         label="備註"
         textareaProps={{
-          value: note,
-          onChange: (e) => setNote(e.target.value),
+          value: value.note,
+          onChange: (event) => onChange({ note: event.target.value }),
         }}
-        onClear={() => setNote('')}
+        onClear={() => onChange({ note: '' })}
         className="border-b-0"
       />
     </BaseFormCard>
