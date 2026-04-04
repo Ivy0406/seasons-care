@@ -12,7 +12,8 @@ function App() {
     pathname === '/calendar-page/new' ||
     pathname === '/data-form' ||
     pathname === '/health-report' ||
-    pathname === '/money';
+    pathname === '/money' ||
+    pathname === '/homepage';
 
   return (
     <div
