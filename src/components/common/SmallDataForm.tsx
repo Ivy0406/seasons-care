@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
   ListFormDateTimeRow,
   ListFormImportantRow,
@@ -11,6 +9,7 @@ import {
   type RepeatPatternValue,
 } from '@/components/common/ListFormRows';
 import type { HealthDraft } from '@/features/health/types';
+import type { MoneyCategoryValue, MoneyDraft } from '@/features/money/types';
 import cn from '@/lib/utils';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
@@ -167,32 +166,45 @@ function JournalDataSmallForm({
   );
 }
 
-function MoneyDataSmallForm({ className }: { className?: string }) {
-  const [category, setCategory] = useState('none');
-  const [needsSplit, setNeedsSplit] = useState(false);
-  const [note, setNote] = useState('');
+type MoneyDataSmallFormProps = {
+  className?: string;
+  value: MoneyDraft;
+  onChange: (updates: Partial<MoneyDraft>) => void;
+};
 
+function MoneyDataSmallForm({
+  className,
+  value,
+  onChange,
+}: MoneyDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="帳目名稱"
-        inputProps={{ placeholder: '' }}
+        inputProps={{
+          value: value.title,
+          onChange: (event) => onChange({ title: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="金額"
-        inputProps={{ placeholder: '', type: 'number' }}
+        inputProps={{
+          value: value.amount,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ amount: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormSelectRow
         label="類別"
-        value={category}
+        value={value.category}
         options={[
           { value: 'none', label: '無' },
           { value: 'medical', label: '醫療支出' },
@@ -200,23 +212,25 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
           { value: 'traffic', label: '交通費用' },
           { value: 'other', label: '生活支出' },
         ]}
-        onChange={setCategory}
+        onChange={(category) =>
+          onChange({ category: category as MoneyCategoryValue })
+        }
         className="border-neutral-900"
       />
       <ListFormImportantRow
         label="是否需分帳"
-        checked={needsSplit}
-        onCheckedChange={setNeedsSplit}
+        checked={value.needsSplit}
+        onCheckedChange={(needsSplit) => onChange({ needsSplit })}
         className="border-neutral-900"
       />
       <ListFormNoteRow
         label="備註"
         textareaProps={{
-          value: note,
-          onChange: (e) => setNote(e.target.value),
+          value: value.note,
+          onChange: (event) => onChange({ note: event.target.value }),
           placeholder: '',
         }}
-        onClear={() => setNote('')}
+        onClear={() => onChange({ note: '' })}
         className="border-b-0"
       />
     </BaseFormCard>

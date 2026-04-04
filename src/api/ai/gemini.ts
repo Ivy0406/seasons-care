@@ -3,10 +3,17 @@ import {
   DIARY_EXTRACTION_SCHEMA,
   HEALTH_EXTRACTION_PROMPT,
   HEALTH_EXTRACTION_SCHEMA,
+  MONEY_EXTRACTION_PROMPT,
+  MONEY_EXTRACTION_SCHEMA,
   isDiaryExtractionResult,
   isHealthExtractionResult,
+  isMoneyExtractionResult,
 } from '@/types/ai';
-import type { DiaryExtractionResult, HealthExtractionResult } from '@/types/ai';
+import type {
+  DiaryExtractionResult,
+  HealthExtractionResult,
+  MoneyExtractionResult,
+} from '@/types/ai';
 
 function getGeminiModel() {
   return import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash';
@@ -110,5 +117,25 @@ async function fetchDiaryExtractionWithGemini(
   return parsedResponse;
 }
 
-export { fetchDiaryExtractionWithGemini, fetchHealthExtractionWithGemini };
+async function fetchMoneyExtractionWithGemini(
+  transcript: string,
+): Promise<MoneyExtractionResult> {
+  const parsedResponse = await requestGeminiStructuredOutput(
+    transcript,
+    MONEY_EXTRACTION_PROMPT,
+    MONEY_EXTRACTION_SCHEMA,
+  );
+
+  if (!isMoneyExtractionResult(parsedResponse)) {
+    throw new Error('gemini-money-parser-invalid-response');
+  }
+
+  return parsedResponse;
+}
+
+export {
+  fetchDiaryExtractionWithGemini,
+  fetchHealthExtractionWithGemini,
+  fetchMoneyExtractionWithGemini,
+};
 export default fetchHealthExtractionWithGemini;

@@ -9,6 +9,7 @@ import {
   normalizeDiaryTitleAndNote,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
+import { hasDiaryIntent } from '@/features/voice/services/voiceIntent';
 import type { DiaryExtractionResult } from '@/types/ai';
 
 function getAIProvider() {
@@ -50,6 +51,13 @@ async function fetchDiaryExtractionWithProvider(transcript: string) {
 const parseDiaryTranscriptWithClient: ParseDiaryTranscript = async (
   transcript,
 ) => {
+  if (!hasDiaryIntent(transcript)) {
+    return {
+      ...createEmptyDiaryDraft(),
+      transcript: transcript.trim(),
+    };
+  }
+
   try {
     const extraction = await fetchDiaryExtractionWithProvider(transcript);
 

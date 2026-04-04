@@ -11,6 +11,7 @@ import 'swiper/css/pagination';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import type { HealthDraft } from '@/features/health/types';
+import type { MoneyDraft } from '@/features/money/types';
 import {
   createEmptyDiaryDraft,
   hasDiaryDraftContent,
@@ -20,11 +21,17 @@ import {
   createEmptyHealthDraft,
   mergeHealthDraft,
 } from '@/features/voice/services/healthParser';
+import {
+  createEmptyMoneyDraft,
+  hasMoneyDraftContent,
+  mergeMoneyDraft,
+} from '@/features/voice/services/moneyParser';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
 import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
+import MoneyDataFormCard from './MoneyDataFormCard';
 import RecordingDrawer from './RecordingDrawer';
 
 import type { Swiper as SwiperClass } from 'swiper';
@@ -65,13 +72,18 @@ function DataFormCardCarousel() {
   const [fallbackDiaryDraft, setFallbackDiaryDraft] = useState<DiaryDraft>(
     createEmptyDiaryDraft(),
   );
+  const [fallbackMoneyDraft, setFallbackMoneyDraft] = useState<MoneyDraft>(
+    createEmptyMoneyDraft(),
+  );
   const {
     transcript,
     healthDraft,
     diaryDraft,
+    moneyDraft,
     setVoiceTranscript,
     updateHealthDraft,
     updateDiaryDraft,
+    updateMoneyDraft,
     clearVoiceInput,
   } = useVoiceInput();
 
@@ -80,11 +92,15 @@ function DataFormCardCarousel() {
     ? healthDraft
     : fallbackHealthDraft;
   const activeDiaryDraft = hasVoiceTranscript ? diaryDraft : fallbackDiaryDraft;
+  const activeMoneyDraft = hasVoiceTranscript ? moneyDraft : fallbackMoneyDraft;
   const shouldShowHealthForm = hasVoiceTranscript
     ? hasHealthDraftContent(activeHealthDraft)
     : true;
   const shouldShowDiaryForm = hasVoiceTranscript
     ? hasDiaryDraftContent(activeDiaryDraft) || !shouldShowHealthForm
+    : true;
+  const shouldShowMoneyForm = hasVoiceTranscript
+    ? hasMoneyDraftContent(activeMoneyDraft)
     : true;
 
   const handleHealthDraftChange = (updates: Partial<HealthDraft>) => {
@@ -109,6 +125,17 @@ function DataFormCardCarousel() {
     );
   };
 
+  const handleMoneyDraftChange = (updates: Partial<MoneyDraft>) => {
+    if (hasVoiceTranscript) {
+      updateMoneyDraft(updates);
+      return;
+    }
+
+    setFallbackMoneyDraft((currentDraft) =>
+      mergeMoneyDraft(currentDraft, updates),
+    );
+  };
+
   const visibleSlides = [
     shouldShowHealthForm
       ? {
@@ -128,6 +155,17 @@ function DataFormCardCarousel() {
             <DiaryDataFormCard
               value={activeDiaryDraft}
               onChange={handleDiaryDraftChange}
+            />
+          ),
+        }
+      : null,
+    shouldShowMoneyForm
+      ? {
+          key: 'money',
+          content: (
+            <MoneyDataFormCard
+              value={activeMoneyDraft}
+              onChange={handleMoneyDraftChange}
             />
           ),
         }

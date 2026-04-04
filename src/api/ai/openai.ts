@@ -3,10 +3,17 @@ import {
   DIARY_EXTRACTION_SCHEMA,
   HEALTH_EXTRACTION_PROMPT,
   HEALTH_EXTRACTION_SCHEMA,
+  MONEY_EXTRACTION_PROMPT,
+  MONEY_EXTRACTION_SCHEMA,
   isDiaryExtractionResult,
   isHealthExtractionResult,
+  isMoneyExtractionResult,
 } from '@/types/ai';
-import type { DiaryExtractionResult, HealthExtractionResult } from '@/types/ai';
+import type {
+  DiaryExtractionResult,
+  HealthExtractionResult,
+  MoneyExtractionResult,
+} from '@/types/ai';
 
 type OpenAIResponsesOutput = {
   output?: Array<{
@@ -129,5 +136,26 @@ async function fetchDiaryExtractionWithOpenAI(
   return parsedResponse;
 }
 
-export { fetchDiaryExtractionWithOpenAI, fetchHealthExtractionWithOpenAI };
+async function fetchMoneyExtractionWithOpenAI(
+  transcript: string,
+): Promise<MoneyExtractionResult> {
+  const parsedResponse = await requestOpenAIStructuredOutput(
+    transcript,
+    MONEY_EXTRACTION_PROMPT,
+    MONEY_EXTRACTION_SCHEMA,
+    'money_extraction',
+  );
+
+  if (!isMoneyExtractionResult(parsedResponse)) {
+    throw new Error('openai-money-parser-invalid-response');
+  }
+
+  return parsedResponse;
+}
+
+export {
+  fetchDiaryExtractionWithOpenAI,
+  fetchHealthExtractionWithOpenAI,
+  fetchMoneyExtractionWithOpenAI,
+};
 export default fetchHealthExtractionWithOpenAI;

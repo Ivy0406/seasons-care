@@ -1,4 +1,5 @@
 import type { HealthDraft } from '@/features/health/types';
+import type { MoneyDraft } from '@/features/money/types';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
 type HealthExtractionResult = Pick<
@@ -222,4 +223,126 @@ export {
   isDiaryExtractionResult,
 };
 
-export type { DiaryExtractionResult, HealthExtractionResult };
+type MoneyExtractionResult = Pick<
+  MoneyDraft,
+  | 'title'
+  | 'amount'
+  | 'dateValue'
+  | 'timeValue'
+  | 'category'
+  | 'note'
+  | 'summary'
+> & {
+  needsSplit: 'true' | 'false';
+};
+
+const MONEY_EXTRACTION_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    title: {
+      type: 'string',
+      description:
+        'Expense title in zh-TW. Return an empty string if not mentioned.',
+    },
+    amount: {
+      type: 'string',
+      description:
+        'Expense amount as digits only. Return an empty string if not mentioned.',
+    },
+    dateValue: {
+      type: 'string',
+      description:
+        'Date in YYYY/MM/DD format. Return an empty string if not mentioned.',
+    },
+    timeValue: {
+      type: 'string',
+      description:
+        '24-hour time in HH:MM format. Return an empty string if not mentioned.',
+    },
+    category: {
+      type: 'string',
+      enum: ['none', 'medical', 'food', 'traffic', 'other'],
+      description: 'Expense category. Use none when category is not explicit.',
+    },
+    needsSplit: {
+      type: 'string',
+      enum: ['true', 'false'],
+      description:
+        'Return true only if the transcript explicitly says this expense should be split.',
+    },
+    note: {
+      type: 'string',
+      description:
+        'Expense note in zh-TW. Return an empty string if not mentioned.',
+    },
+    summary: {
+      type: 'string',
+      description:
+        'A one-sentence zh-TW summary of the extracted expense content for caregiver review.',
+    },
+  },
+  required: [
+    'title',
+    'amount',
+    'dateValue',
+    'timeValue',
+    'category',
+    'needsSplit',
+    'note',
+    'summary',
+  ],
+} as const;
+
+const MONEY_EXTRACTION_PROMPT = `
+你是照護帳目語音紀錄抽取器。請從使用者的中文語音轉文字中，擷取帳目表單需要的欄位並輸出 JSON。
+
+規則：
+1. 只能回傳符合 schema 的 JSON，不要加任何說明文字。
+2. 無法確認的欄位請回傳空字串，不要猜。
+3. title 要優先填寫，請用 4 到 16 字的短標題概括主要支出，不要留空後只填 note。
+4. amount 只回傳數字字串，不要含幣別或標點。
+5. dateValue 格式固定 YYYY/MM/DD。
+6. timeValue 格式固定 HH:MM，使用 24 小時制。
+7. category 只允許 none、medical、food、traffic、other。
+8. needsSplit 只回傳 true 或 false 字串。
+9. note 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 note，也不要讓 note 和 title 重複。
+10. summary 用繁體中文，簡短描述已抽取到的帳目內容。
+`;
+
+function isMoneyExtractionResult(
+  value: unknown,
+): value is MoneyExtractionResult {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const result = value as Record<string, unknown>;
+
+  return (
+    typeof result.title === 'string' &&
+    typeof result.amount === 'string' &&
+    typeof result.dateValue === 'string' &&
+    typeof result.timeValue === 'string' &&
+    (result.category === 'none' ||
+      result.category === 'medical' ||
+      result.category === 'food' ||
+      result.category === 'traffic' ||
+      result.category === 'other') &&
+    (result.needsSplit === 'true' || result.needsSplit === 'false') &&
+    typeof result.note === 'string' &&
+    typeof result.summary === 'string'
+  );
+}
+
+export {
+  MONEY_EXTRACTION_PROMPT,
+  MONEY_EXTRACTION_SCHEMA,
+  isMoneyExtractionResult,
+};
+
+export type {
+  DiaryExtractionResult,
+  HealthExtractionResult,
+  MoneyExtractionResult,
+};

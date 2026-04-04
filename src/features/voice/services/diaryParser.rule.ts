@@ -5,6 +5,7 @@ import {
   normalizeDiaryTitleAndNote,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
+import { hasDiaryIntent } from '@/features/voice/services/voiceIntent';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
 function extractRepeatPattern(transcript: string): DiaryDraft['repeatPattern'] {
@@ -36,6 +37,14 @@ const parseDiaryTranscriptWithRule: ParseDiaryTranscript = async (
 ) => {
   const emptyDraft = createEmptyDiaryDraft();
   const normalizedTranscript = transcript.trim();
+
+  if (!hasDiaryIntent(normalizedTranscript)) {
+    return {
+      ...emptyDraft,
+      transcript: normalizedTranscript,
+    };
+  }
+
   const title = extractTitle(normalizedTranscript);
   const { note } = normalizeDiaryTitleAndNote(title, '', normalizedTranscript);
 
