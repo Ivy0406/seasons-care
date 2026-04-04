@@ -1,5 +1,7 @@
-import fetchHealthExtractionWithGemini from '@/api/ai/gemini';
-import fetchHealthExtractionWithOpenAI from '@/api/ai/openai';
+import {
+  fetchHealthExtractionWithGemini,
+  fetchHealthExtractionWithOpenAI,
+} from '@/api/ai';
 import parseHealthTranscriptWithRule from '@/features/voice/services/healthParser.rule';
 import {
   createEmptyHealthDraft,

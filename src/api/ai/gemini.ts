@@ -1,9 +1,12 @@
 import {
+  DIARY_EXTRACTION_PROMPT,
+  DIARY_EXTRACTION_SCHEMA,
   HEALTH_EXTRACTION_PROMPT,
   HEALTH_EXTRACTION_SCHEMA,
+  isDiaryExtractionResult,
   isHealthExtractionResult,
 } from '@/types/ai';
-import type { HealthExtractionResult } from '@/types/ai';
+import type { DiaryExtractionResult, HealthExtractionResult } from '@/types/ai';
 
 function getGeminiModel() {
   return import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash';
@@ -29,9 +32,11 @@ async function parseGeminiResponse(response: Response) {
   return JSON.parse(responseText) as unknown;
 }
 
-async function fetchHealthExtractionWithGemini(
+async function requestGeminiStructuredOutput(
   transcript: string,
-): Promise<HealthExtractionResult> {
+  prompt: string,
+  schema: object,
+) {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
@@ -51,14 +56,14 @@ async function fetchHealthExtractionWithGemini(
           {
             parts: [
               {
-                text: `${HEALTH_EXTRACTION_PROMPT}\n\n使用者語音轉文字：\n${transcript}`,
+                text: `${prompt}\n\n使用者語音轉文字：\n${transcript}`,
               },
             ],
           },
         ],
         generationConfig: {
           responseMimeType: 'application/json',
-          responseJsonSchema: HEALTH_EXTRACTION_SCHEMA,
+          responseJsonSchema: schema,
         },
       }),
     },
@@ -70,6 +75,18 @@ async function fetchHealthExtractionWithGemini(
 
   const parsedResponse = await parseGeminiResponse(response);
 
+  return parsedResponse;
+}
+
+async function fetchHealthExtractionWithGemini(
+  transcript: string,
+): Promise<HealthExtractionResult> {
+  const parsedResponse = await requestGeminiStructuredOutput(
+    transcript,
+    HEALTH_EXTRACTION_PROMPT,
+    HEALTH_EXTRACTION_SCHEMA,
+  );
+
   if (!isHealthExtractionResult(parsedResponse)) {
     throw new Error('gemini-health-parser-invalid-response');
   }
@@ -77,4 +94,21 @@ async function fetchHealthExtractionWithGemini(
   return parsedResponse;
 }
 
+async function fetchDiaryExtractionWithGemini(
+  transcript: string,
+): Promise<DiaryExtractionResult> {
+  const parsedResponse = await requestGeminiStructuredOutput(
+    transcript,
+    DIARY_EXTRACTION_PROMPT,
+    DIARY_EXTRACTION_SCHEMA,
+  );
+
+  if (!isDiaryExtractionResult(parsedResponse)) {
+    throw new Error('gemini-diary-parser-invalid-response');
+  }
+
+  return parsedResponse;
+}
+
+export { fetchDiaryExtractionWithGemini, fetchHealthExtractionWithGemini };
 export default fetchHealthExtractionWithGemini;

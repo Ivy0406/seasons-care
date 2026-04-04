@@ -7,24 +7,10 @@ import {
   getHealthDraftMetricValue,
   mergeHealthDraft,
 } from '@/features/voice/services/healthParser.shared';
-import type { HealthParserMode } from '@/features/voice/services/healthParser.types';
-
-function getHealthParserMode(): HealthParserMode {
-  const parserMode = import.meta.env.VITE_HEALTH_PARSER_MODE;
-
-  if (
-    parserMode === 'client' ||
-    parserMode === 'server' ||
-    parserMode === 'rule'
-  ) {
-    return parserMode;
-  }
-
-  return 'rule';
-}
+import { getVoiceParserMode } from '@/features/voice/services/voiceParserMode';
 
 async function parseHealthTranscript(transcript: string) {
-  const parserMode = getHealthParserMode();
+  const parserMode = getVoiceParserMode();
 
   if (parserMode === 'client') {
     return parseHealthTranscriptWithClient(transcript);

@@ -1,9 +1,12 @@
 import {
+  DIARY_EXTRACTION_PROMPT,
+  DIARY_EXTRACTION_SCHEMA,
   HEALTH_EXTRACTION_PROMPT,
   HEALTH_EXTRACTION_SCHEMA,
+  isDiaryExtractionResult,
   isHealthExtractionResult,
 } from '@/types/ai';
-import type { HealthExtractionResult } from '@/types/ai';
+import type { DiaryExtractionResult, HealthExtractionResult } from '@/types/ai';
 
 type OpenAIResponsesOutput = {
   output?: Array<{
@@ -32,9 +35,12 @@ async function parseOpenAIResponse(response: Response) {
   return JSON.parse(outputText) as unknown;
 }
 
-async function fetchHealthExtractionWithOpenAI(
+async function requestOpenAIStructuredOutput(
   transcript: string,
-): Promise<HealthExtractionResult> {
+  prompt: string,
+  schema: object,
+  schemaName: string,
+) {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -55,7 +61,7 @@ async function fetchHealthExtractionWithOpenAI(
           content: [
             {
               type: 'input_text',
-              text: HEALTH_EXTRACTION_PROMPT,
+              text: prompt,
             },
           ],
         },
@@ -72,9 +78,9 @@ async function fetchHealthExtractionWithOpenAI(
       text: {
         format: {
           type: 'json_schema',
-          name: 'health_extraction',
+          name: schemaName,
           strict: true,
-          schema: HEALTH_EXTRACTION_SCHEMA,
+          schema,
         },
       },
     }),
@@ -86,6 +92,19 @@ async function fetchHealthExtractionWithOpenAI(
 
   const parsedResponse = await parseOpenAIResponse(response);
 
+  return parsedResponse;
+}
+
+async function fetchHealthExtractionWithOpenAI(
+  transcript: string,
+): Promise<HealthExtractionResult> {
+  const parsedResponse = await requestOpenAIStructuredOutput(
+    transcript,
+    HEALTH_EXTRACTION_PROMPT,
+    HEALTH_EXTRACTION_SCHEMA,
+    'health_extraction',
+  );
+
   if (!isHealthExtractionResult(parsedResponse)) {
     throw new Error('openai-health-parser-invalid-response');
   }
@@ -93,4 +112,22 @@ async function fetchHealthExtractionWithOpenAI(
   return parsedResponse;
 }
 
+async function fetchDiaryExtractionWithOpenAI(
+  transcript: string,
+): Promise<DiaryExtractionResult> {
+  const parsedResponse = await requestOpenAIStructuredOutput(
+    transcript,
+    DIARY_EXTRACTION_PROMPT,
+    DIARY_EXTRACTION_SCHEMA,
+    'diary_extraction',
+  );
+
+  if (!isDiaryExtractionResult(parsedResponse)) {
+    throw new Error('openai-diary-parser-invalid-response');
+  }
+
+  return parsedResponse;
+}
+
+export { fetchDiaryExtractionWithOpenAI, fetchHealthExtractionWithOpenAI };
 export default fetchHealthExtractionWithOpenAI;

@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL?: string;
+  readonly VITE_VOICE_PARSER_MODE?: 'rule' | 'client' | 'server';
   readonly VITE_HEALTH_PARSER_MODE?: 'rule' | 'client' | 'server';
   readonly VITE_AI_PROVIDER?: 'gemini' | 'openai';
   readonly VITE_GEMINI_API_KEY?: string;
