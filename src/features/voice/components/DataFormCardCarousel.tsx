@@ -102,15 +102,12 @@ function DataFormCardCarousel() {
     hasDiaryDraftContent(draft),
   );
   const shouldShowDiaryForm = hasVoiceTranscript
-    ? visibleDiaryDrafts.length > 0 || !shouldShowHealthForm
+    ? visibleDiaryDrafts.length > 0
     : true;
   let renderedDiaryDrafts = activeDiaryDrafts;
 
   if (hasVoiceTranscript) {
-    renderedDiaryDrafts =
-      visibleDiaryDrafts.length > 0
-        ? visibleDiaryDrafts
-        : [activeDiaryDrafts[0] ?? createEmptyDiaryDraft()];
+    renderedDiaryDrafts = visibleDiaryDrafts;
   }
   const shouldShowMoneyForm = hasVoiceTranscript
     ? hasMoneyDraftContent(activeMoneyDraft)
