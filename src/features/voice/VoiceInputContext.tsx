@@ -20,17 +20,22 @@ import {
 } from '@/features/voice/services/healthParser';
 import {
   createEmptyMoneyDraft,
+  hasMoneyDraftContent,
   mergeMoneyDraft,
   parseMoneyTranscript,
 } from '@/features/voice/services/moneyParser';
 import type { DiaryDraft } from '@/pages/CareLog/types';
+
+type SetVoiceTranscriptResult = {
+  hasDetectedContent: boolean;
+};
 
 type VoiceInputContextValue = {
   transcript: string;
   healthDraft: HealthDraft;
   diaryDrafts: DiaryDraft[];
   moneyDraft: MoneyDraft;
-  setVoiceTranscript: (transcript: string) => Promise<void>;
+  setVoiceTranscript: (transcript: string) => Promise<SetVoiceTranscriptResult>;
   updateHealthDraft: (updates: Partial<HealthDraft>) => void;
   updateDiaryDraft: (id: string, updates: Partial<DiaryDraft>) => void;
   updateMoneyDraft: (updates: Partial<MoneyDraft>) => void;
@@ -38,6 +43,17 @@ type VoiceInputContextValue = {
 };
 
 const VoiceInputContext = createContext<VoiceInputContextValue | null>(null);
+
+function hasHealthDraftContent(draft: HealthDraft) {
+  return (
+    draft.systolic.trim() !== '' ||
+    draft.diastolic.trim() !== '' ||
+    draft.temperature.trim() !== '' ||
+    draft.bloodOxygen.trim() !== '' ||
+    draft.weight.trim() !== '' ||
+    draft.bloodSugar.trim() !== ''
+  );
+}
 
 function VoiceInputProvider({ children }: { children: ReactNode }) {
   const [transcript, setTranscript] = useState('');
@@ -68,6 +84,13 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
         : [createEmptyDiaryDraft()],
     );
     setMoneyDraft(parsedMoneyDraft);
+
+    return {
+      hasDetectedContent:
+        hasHealthDraftContent(parsedHealthDraft) ||
+        parsedDiaryDrafts.length > 0 ||
+        hasMoneyDraftContent(parsedMoneyDraft),
+    };
   };
 
   const updateHealthDraft = (updates: Partial<HealthDraft>) => {

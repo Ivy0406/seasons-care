@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Mic } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import avatars from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
@@ -70,7 +71,7 @@ function HomepageLayout() {
   const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
     null,
   );
-  const { setVoiceTranscript } = useVoiceInput();
+  const { setVoiceTranscript, clearVoiceInput } = useVoiceInput();
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -255,10 +256,22 @@ function HomepageLayout() {
               </CircleButtonPrimary>
             }
             onFinish={async ({ transcript }) => {
-              if (transcript.trim() === '') return;
+              if (transcript.trim() === '') {
+                return { shouldClose: false };
+              }
 
-              await setVoiceTranscript(transcript);
+              const result = await setVoiceTranscript(transcript);
+
+              if (!result.hasDetectedContent) {
+                clearVoiceInput();
+                toast.error(
+                  '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+                );
+                return { shouldClose: false };
+              }
+
               navigate('/data-form');
+              return { shouldClose: true };
             }}
           />
         </section>

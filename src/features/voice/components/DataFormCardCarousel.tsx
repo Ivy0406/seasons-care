@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ChevronLeft, RotateCw } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -261,7 +262,17 @@ function DataFormCardCarousel() {
         open={showRecordingDrawer}
         onOpenChange={setShowRecordingDrawer}
         onFinish={async ({ transcript: nextTranscript }) => {
-          await setVoiceTranscript(nextTranscript);
+          const result = await setVoiceTranscript(nextTranscript);
+
+          if (!result.hasDetectedContent) {
+            clearVoiceInput();
+            toast.error(
+              '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+            );
+            return { shouldClose: false };
+          }
+
+          return { shouldClose: true };
         }}
       />
 

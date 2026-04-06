@@ -7,11 +7,22 @@ import BaseDrawer from '@/components/common/BaseDrawer';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import useSpeechRecognition from '@/features/voice/hooks/useSpeechRecognition';
 
+type RecordingDrawerFinishResult = {
+  shouldClose?: boolean;
+};
+
+type RecordingDrawerFinishHandler = (payload: {
+  transcript: string;
+}) =>
+  | Promise<RecordingDrawerFinishResult | void>
+  | RecordingDrawerFinishResult
+  | void;
+
 type RecordingDrawerProps = {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onFinish?: (payload: { transcript: string }) => Promise<void> | void;
+  onFinish?: RecordingDrawerFinishHandler;
 };
 
 function RecordingDrawer({
@@ -85,8 +96,12 @@ function RecordingDrawer({
 
     try {
       if (onFinish) {
-        await onFinish({ transcript: finalTranscript });
-        handleOpenChange(false);
+        const result = await onFinish({ transcript: finalTranscript });
+
+        if (result?.shouldClose !== false) {
+          handleOpenChange(false);
+        }
+
         return;
       }
 
@@ -171,7 +186,7 @@ function RecordingDrawer({
           <AudioLines
             className={
               isListening && !isProcessing
-                ? 'size-10'
+                ? 'text-primary-default size-10 scale-110 animate-pulse transition-all duration-300 ease-out'
                 : 'size-10 text-neutral-500'
             }
           />
