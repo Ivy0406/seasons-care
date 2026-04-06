@@ -28,11 +28,11 @@ import type { DiaryDraft } from '@/pages/CareLog/types';
 type VoiceInputContextValue = {
   transcript: string;
   healthDraft: HealthDraft;
-  diaryDraft: DiaryDraft;
+  diaryDrafts: DiaryDraft[];
   moneyDraft: MoneyDraft;
   setVoiceTranscript: (transcript: string) => Promise<void>;
   updateHealthDraft: (updates: Partial<HealthDraft>) => void;
-  updateDiaryDraft: (updates: Partial<DiaryDraft>) => void;
+  updateDiaryDraft: (id: string, updates: Partial<DiaryDraft>) => void;
   updateMoneyDraft: (updates: Partial<MoneyDraft>) => void;
   clearVoiceInput: () => void;
 };
@@ -44,16 +44,16 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
   const [healthDraft, setHealthDraft] = useState<HealthDraft>(
     createEmptyHealthDraft(),
   );
-  const [diaryDraft, setDiaryDraft] = useState<DiaryDraft>(
+  const [diaryDrafts, setDiaryDrafts] = useState<DiaryDraft[]>([
     createEmptyDiaryDraft(),
-  );
+  ]);
   const [moneyDraft, setMoneyDraft] = useState<MoneyDraft>(
     createEmptyMoneyDraft(),
   );
 
   const setVoiceTranscript = async (nextTranscript: string) => {
     const normalizedTranscript = nextTranscript.trim();
-    const [parsedHealthDraft, parsedDiaryDraft, parsedMoneyDraft] =
+    const [parsedHealthDraft, parsedDiaryDrafts, parsedMoneyDraft] =
       await Promise.all([
         parseHealthTranscript(normalizedTranscript),
         parseDiaryTranscript(normalizedTranscript),
@@ -62,7 +62,11 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
 
     setTranscript(normalizedTranscript);
     setHealthDraft(parsedHealthDraft);
-    setDiaryDraft(parsedDiaryDraft);
+    setDiaryDrafts(
+      parsedDiaryDrafts.length > 0
+        ? parsedDiaryDrafts
+        : [createEmptyDiaryDraft()],
+    );
     setMoneyDraft(parsedMoneyDraft);
   };
 
@@ -70,8 +74,12 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
     setHealthDraft((currentDraft) => mergeHealthDraft(currentDraft, updates));
   };
 
-  const updateDiaryDraft = (updates: Partial<DiaryDraft>) => {
-    setDiaryDraft((currentDraft) => mergeDiaryDraft(currentDraft, updates));
+  const updateDiaryDraft = (id: string, updates: Partial<DiaryDraft>) => {
+    setDiaryDrafts((currentDrafts) =>
+      currentDrafts.map((draft) =>
+        draft.id === id ? mergeDiaryDraft(draft, updates) : draft,
+      ),
+    );
   };
 
   const updateMoneyDraft = (updates: Partial<MoneyDraft>) => {
@@ -81,7 +89,7 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
   const clearVoiceInput = () => {
     setTranscript('');
     setHealthDraft(createEmptyHealthDraft());
-    setDiaryDraft(createEmptyDiaryDraft());
+    setDiaryDrafts([createEmptyDiaryDraft()]);
     setMoneyDraft(createEmptyMoneyDraft());
   };
 
@@ -89,7 +97,7 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
     () => ({
       transcript,
       healthDraft,
-      diaryDraft,
+      diaryDrafts,
       moneyDraft,
       setVoiceTranscript,
       updateHealthDraft,
@@ -97,7 +105,7 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
       updateMoneyDraft,
       clearVoiceInput,
     }),
-    [transcript, healthDraft, diaryDraft, moneyDraft],
+    [transcript, healthDraft, diaryDrafts, moneyDraft],
   );
 
   return (

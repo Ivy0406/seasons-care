@@ -9,6 +9,7 @@ function isDiaryDraft(value: unknown): value is DiaryDraft {
   const draft = value as Record<string, unknown>;
 
   return (
+    typeof draft.id === 'string' &&
     typeof draft.title === 'string' &&
     typeof draft.dateValue === 'string' &&
     typeof draft.timeValue === 'string' &&
@@ -21,6 +22,10 @@ function isDiaryDraft(value: unknown): value is DiaryDraft {
     typeof draft.transcript === 'string' &&
     typeof draft.summary === 'string'
   );
+}
+
+function isDiaryDraftList(value: unknown): value is DiaryDraft[] {
+  return Array.isArray(value) && value.every((item) => isDiaryDraft(item));
 }
 
 const parseDiaryTranscriptWithServer: ParseDiaryTranscript = async (
@@ -40,7 +45,7 @@ const parseDiaryTranscriptWithServer: ParseDiaryTranscript = async (
 
   const parsedResponse = (await response.json()) as unknown;
 
-  if (!isDiaryDraft(parsedResponse)) {
+  if (!isDiaryDraftList(parsedResponse)) {
     throw new Error('diary-parser-server-invalid-response');
   }
 

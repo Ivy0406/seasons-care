@@ -3,14 +3,19 @@ import { JournalDataSmallForm } from '@/components/common/SmallDataForm';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
 type DiaryDataFormCardProps = {
+  title?: string;
   value: DiaryDraft;
   onChange: (updates: Partial<DiaryDraft>) => void;
 };
 
-function DiaryDataFormCard({ value, onChange }: DiaryDataFormCardProps) {
+function DiaryDataFormCard({
+  title = '新日誌',
+  value,
+  onChange,
+}: DiaryDataFormCardProps) {
   return (
     <DataFormCard
-      title="新日誌"
+      title={title}
       className="bg-primary-default"
       toneClassName="bg-primary-default"
     >

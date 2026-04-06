@@ -3,6 +3,7 @@ import {
   createEmptyDiaryDraft,
   getDiaryDraftSummarySource,
   normalizeDiaryTitleAndNote,
+  splitDiaryTranscriptIntoSegments,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
 import { hasDiaryIntent } from '@/features/voice/services/voiceIntent';
@@ -35,32 +36,33 @@ function extractTitle(transcript: string) {
 const parseDiaryTranscriptWithRule: ParseDiaryTranscript = async (
   transcript,
 ) => {
-  const emptyDraft = createEmptyDiaryDraft();
   const normalizedTranscript = transcript.trim();
 
   if (!hasDiaryIntent(normalizedTranscript)) {
-    return {
-      ...emptyDraft,
-      transcript: normalizedTranscript,
-    };
+    return [];
   }
 
-  const title = extractTitle(normalizedTranscript);
-  const { note } = normalizeDiaryTitleAndNote(title, '', normalizedTranscript);
+  return splitDiaryTranscriptIntoSegments(normalizedTranscript)
+    .filter((segment) => hasDiaryIntent(segment))
+    .map((segment) => {
+      const emptyDraft = createEmptyDiaryDraft();
+      const title = extractTitle(segment);
+      const { note } = normalizeDiaryTitleAndNote(title, '', segment);
+      const baseDraft = {
+        ...getDiaryDraftSummarySource(emptyDraft),
+        transcript: segment,
+        title,
+        repeatPattern: extractRepeatPattern(segment),
+        note,
+        isImportant: /重要|緊急|記得|一定要|務必/.test(segment),
+      };
 
-  const baseDraft: Omit<DiaryDraft, 'summary'> = {
-    ...getDiaryDraftSummarySource(emptyDraft),
-    transcript: normalizedTranscript,
-    title,
-    repeatPattern: extractRepeatPattern(normalizedTranscript),
-    note,
-    isImportant: /重要|緊急|記得|一定要|務必/.test(normalizedTranscript),
-  };
-
-  return {
-    ...baseDraft,
-    summary: buildDiaryDraftSummary(baseDraft),
-  };
+      return {
+        id: emptyDraft.id,
+        ...baseDraft,
+        summary: buildDiaryDraftSummary(baseDraft),
+      };
+    });
 };
 
 export default parseDiaryTranscriptWithRule;

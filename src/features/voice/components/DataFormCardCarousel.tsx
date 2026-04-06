@@ -78,7 +78,7 @@ function DataFormCardCarousel() {
   const {
     transcript,
     healthDraft,
-    diaryDraft,
+    diaryDrafts,
     moneyDraft,
     setVoiceTranscript,
     updateHealthDraft,
@@ -91,14 +91,27 @@ function DataFormCardCarousel() {
   const activeHealthDraft = hasVoiceTranscript
     ? healthDraft
     : fallbackHealthDraft;
-  const activeDiaryDraft = hasVoiceTranscript ? diaryDraft : fallbackDiaryDraft;
+  const activeDiaryDrafts = hasVoiceTranscript
+    ? diaryDrafts
+    : [fallbackDiaryDraft];
   const activeMoneyDraft = hasVoiceTranscript ? moneyDraft : fallbackMoneyDraft;
   const shouldShowHealthForm = hasVoiceTranscript
     ? hasHealthDraftContent(activeHealthDraft)
     : true;
+  const visibleDiaryDrafts = activeDiaryDrafts.filter((draft) =>
+    hasDiaryDraftContent(draft),
+  );
   const shouldShowDiaryForm = hasVoiceTranscript
-    ? hasDiaryDraftContent(activeDiaryDraft) || !shouldShowHealthForm
+    ? visibleDiaryDrafts.length > 0 || !shouldShowHealthForm
     : true;
+  let renderedDiaryDrafts = activeDiaryDrafts;
+
+  if (hasVoiceTranscript) {
+    renderedDiaryDrafts =
+      visibleDiaryDrafts.length > 0
+        ? visibleDiaryDrafts
+        : [activeDiaryDrafts[0] ?? createEmptyDiaryDraft()];
+  }
   const shouldShowMoneyForm = hasVoiceTranscript
     ? hasMoneyDraftContent(activeMoneyDraft)
     : true;
@@ -114,14 +127,16 @@ function DataFormCardCarousel() {
     );
   };
 
-  const handleDiaryDraftChange = (updates: Partial<DiaryDraft>) => {
+  const handleDiaryDraftChange = (id: string, updates: Partial<DiaryDraft>) => {
     if (hasVoiceTranscript) {
-      updateDiaryDraft(updates);
+      updateDiaryDraft(id, updates);
       return;
     }
 
     setFallbackDiaryDraft((currentDraft) =>
-      mergeDiaryDraft(currentDraft, updates),
+      currentDraft.id === id
+        ? mergeDiaryDraft(currentDraft, updates)
+        : currentDraft,
     );
   };
 
@@ -148,17 +163,18 @@ function DataFormCardCarousel() {
           ),
         }
       : null,
-    shouldShowDiaryForm
-      ? {
-          key: 'diary',
+    ...(shouldShowDiaryForm
+      ? renderedDiaryDrafts.map((draft, index) => ({
+          key: `diary-${draft.id}`,
           content: (
             <DiaryDataFormCard
-              value={activeDiaryDraft}
-              onChange={handleDiaryDraftChange}
+              title={`新日誌 ${index + 1}`}
+              value={draft}
+              onChange={(updates) => handleDiaryDraftChange(draft.id, updates)}
             />
           ),
-        }
-      : null,
+        }))
+      : []),
     shouldShowMoneyForm
       ? {
           key: 'money',

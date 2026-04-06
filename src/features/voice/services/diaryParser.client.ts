@@ -7,6 +7,7 @@ import {
   createEmptyDiaryDraft,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  splitDiaryTranscriptIntoSegments,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
 import { hasDiaryIntent } from '@/features/voice/services/voiceIntent';
@@ -52,16 +53,21 @@ const parseDiaryTranscriptWithClient: ParseDiaryTranscript = async (
   transcript,
 ) => {
   if (!hasDiaryIntent(transcript)) {
-    return {
-      ...createEmptyDiaryDraft(),
-      transcript: transcript.trim(),
-    };
+    return [];
   }
 
   try {
-    const extraction = await fetchDiaryExtractionWithProvider(transcript);
+    const segments = splitDiaryTranscriptIntoSegments(transcript).filter(
+      (segment) => hasDiaryIntent(segment),
+    );
 
-    return createDiaryDraftFromAIResult(transcript, extraction);
+    const extractions = await Promise.all(
+      segments.map((segment) => fetchDiaryExtractionWithProvider(segment)),
+    );
+
+    return extractions.map((extraction, index) =>
+      createDiaryDraftFromAIResult(segments[index] ?? transcript, extraction),
+    );
   } catch {
     return parseDiaryTranscriptWithRule(transcript);
   }

@@ -2,6 +2,6 @@
 
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
-type ParseDiaryTranscript = (transcript: string) => Promise<DiaryDraft>;
+type ParseDiaryTranscript = (transcript: string) => Promise<DiaryDraft[]>;
 
 export type { ParseDiaryTranscript };

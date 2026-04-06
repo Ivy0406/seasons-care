@@ -1,5 +1,14 @@
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
+const DIARY_DATE_PATTERN = /(今天|明天|後天)/u;
+const DIARY_DATE_PATTERN_GLOBAL = /(今天|明天|後天)/gu;
+const DIARY_TIME_PATTERN =
+  /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/gu;
+
+function createDiaryDraftId() {
+  return globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`;
+}
+
 function padTimeUnit(value: number) {
   return value.toString().padStart(2, '0');
 }
@@ -76,6 +85,80 @@ function normalizeDiaryTitleAndNote(
   };
 }
 
+function extractDiaryDateContext(text: string) {
+  return text.match(DIARY_DATE_PATTERN)?.[0] ?? '';
+}
+
+function applyDiaryDateContext(segment: string, dateContext: string) {
+  if (dateContext === '' || extractDiaryDateContext(segment) !== '') {
+    return segment;
+  }
+
+  return `${dateContext} ${segment}`.trim();
+}
+
+function splitDiaryTranscriptIntoSegments(transcript: string) {
+  const normalizedTranscript = transcript.replace(/\s+/g, ' ').trim();
+
+  if (normalizedTranscript === '') {
+    return [];
+  }
+
+  const splitPositions = new Set<number>();
+
+  [...normalizedTranscript.matchAll(DIARY_DATE_PATTERN_GLOBAL)]
+    .slice(1)
+    .forEach((match) => {
+      if (match.index !== undefined) {
+        splitPositions.add(match.index);
+      }
+    });
+
+  [...normalizedTranscript.matchAll(DIARY_TIME_PATTERN)]
+    .slice(1)
+    .forEach((match) => {
+      if (match.index !== undefined) {
+        splitPositions.add(match.index);
+      }
+    });
+
+  const sortedSplitPositions = [...splitPositions]
+    .filter((index) => index > 0)
+    .sort((left, right) => left - right);
+
+  if (sortedSplitPositions.length === 0) {
+    return [normalizedTranscript];
+  }
+
+  const segments: string[] = [];
+  let startIndex = 0;
+  let currentDateContext = extractDiaryDateContext(normalizedTranscript);
+
+  sortedSplitPositions.forEach((splitIndex) => {
+    const segment = normalizedTranscript.slice(startIndex, splitIndex).trim();
+
+    if (segment !== '') {
+      const segmentWithDateContext = applyDiaryDateContext(
+        segment,
+        currentDateContext,
+      );
+      segments.push(segmentWithDateContext);
+      currentDateContext =
+        extractDiaryDateContext(segmentWithDateContext) || currentDateContext;
+    }
+
+    startIndex = splitIndex;
+  });
+
+  const lastSegment = normalizedTranscript.slice(startIndex).trim();
+
+  if (lastSegment !== '') {
+    segments.push(applyDiaryDateContext(lastSegment, currentDateContext));
+  }
+
+  return segments;
+}
+
 function getRepeatPatternLabel(repeatPattern: DiaryDraft['repeatPattern']) {
   if (repeatPattern === 'daily') {
     return '每天重複';
@@ -92,9 +175,11 @@ function getRepeatPatternLabel(repeatPattern: DiaryDraft['repeatPattern']) {
   return '';
 }
 
+type DiaryDraftSummarySource = Omit<DiaryDraft, 'id' | 'summary'>;
+
 function getDiaryDraftSummarySource(
   draft: DiaryDraft,
-): Omit<DiaryDraft, 'summary'> {
+): DiaryDraftSummarySource {
   return {
     title: draft.title,
     dateValue: draft.dateValue,
@@ -106,7 +191,7 @@ function getDiaryDraftSummarySource(
   };
 }
 
-function buildDiaryDraftSummary(draft: Omit<DiaryDraft, 'summary'>) {
+function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
   const summaryParts: string[] = [];
 
   if (draft.title.trim() !== '') {
@@ -134,6 +219,7 @@ function buildDiaryDraftSummary(draft: Omit<DiaryDraft, 'summary'>) {
 
 function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
   return {
+    id: createDiaryDraftId(),
     title: '',
     dateValue: formatDateValue(date),
     timeValue: formatTimeValue(date),
@@ -173,6 +259,7 @@ function mergeDiaryDraft(
 
 export {
   buildDiaryDraftSummary,
+  createDiaryDraftId,
   createEmptyDiaryDraft,
   formatDateValue,
   formatTimeValue,
@@ -180,4 +267,5 @@ export {
   hasDiaryDraftContent,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  splitDiaryTranscriptIntoSegments,
 };
