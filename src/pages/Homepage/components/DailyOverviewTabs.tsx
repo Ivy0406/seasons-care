@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router';
+
+import ViewMoreButton from '@/components/common/ViewMoreButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import HealthSummary from '@/features/health/HealthSummary';
 import cn from '@/lib/utils';
@@ -30,7 +33,8 @@ const TABS_LIST: {
     value: 'health',
     label: '今日數據',
     bgClass: 'bg-neutral-800 data-active:bg-neutral-800',
-    textClass: 'text-neutral-50 data-active:text-neutral-50',
+    textClass:
+      'text-neutral-50 hover:text-neutral-50 data-active:text-neutral-50',
   },
 ];
 
@@ -39,6 +43,7 @@ const triggerBaseClass =
 
 function DailyOverviewTabs() {
   const [activeTab, setActiveTab] = useState<Tab>('diary');
+  const navigate = useNavigate();
 
   return (
     <Tabs
@@ -61,20 +66,28 @@ function DailyOverviewTabs() {
 
         <TabsContent
           value="diary"
-          className="bg-primary-default border-x-2 border-neutral-900 px-6 pt-7 pb-17"
+          className="bg-primary-default flex flex-col items-center gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
           <DiarySummary />
+          <ViewMoreButton onClick={() => navigate('/calendar-page')} />
         </TabsContent>
 
         <TabsContent
           value="money"
-          className="bg-secondary-default border-x-2 border-neutral-900 px-6 pt-7 pb-17"
+          className="bg-secondary-default flex flex-col items-stretch gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
           <MoneySummary />
+          <div className="flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/money')} />
+          </div>
         </TabsContent>
 
         <TabsContent value="health" className="bg-neutral-800 pt-7 pb-17">
           <HealthSummary />
+
+          <div className="mt-5 flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/health-report')} />
+          </div>
         </TabsContent>
       </div>
     </Tabs>
