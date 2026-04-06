@@ -3,6 +3,8 @@ import {
   createEmptyDiaryDraft,
   getDiaryDraftSummarySource,
   normalizeDiaryTitleAndNote,
+  resolveDiaryDateValue,
+  resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
@@ -52,6 +54,8 @@ const parseDiaryTranscriptWithRule: ParseDiaryTranscript = async (
         ...getDiaryDraftSummarySource(emptyDraft),
         transcript: segment,
         title,
+        dateValue: resolveDiaryDateValue(segment, emptyDraft.dateValue),
+        timeValue: resolveDiaryTimeValue(segment, emptyDraft.timeValue),
         repeatPattern: extractRepeatPattern(segment),
         note,
         isImportant: /重要|緊急|記得|一定要|務必/.test(segment),

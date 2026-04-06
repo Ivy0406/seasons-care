@@ -28,3 +28,6 @@ dist-ssr
 
 # Local docs
 /docs/
+
+# OMX local state
+.omx/

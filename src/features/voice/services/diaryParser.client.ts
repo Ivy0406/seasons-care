@@ -5,8 +5,11 @@ import {
 import parseDiaryTranscriptWithRule from '@/features/voice/services/diaryParser.rule';
 import {
   createEmptyDiaryDraft,
+  hasRelativeDiaryDate,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  resolveDiaryDateValue,
+  resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,
 } from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
@@ -32,8 +35,12 @@ function createDiaryDraftFromAIResult(
   return mergeDiaryDraft(draft, {
     transcript: transcript.trim(),
     title: normalizedContent.title,
-    dateValue: extraction.dateValue.trim() || draft.dateValue,
-    timeValue: extraction.timeValue.trim() || draft.timeValue,
+    dateValue: hasRelativeDiaryDate(transcript)
+      ? resolveDiaryDateValue(transcript, draft.dateValue)
+      : extraction.dateValue.trim() || draft.dateValue,
+    timeValue:
+      extraction.timeValue.trim() ||
+      resolveDiaryTimeValue(transcript, draft.timeValue),
     repeatPattern: extraction.repeatPattern,
     note: normalizedContent.note,
     isImportant: extraction.isImportant === 'true',

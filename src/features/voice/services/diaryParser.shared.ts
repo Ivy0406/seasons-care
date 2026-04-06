@@ -4,6 +4,21 @@ const DIARY_DATE_PATTERN = /(今天|明天|後天)/u;
 const DIARY_DATE_PATTERN_GLOBAL = /(今天|明天|後天)/gu;
 const DIARY_TIME_PATTERN =
   /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/gu;
+const DIARY_RELATIVE_DATE_PATTERN =
+  /(今天|明天|後天|下(?:週|周|星期|禮拜)(?:[一二三四五六日天])?)/u;
+const DIARY_RELATIVE_WEEKDAY_PATTERN =
+  /下(?:週|周|星期|禮拜)([一二三四五六日天])/u;
+
+const WEEKDAY_OFFSET_MAP = {
+  一: 0,
+  二: 1,
+  三: 2,
+  四: 3,
+  五: 4,
+  六: 5,
+  日: 6,
+  天: 6,
+} as const;
 
 function createDiaryDraftId() {
   return globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`;
@@ -19,6 +34,121 @@ function formatDateValue(date: Date) {
 
 function formatTimeValue(date: Date) {
   return `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
+}
+
+function cloneDate(date: Date) {
+  return new Date(date.getTime());
+}
+
+function addDays(date: Date, days: number) {
+  const nextDate = cloneDate(date);
+  nextDate.setDate(nextDate.getDate() + days);
+  return nextDate;
+}
+
+function hasRelativeDiaryDate(text: string) {
+  return DIARY_RELATIVE_DATE_PATTERN.test(text);
+}
+
+function resolveNextWeekdayDate(
+  referenceDate: Date,
+  weekday: keyof typeof WEEKDAY_OFFSET_MAP,
+) {
+  const nextWeekReference = addDays(referenceDate, 7);
+  const nextWeekDay = nextWeekReference.getDay();
+  const mondayBasedOffset = WEEKDAY_OFFSET_MAP[weekday];
+  const normalizedCurrentOffset = nextWeekDay === 0 ? 6 : nextWeekDay - 1;
+
+  return addDays(
+    nextWeekReference,
+    mondayBasedOffset - normalizedCurrentOffset,
+  );
+}
+
+function resolveDiaryDateFromTranscript(
+  transcript: string,
+  referenceDate = new Date(),
+) {
+  const normalizedTranscript = transcript.replace(/\s+/g, ' ').trim();
+
+  if (normalizedTranscript === '') {
+    return null;
+  }
+
+  const relativeWeekdayMatch = normalizedTranscript.match(
+    DIARY_RELATIVE_WEEKDAY_PATTERN,
+  );
+
+  if (relativeWeekdayMatch?.[1] !== undefined) {
+    return resolveNextWeekdayDate(
+      referenceDate,
+      relativeWeekdayMatch[1] as keyof typeof WEEKDAY_OFFSET_MAP,
+    );
+  }
+
+  if (/後天/u.test(normalizedTranscript)) {
+    return addDays(referenceDate, 2);
+  }
+
+  if (/明天/u.test(normalizedTranscript)) {
+    return addDays(referenceDate, 1);
+  }
+
+  if (/今天/u.test(normalizedTranscript)) {
+    return cloneDate(referenceDate);
+  }
+
+  if (/下(?:週|周|星期|禮拜)/u.test(normalizedTranscript)) {
+    return addDays(referenceDate, 7);
+  }
+
+  return null;
+}
+
+function resolveDiaryDateValue(
+  transcript: string,
+  fallbackDateValue: string,
+  referenceDate = new Date(),
+) {
+  const resolvedDate = resolveDiaryDateFromTranscript(
+    transcript,
+    referenceDate,
+  );
+
+  return resolvedDate === null
+    ? fallbackDateValue
+    : formatDateValue(resolvedDate);
+}
+
+function resolveDiaryTimeValue(transcript: string, fallbackTimeValue: string) {
+  const timeMatch =
+    transcript.match(
+      /(早上|上午|中午|下午|晚上)?\s*(\d{1,2})(?:[:：點時](\d{1,2}))?(?:分)?/u,
+    ) ?? transcript.match(/(\d{1,2})[:：](\d{2})/u);
+
+  if (timeMatch === null) {
+    return fallbackTimeValue;
+  }
+
+  const period = timeMatch[1] ?? '';
+  const rawHour = Number(timeMatch[2]);
+  const rawMinute = Number(timeMatch[3] ?? 0);
+
+  if (Number.isNaN(rawHour) || Number.isNaN(rawMinute)) {
+    return fallbackTimeValue;
+  }
+
+  let hour = rawHour;
+
+  if ((period === '下午' || period === '晚上') && hour < 12) {
+    hour += 12;
+  }
+
+  if (period === '中午' && hour < 11) {
+    hour += 12;
+  }
+
+  return `${padTimeUnit(hour)}:${padTimeUnit(rawMinute)}`;
 }
 
 function stripDiaryLeadIn(text: string) {
@@ -264,8 +394,11 @@ export {
   formatDateValue,
   formatTimeValue,
   getDiaryDraftSummarySource,
+  hasRelativeDiaryDate,
   hasDiaryDraftContent,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  resolveDiaryDateValue,
+  resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,
 };
