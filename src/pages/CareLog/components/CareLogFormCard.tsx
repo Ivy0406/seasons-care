@@ -89,116 +89,114 @@ function CareLogFormCard({
   };
 
   return (
-    <>
-      <DataFormCard
-        title={title}
-        className={cardClassName}
-        toneClassName={toneClassName}
-        contentClassName="overflow-hidden px-0 py-0"
-      >
-        <DataFormCard.Content>
-          <div className="flex flex-col text-neutral-900">
-            <VoiceCTA
-              title="日誌"
-              onClose={onClose}
-              onInputClick={() => {
-                onClose();
-                onVoiceInput?.();
+    <DataFormCard
+      title={title}
+      className={cardClassName}
+      toneClassName={toneClassName}
+      contentClassName="overflow-hidden px-0 py-0"
+    >
+      <DataFormCard.Content>
+        <div className="flex flex-col text-neutral-900">
+          <VoiceCTA
+            title="日誌"
+            onClose={onClose}
+            onInputClick={() => {
+              onClose();
+              onVoiceInput?.();
+            }}
+          />
+
+          <div className="px-4 py-2">
+            <ListFormInputRow
+              label="日誌名稱"
+              inputProps={{
+                id: `${entry.id}-title`,
+                value: titleValue,
+                onChange: (event) => setTitleValue(event.target.value),
               }}
+              className="border-neutral-900"
             />
-
-            <div className="px-4 py-2">
-              <ListFormInputRow
-                label="日誌名稱"
-                inputProps={{
-                  id: `${entry.id}-title`,
-                  value: titleValue,
-                  onChange: (event) => setTitleValue(event.target.value),
-                }}
-                className="border-neutral-900"
-              />
-              <ListFormDateTimeRow
-                label="時間"
-                dateValue={dateValue}
-                timeValue={timeValue}
-                className="border-neutral-900"
-              />
-              <ListFormRepeatRow
-                value={repeatPattern}
-                onChange={setRepeatPattern}
-                className="border-neutral-900"
-              />
-              <ListFormRow
-                label="參與者"
-                htmlFor={`${entry.id}-participants`}
-                className="border-neutral-900"
+            <ListFormDateTimeRow
+              label="時間"
+              dateValue={dateValue}
+              timeValue={timeValue}
+              className="border-neutral-900"
+            />
+            <ListFormRepeatRow
+              value={repeatPattern}
+              onChange={setRepeatPattern}
+              className="border-neutral-900"
+            />
+            <ListFormRow
+              label="參與者"
+              htmlFor={`${entry.id}-participants`}
+              className="border-neutral-900"
+            >
+              <div
+                id={`${entry.id}-participants`}
+                className="flex items-center gap-2 text-neutral-900"
               >
-                <div
-                  id={`${entry.id}-participants`}
-                  className="flex items-center gap-2 text-neutral-900"
-                >
-                  <div className="flex items-center gap-2">
-                    {entry.participants.map((participant) => (
-                      <SingleAvatar
-                        key={participant.id}
-                        src={participant.src}
-                        name={participant.name}
-                        className="size-7 ring-1"
-                      />
-                    ))}
-                  </div>
-                  <ChevronRight className="size-4 shrink-0" strokeWidth={2.4} />
+                <div className="flex items-center gap-2">
+                  {entry.participants.map((participant) => (
+                    <SingleAvatar
+                      key={participant.id}
+                      src={participant.src}
+                      name={participant.name}
+                      className="size-7 ring-1"
+                    />
+                  ))}
                 </div>
-              </ListFormRow>
-              <ListFormImportantRow
-                label="是否標記為重要"
-                checked={isImportant}
-                onCheckedChange={setIsImportant}
-                className="border-neutral-900"
-              />
-              <ListFormNoteRow
-                label="備註"
-                textareaProps={{
-                  id: `${entry.id}-description`,
-                  value: note,
-                  onChange: (event) => setNote(event.target.value),
-                }}
-                onClear={() => setNote('')}
-                className="border-b-0"
-              />
-            </div>
+                <ChevronRight className="size-4 shrink-0" strokeWidth={2.4} />
+              </div>
+            </ListFormRow>
+            <ListFormImportantRow
+              label="是否標記為重要"
+              checked={isImportant}
+              onCheckedChange={setIsImportant}
+              className="border-neutral-900"
+            />
+            <ListFormNoteRow
+              label="備註"
+              textareaProps={{
+                id: `${entry.id}-description`,
+                value: note,
+                onChange: (event) => setNote(event.target.value),
+              }}
+              onClear={() => setNote('')}
+              className="border-b-0"
+            />
           </div>
-        </DataFormCard.Content>
+        </div>
+      </DataFormCard.Content>
 
-        <DataFormCard.Footer>
-          {footerMode === 'submitOnly' ? (
+      <DataFormCard.Footer>
+        {footerMode === 'submitOnly' ? (
+          <RoundedButtonPrimary
+            onClick={handleSubmit}
+            className="font-label-md active:bg-primary-dark w-full border-neutral-900 bg-neutral-900 text-neutral-50 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+            disabled={isSubmitDisabled}
+          >
+            {submitLabel}
+          </RoundedButtonPrimary>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            <RoundedButtonSecondary
+              onClick={onClose}
+              className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
+            >
+              捨棄變更
+            </RoundedButtonSecondary>
             <RoundedButtonPrimary
               onClick={handleSubmit}
-              className="font-label-md active:bg-primary-dark w-full border-neutral-900 bg-neutral-900 text-neutral-50 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+              className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
               disabled={isSubmitDisabled}
             >
               {submitLabel}
             </RoundedButtonPrimary>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <RoundedButtonSecondary
-                onClick={onClose}
-                className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
-              >
-                捨棄變更
-              </RoundedButtonSecondary>
-              <RoundedButtonPrimary
-                onClick={handleSubmit}
-                className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
-                disabled={isSubmitDisabled}
-              >
-                {submitLabel}
-              </RoundedButtonPrimary>
-            </div>
-          )}
-        </DataFormCard.Footer>
-      </DataFormCard>
-    </>
+          </div>
+        )}
+      </DataFormCard.Footer>
+    </DataFormCard>
   );
 }
 
