@@ -9,6 +9,7 @@ import type {
   BloodSugarResponse,
   temperturesPayload,
   temperturesResponse,
+  GetTemperaturesResponse,
   WeightPayload,
   WeightResponse,
 } from '@/types/health';
@@ -85,7 +86,7 @@ const createTemperature = (payload: temperturesPayload) => {
 
 const getTemperatures = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetTemperaturesResponse>(
     `/api/care-groups/${careGroupId}/health-records/temperatures`,
   );
 };

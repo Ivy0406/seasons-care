@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { getBloodOxygens, getBloodPressures } from '@/api/endpoints/health';
-import type { BloodOxygenData, BloodPressureData } from '@/types/health';
+import { getBloodOxygens, getBloodPressures, getTemperatures } from '@/api/endpoints/health';
+import type { BloodOxygenData, BloodPressureData, TemperatureData } from '@/types/health';
 
 type HealthData = {
   bloodPressure: BloodPressureData;
   bloodOxygen: BloodOxygenData;
+  temperature: TemperatureData;
   isLoading: boolean;
 };
 
@@ -15,6 +16,11 @@ function useHealth(): HealthData {
     time: '--',
     systolic: '--',
     diastolic: '--',
+  });
+  const [temperature, setTemperature] = useState<TemperatureData>({
+    date: '--',
+    time: '--',
+    value: '--',
   });
   const [bloodOxygen, setBloodOxygen] = useState<BloodOxygenData>({
     date: '--',
@@ -27,9 +33,10 @@ function useHealth(): HealthData {
     const getAllHealthData = async () => {
       setIsLoading(true);
       try {
-        const [bpRes, boRes] = await Promise.all([
+        const [bpRes, boRes, tempRes] = await Promise.all([
           getBloodPressures(),
           getBloodOxygens(),
+          getTemperatures(),
         ]);
 
         const bpRecords = bpRes.data.data;
@@ -64,6 +71,21 @@ function useHealth(): HealthData {
             spO2: latest.spO2,
           });
         }
+        const tempRecords = tempRes.data.data;
+        if (tempRecords.length > 0) {
+          const latest = tempRecords.reduce((a, b) =>
+            new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
+          );
+          const dateObj = new Date(latest.recordDate);
+          setTemperature({
+            date: dateObj.toLocaleDateString('zh-TW'),
+            time: dateObj.toLocaleTimeString('zh-TW', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            value: latest.value,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -72,7 +94,7 @@ function useHealth(): HealthData {
     getAllHealthData();
   }, []);
 
-  return { bloodPressure, bloodOxygen, isLoading };
+  return { bloodPressure, bloodOxygen, temperature, isLoading };
 }
 
 export default useHealth;

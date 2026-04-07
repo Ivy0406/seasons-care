@@ -32,7 +32,7 @@ const swiperConfig = {
 
 function HealthSummary() {
   const navigate = useNavigate();
-  const { bloodPressure, bloodOxygen } = useHealth();
+  const { bloodPressure, bloodOxygen, temperature } = useHealth();
 
   return (
     <section className="pt-3">
@@ -79,9 +79,9 @@ function HealthSummary() {
           <div className="flex h-full gap-3">
             <DataCardTemperature
               category="體溫"
-              temperature="--"
+              temperature={temperature.value}
               className="flex-1"
-              time="--"
+              time={temperature.time}
             />
             <DataCardWeight
               category="體重"

@@ -120,6 +120,27 @@ type temperturesResponse = {
   };
 };
 
+type TemperatureRecord = {
+  id: string;
+  careGroupId: string;
+  value: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetTemperaturesResponse = {
+  data: TemperatureRecord[];
+};
+
+type TemperatureData = {
+  date: string;
+  time: string;
+  value: number | '--';
+};
+
 type WeightPayload = {
   value: number;
   notes?: string;
@@ -156,6 +177,9 @@ export type {
   BloodSugarResponse,
   temperturesPayload,
   temperturesResponse,
+  TemperatureRecord,
+  GetTemperaturesResponse,
+  TemperatureData,
   WeightPayload,
   WeightResponse,
 };
