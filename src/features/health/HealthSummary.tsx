@@ -30,10 +30,9 @@ const swiperConfig = {
 };
 
 function HealthSummary() {
-  const healthData = useHealth();
-
-  const { time, bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
-    healthData;
+  const navigate = useNavigate();
+  const { bloodPressure, bloodOxygen, temperature, weight, bloodSugar } =
+    useHealth();
 
   return (
     <section className="pt-3">
@@ -42,30 +41,45 @@ function HealthSummary() {
         {...swiperConfig}
         className="h-40 w-full [--swiper-pagination-bottom:8px] [--swiper-theme-color:var(--color-neutral-100)]"
       >
-        <SwiperSlide style={{ width: '166px' }}>
-          <DataCardBloodPressure
-            category="血壓"
-            systolic={bloodPressure.systolic}
-            diastolic={bloodPressure.diastolic}
-            className="h-full w-full"
-            time={time}
+        <SwiperSlide>
+          <DataCardSummary
+            category="AI分析摘要"
+            className="w-full"
+            content="--"
           />
         </SwiperSlide>
-        <SwiperSlide style={{ width: '166px' }}>
-          <DataCardOxygen
-            category="血氧"
-            bloodOxygen={bloodOxygen}
-            className="h-full w-full"
-            time={time}
-          />
+        <SwiperSlide>
+          <div className="flex h-full gap-3">
+            <DataCardBloodPressure
+              category="血壓"
+              systolic={bloodPressure.systolic}
+              diastolic={bloodPressure.diastolic}
+              className="flex-1"
+              time={bloodPressure.time}
+            />
+            <DataCardOxygen
+              category="血氧"
+              bloodOxygen={bloodOxygen.spO2}
+              className="flex-1"
+              time={bloodOxygen.time}
+            />
+          </div>
         </SwiperSlide>
-        <SwiperSlide style={{ width: '166px' }}>
-          <DataCardTemperature
-            category="體溫"
-            temperature={temperature}
-            className="h-full w-full"
-            time={time}
-          />
+        <SwiperSlide>
+          <div className="flex h-full gap-3">
+            <DataCardTemperature
+              category="體溫"
+              temperature={temperature.value}
+              className="flex-1"
+              time={temperature.time}
+            />
+            <DataCardWeight
+              category="體重"
+              weight={weight.value}
+              className="flex-1"
+              time={weight.time}
+            />
+          </div>
         </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
           <DataCardWeight
@@ -82,7 +96,7 @@ function HealthSummary() {
             noon={bloodSugar.noon}
             night={bloodSugar.night}
             className="h-full w-full"
-            time={time}
+            time=""
           />
         </SwiperSlide>
       </Swiper>

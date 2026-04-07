@@ -23,8 +23,11 @@ const useLogin = () => {
         email: data.account,
         password: data.password,
       });
-      const { token, careGroupCount } = res.data.data;
+      const { token, careGroupCount, defaultCareGroupId } = res.data.data;
       Cookies.set('userToken', token, { expires: 100 });
+      if (defaultCareGroupId) {
+        window.localStorage.setItem('currentGroupId', defaultCareGroupId);
+      }
       if (careGroupCount === 0) {
         navigate('/group-entrance');
       } else {

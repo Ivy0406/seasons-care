@@ -1,12 +1,17 @@
 import type {
   BloodOxygensPayload,
   BloodOxygensResponse,
+  GetBloodOxygensResponse,
   BloodPressuresPayload,
   BloodPressuresResponse,
+  GetBloodPressuresResponse,
+  GetBloodSugarsResponse,
   BloodSugarPayload,
   BloodSugarResponse,
   temperturesPayload,
   temperturesResponse,
+  GetTemperaturesResponse,
+  GetWeightsResponse,
   WeightPayload,
   WeightResponse,
 } from '@/types/health';
@@ -23,7 +28,7 @@ const createBloodOxygen = (payload: BloodOxygensPayload) => {
 
 const getBloodOxygens = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetBloodOxygensResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-oxygens`,
   );
 };
@@ -38,7 +43,7 @@ const createBloodPressure = (payload: BloodPressuresPayload) => {
 
 const getBloodPressures = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetBloodPressuresResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-pressures`,
   );
 };
@@ -53,7 +58,7 @@ const createBloodSugar = (payload: BloodSugarPayload) => {
 
 const getBloodSugars = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetBloodSugarsResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-sugars`,
   );
 };
@@ -68,7 +73,7 @@ const createWeight = (payload: WeightPayload) => {
 
 const getWeights = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetWeightsResponse>(
     `/api/care-groups/${careGroupId}/health-records/weights`,
   );
 };
@@ -83,7 +88,7 @@ const createTemperature = (payload: temperturesPayload) => {
 
 const getTemperatures = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetTemperaturesResponse>(
     `/api/care-groups/${careGroupId}/health-records/temperatures`,
   );
 };

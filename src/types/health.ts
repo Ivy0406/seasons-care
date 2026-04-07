@@ -19,6 +19,27 @@ type BloodOxygensResponse = {
   };
 };
 
+type BloodOxygenRecord = {
+  id: string;
+  careGroupId: string;
+  spO2: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetBloodOxygensResponse = {
+  data: BloodOxygenRecord[];
+};
+
+type BloodOxygenData = {
+  date: string;
+  time: string;
+  spO2: number | '--';
+};
+
 type BloodPressuresPayload = {
   systolic: number;
   diastolic: number;
@@ -26,20 +47,55 @@ type BloodPressuresPayload = {
   recordDate: string;
 };
 
+type BloodPressureRecord = {
+  id: string;
+  careGroupId: string;
+  systolic: number;
+  diastolic: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
 type BloodPressuresResponse = {
   success: boolean;
   message: string;
-  data: {
-    id: string;
-    careGroupId: string;
-    systolic: number;
-    diastolic: number;
-    notes?: string;
-    recordDate: string;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: string;
-  };
+  data: BloodPressureRecord;
+};
+
+type GetBloodPressuresResponse = {
+  data: BloodPressureRecord[];
+};
+
+type BloodPressureData = {
+  date: string;
+  time: string;
+  systolic: number | '--';
+  diastolic: number | '--';
+};
+
+type BloodSugarRecord = {
+  id: string;
+  careGroupId: string;
+  glucoseLevel: number;
+  measurementContext: string;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetBloodSugarsResponse = {
+  data: BloodSugarRecord[];
+};
+
+type BloodSugarData = {
+  morning: number | '--';
+  noon: number | '--';
+  night: number | '--';
 };
 
 type BloodSugarPayload = {
@@ -86,6 +142,48 @@ type temperturesResponse = {
   };
 };
 
+type TemperatureRecord = {
+  id: string;
+  careGroupId: string;
+  value: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetTemperaturesResponse = {
+  data: TemperatureRecord[];
+};
+
+type TemperatureData = {
+  date: string;
+  time: string;
+  value: number | '--';
+};
+
+type WeightRecord = {
+  id: string;
+  careGroupId: string;
+  value: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetWeightsResponse = {
+  data: WeightRecord[];
+};
+
+type WeightData = {
+  date: string;
+  time: string;
+  value: number | '--';
+};
+
 type WeightPayload = {
   value: number;
   notes?: string;
@@ -110,12 +208,27 @@ type WeightResponse = {
 export type {
   BloodOxygensPayload,
   BloodOxygensResponse,
+  BloodOxygenRecord,
+  GetBloodOxygensResponse,
+  BloodOxygenData,
   BloodPressuresPayload,
+  BloodPressureRecord,
   BloodPressuresResponse,
+  GetBloodPressuresResponse,
+  BloodPressureData,
+  BloodSugarRecord,
+  GetBloodSugarsResponse,
+  BloodSugarData,
   BloodSugarPayload,
   BloodSugarResponse,
   temperturesPayload,
   temperturesResponse,
+  TemperatureRecord,
+  GetTemperaturesResponse,
+  TemperatureData,
+  WeightRecord,
+  GetWeightsResponse,
+  WeightData,
   WeightPayload,
   WeightResponse,
 };
