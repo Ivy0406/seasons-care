@@ -26,20 +26,33 @@ type BloodPressuresPayload = {
   recordDate: string;
 };
 
+type BloodPressureRecord = {
+  id: string;
+  careGroupId: string;
+  systolic: number;
+  diastolic: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
 type BloodPressuresResponse = {
   success: boolean;
   message: string;
-  data: {
-    id: string;
-    careGroupId: string;
-    systolic: number;
-    diastolic: number;
-    notes?: string;
-    recordDate: string;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: string;
-  };
+  data: BloodPressureRecord;
+};
+
+type GetBloodPressuresResponse = {
+  data: BloodPressureRecord[];
+};
+
+type BloodPressureData = {
+  date: string;
+  time: string;
+  systolic: number | '--';
+  diastolic: number | '--';
 };
 
 type BloodSugarPayload = {
@@ -111,7 +124,10 @@ export type {
   BloodOxygensPayload,
   BloodOxygensResponse,
   BloodPressuresPayload,
+  BloodPressureRecord,
   BloodPressuresResponse,
+  GetBloodPressuresResponse,
+  BloodPressureData,
   BloodSugarPayload,
   BloodSugarResponse,
   temperturesPayload,
