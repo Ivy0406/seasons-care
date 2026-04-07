@@ -1,14 +1,35 @@
 import { useEffect, useState } from 'react';
 
-import { getBloodOxygens, getBloodPressures, getTemperatures } from '@/api/endpoints/health';
-import type { BloodOxygenData, BloodPressureData, TemperatureData } from '@/types/health';
+import {
+  getBloodOxygens,
+  getBloodPressures,
+  getBloodSugars,
+  getTemperatures,
+  getWeights,
+} from '@/api/endpoints/health';
+import type {
+  BloodOxygenData,
+  BloodPressureData,
+  BloodSugarData,
+  TemperatureData,
+  WeightData,
+} from '@/types/health';
 
 type HealthData = {
   bloodPressure: BloodPressureData;
   bloodOxygen: BloodOxygenData;
   temperature: TemperatureData;
+  weight: WeightData;
+  bloodSugar: BloodSugarData;
   isLoading: boolean;
 };
+
+function getTimeSlot(recordDate: string): 'morning' | 'noon' | 'night' {
+  const hour = new Date(recordDate).getHours();
+  if (hour < 12) return 'morning';
+  if (hour < 18) return 'noon';
+  return 'night';
+}
 
 function useHealth(): HealthData {
   const [bloodPressure, setBloodPressure] = useState<BloodPressureData>({
@@ -16,6 +37,16 @@ function useHealth(): HealthData {
     time: '--',
     systolic: '--',
     diastolic: '--',
+  });
+  const [bloodSugar, setBloodSugar] = useState<BloodSugarData>({
+    morning: '--',
+    noon: '--',
+    night: '--',
+  });
+  const [weight, setWeight] = useState<WeightData>({
+    date: '--',
+    time: '--',
+    value: '--',
   });
   const [temperature, setTemperature] = useState<TemperatureData>({
     date: '--',
@@ -33,15 +64,27 @@ function useHealth(): HealthData {
     const getAllHealthData = async () => {
       setIsLoading(true);
       try {
-        const [bpRes, boRes, tempRes] = await Promise.all([
+        const [
+          bloodPressureRes,
+          bloodOxygenRes,
+          temperatureRes,
+          weightRes,
+          bloodSugarRes,
+        ] = await Promise.all([
           getBloodPressures(),
           getBloodOxygens(),
           getTemperatures(),
+          getWeights(),
+          getBloodSugars(),
         ]);
 
-        const bpRecords = bpRes.data.data;
-        if (bpRecords.length > 0) {
-          const latest = bpRecords.reduce((a, b) =>
+        const today = new Date().toDateString();
+
+        const todayBpRecords = bloodPressureRes.data.data.filter(
+          (r) => new Date(r.recordDate).toDateString() === today,
+        );
+        if (todayBpRecords.length > 0) {
+          const latest = todayBpRecords.reduce((a, b) =>
             new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
           );
           const dateObj = new Date(latest.recordDate);
@@ -56,9 +99,11 @@ function useHealth(): HealthData {
           });
         }
 
-        const boRecords = boRes.data.data;
-        if (boRecords.length > 0) {
-          const latest = boRecords.reduce((a, b) =>
+        const todayBoRecords = bloodOxygenRes.data.data.filter(
+          (r) => new Date(r.recordDate).toDateString() === today,
+        );
+        if (todayBoRecords.length > 0) {
+          const latest = todayBoRecords.reduce((a, b) =>
             new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
           );
           const dateObj = new Date(latest.recordDate);
@@ -71,9 +116,12 @@ function useHealth(): HealthData {
             spO2: latest.spO2,
           });
         }
-        const tempRecords = tempRes.data.data;
-        if (tempRecords.length > 0) {
-          const latest = tempRecords.reduce((a, b) =>
+
+        const todayTempRecords = temperatureRes.data.data.filter(
+          (r) => new Date(r.recordDate).toDateString() === today,
+        );
+        if (todayTempRecords.length > 0) {
+          const latest = todayTempRecords.reduce((a, b) =>
             new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
           );
           const dateObj = new Date(latest.recordDate);
@@ -86,6 +134,49 @@ function useHealth(): HealthData {
             value: latest.value,
           });
         }
+
+        const todayWeightRecords = weightRes.data.data.filter(
+          (r) => new Date(r.recordDate).toDateString() === today,
+        );
+        if (todayWeightRecords.length > 0) {
+          const latest = todayWeightRecords.reduce((a, b) =>
+            new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
+          );
+          const dateObj = new Date(latest.recordDate);
+          setWeight({
+            date: dateObj.toLocaleDateString('zh-TW'),
+            time: dateObj.toLocaleTimeString('zh-TW', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            value: latest.value,
+          });
+        }
+
+        const todayBloodSugarRecords = bloodSugarRes.data.data.filter(
+          (r) => new Date(r.recordDate).toDateString() === today,
+        );
+        const latestPerSlot: Record<
+          string,
+          { glucoseLevel: number; recordDate: string }
+        > = {};
+        todayBloodSugarRecords.forEach((r) => {
+          const slot = getTimeSlot(r.recordDate);
+          if (
+            !latestPerSlot[slot] ||
+            new Date(r.recordDate) > new Date(latestPerSlot[slot].recordDate)
+          ) {
+            latestPerSlot[slot] = {
+              glucoseLevel: r.glucoseLevel,
+              recordDate: r.recordDate,
+            };
+          }
+        });
+        setBloodSugar({
+          morning: latestPerSlot.morning?.glucoseLevel ?? '--',
+          noon: latestPerSlot.noon?.glucoseLevel ?? '--',
+          night: latestPerSlot.night?.glucoseLevel ?? '--',
+        });
       } finally {
         setIsLoading(false);
       }
@@ -94,7 +185,14 @@ function useHealth(): HealthData {
     getAllHealthData();
   }, []);
 
-  return { bloodPressure, bloodOxygen, temperature, isLoading };
+  return {
+    bloodPressure,
+    bloodOxygen,
+    temperature,
+    weight,
+    bloodSugar,
+    isLoading,
+  };
 }
 
 export default useHealth;

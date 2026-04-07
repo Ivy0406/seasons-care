@@ -32,7 +32,7 @@ const swiperConfig = {
 
 function HealthSummary() {
   const navigate = useNavigate();
-  const { bloodPressure, bloodOxygen, temperature } = useHealth();
+  const { bloodPressure, bloodOxygen, temperature, weight, bloodSugar } = useHealth();
 
   return (
     <section className="pt-3">
@@ -85,20 +85,20 @@ function HealthSummary() {
             />
             <DataCardWeight
               category="體重"
-              weight="--"
+              weight={weight.value}
               className="flex-1"
-              time="--"
+              time={weight.time}
             />
           </div>
         </SwiperSlide>
         <SwiperSlide>
           <DataCardBloodSugar
             category="血糖"
-            morning="--"
-            noon="--"
-            night="--"
+            morning={bloodSugar.morning}
+            noon={bloodSugar.noon}
+            night={bloodSugar.night}
             className="h-full w-full"
-            time="--"
+            time=""
           />
         </SwiperSlide>
       </Swiper>

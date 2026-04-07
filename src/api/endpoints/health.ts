@@ -5,11 +5,13 @@ import type {
   BloodPressuresPayload,
   BloodPressuresResponse,
   GetBloodPressuresResponse,
+  GetBloodSugarsResponse,
   BloodSugarPayload,
   BloodSugarResponse,
   temperturesPayload,
   temperturesResponse,
   GetTemperaturesResponse,
+  GetWeightsResponse,
   WeightPayload,
   WeightResponse,
 } from '@/types/health';
@@ -56,7 +58,7 @@ const createBloodSugar = (payload: BloodSugarPayload) => {
 
 const getBloodSugars = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetBloodSugarsResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-sugars`,
   );
 };
@@ -71,7 +73,7 @@ const createWeight = (payload: WeightPayload) => {
 
 const getWeights = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetWeightsResponse>(
     `/api/care-groups/${careGroupId}/health-records/weights`,
   );
 };

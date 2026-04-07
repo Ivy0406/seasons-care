@@ -76,6 +76,28 @@ type BloodPressureData = {
   diastolic: number | '--';
 };
 
+type BloodSugarRecord = {
+  id: string;
+  careGroupId: string;
+  glucoseLevel: number;
+  measurementContext: string;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetBloodSugarsResponse = {
+  data: BloodSugarRecord[];
+};
+
+type BloodSugarData = {
+  morning: number | '--';
+  noon: number | '--';
+  night: number | '--';
+};
+
 type BloodSugarPayload = {
   glucoseLevel: number;
   measurementContext: string;
@@ -141,6 +163,27 @@ type TemperatureData = {
   value: number | '--';
 };
 
+type WeightRecord = {
+  id: string;
+  careGroupId: string;
+  value: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetWeightsResponse = {
+  data: WeightRecord[];
+};
+
+type WeightData = {
+  date: string;
+  time: string;
+  value: number | '--';
+};
+
 type WeightPayload = {
   value: number;
   notes?: string;
@@ -173,6 +216,9 @@ export type {
   BloodPressuresResponse,
   GetBloodPressuresResponse,
   BloodPressureData,
+  BloodSugarRecord,
+  GetBloodSugarsResponse,
+  BloodSugarData,
   BloodSugarPayload,
   BloodSugarResponse,
   temperturesPayload,
@@ -180,6 +226,9 @@ export type {
   TemperatureRecord,
   GetTemperaturesResponse,
   TemperatureData,
+  WeightRecord,
+  GetWeightsResponse,
+  WeightData,
   WeightPayload,
   WeightResponse,
 };
