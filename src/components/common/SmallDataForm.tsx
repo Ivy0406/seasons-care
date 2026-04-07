@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
   ListFormDateTimeRow,
   ListFormImportantRow,
@@ -10,7 +8,10 @@ import {
   ListFormSelectRow,
   type RepeatPatternValue,
 } from '@/components/common/ListFormRows';
+import type { HealthDraft } from '@/features/health/types';
+import type { MoneyCategoryValue, MoneyDraft } from '@/features/money/types';
 import cn from '@/lib/utils';
+import type { DiaryDraft } from '@/pages/CareLog/types';
 
 import type { UseFormRegister } from 'react-hook-form';
 
@@ -32,54 +33,94 @@ function BaseFormCard({ children, className }: BaseFormCardProps) {
   );
 }
 
-function HealthDataSmallForm({ className }: { className?: string }) {
+type HealthDataSmallFormProps = {
+  className?: string;
+  value: HealthDraft;
+  onChange: (updates: Partial<HealthDraft>) => void;
+};
+
+function HealthDataSmallForm({
+  className,
+  value,
+  onChange,
+}: HealthDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (收縮壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          value: value.systolic,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ systolic: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血壓 (舒張壓)"
         unit="mmHg"
-        inputProps={{ defaultValue: '92' }}
+        inputProps={{
+          value: value.diastolic,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ diastolic: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體溫"
         unit="°C"
-        inputProps={{ defaultValue: '34.5' }}
+        inputProps={{
+          value: value.temperature,
+          inputMode: 'decimal',
+          onChange: (event) => onChange({ temperature: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血氧"
         unit="%"
-        inputProps={{ defaultValue: '98' }}
+        inputProps={{
+          value: value.bloodOxygen,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ bloodOxygen: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="體重"
         unit="kg"
-        inputProps={{ defaultValue: '70' }}
+        inputProps={{
+          value: value.weight,
+          inputMode: 'decimal',
+          onChange: (event) => onChange({ weight: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="血糖"
         unit="mg/dL"
-        inputProps={{ defaultValue: '155' }}
+        inputProps={{
+          value: value.bloodSugar,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ bloodSugar: event.target.value }),
+        }}
         className="border-b-0"
       />
     </BaseFormCard>
   );
 }
+
+type JournalDataSmallFormProps = {
+  className?: string;
+  value: DiaryDraft;
+  onChange: (updates: Partial<DiaryDraft>) => void;
+};
 
 type HealthDataFormField =
   | 'systolic'
@@ -189,76 +230,91 @@ function HealthDataForm({
   );
 }
 
-function JournalDataSmallForm({ className }: { className?: string }) {
-  const [repeatPattern, setRepeatPattern] =
-    useState<RepeatPatternValue>('none');
-  const [isImportant, setIsImportant] = useState(true);
-  const [note, setNote] = useState('');
-
+function JournalDataSmallForm({
+  className,
+  value,
+  onChange,
+}: JournalDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="日誌名稱"
-        inputProps={{ defaultValue: '' }}
+        inputProps={{
+          value: value.title,
+          onChange: (event) => onChange({ title: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormRepeatRow
-        value={repeatPattern}
-        onChange={setRepeatPattern}
+        value={value.repeatPattern as RepeatPatternValue}
+        onChange={(repeatPattern) => onChange({ repeatPattern })}
         className="border-neutral-900"
       />
       <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
       <ListFormImportantRow
         label="是否標記為重要"
-        checked={isImportant}
-        onCheckedChange={setIsImportant}
+        checked={value.isImportant}
+        onCheckedChange={(isImportant) => onChange({ isImportant })}
         className="border-neutral-900"
       />
       <ListFormNoteRow
         label="備註"
         textareaProps={{
-          value: note,
-          onChange: (e) => setNote(e.target.value),
+          value: value.note,
+          onChange: (event) => onChange({ note: event.target.value }),
         }}
-        onClear={() => setNote('')}
+        onClear={() => onChange({ note: '' })}
         className="border-b-0"
       />
     </BaseFormCard>
   );
 }
 
-function MoneyDataSmallForm({ className }: { className?: string }) {
-  const [category, setCategory] = useState('none');
-  const [needsSplit, setNeedsSplit] = useState(false);
-  const [note, setNote] = useState('');
+type MoneyDataSmallFormProps = {
+  className?: string;
+  value: MoneyDraft;
+  onChange: (updates: Partial<MoneyDraft>) => void;
+};
 
+function MoneyDataSmallForm({
+  className,
+  value,
+  onChange,
+}: MoneyDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="帳目名稱"
-        inputProps={{ placeholder: '' }}
+        inputProps={{
+          value: value.title,
+          onChange: (event) => onChange({ title: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="金額"
-        inputProps={{ placeholder: '', type: 'number' }}
+        inputProps={{
+          value: value.amount,
+          inputMode: 'numeric',
+          onChange: (event) => onChange({ amount: event.target.value }),
+        }}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
         label="時間"
-        dateValue="2026/01/12"
-        timeValue="10:00"
+        dateValue={value.dateValue}
+        timeValue={value.timeValue}
         className="border-neutral-900"
       />
       <ListFormSelectRow
         label="類別"
-        value={category}
+        value={value.category}
         options={[
           { value: 'none', label: '無' },
           { value: 'medical', label: '醫療支出' },
@@ -266,23 +322,25 @@ function MoneyDataSmallForm({ className }: { className?: string }) {
           { value: 'traffic', label: '交通費用' },
           { value: 'other', label: '生活支出' },
         ]}
-        onChange={setCategory}
+        onChange={(category) =>
+          onChange({ category: category as MoneyCategoryValue })
+        }
         className="border-neutral-900"
       />
       <ListFormImportantRow
         label="是否需分帳"
-        checked={needsSplit}
-        onCheckedChange={setNeedsSplit}
+        checked={value.needsSplit}
+        onCheckedChange={(needsSplit) => onChange({ needsSplit })}
         className="border-neutral-900"
       />
       <ListFormNoteRow
         label="備註"
         textareaProps={{
-          value: note,
-          onChange: (e) => setNote(e.target.value),
+          value: value.note,
+          onChange: (event) => onChange({ note: event.target.value }),
           placeholder: '',
         }}
-        onClear={() => setNote('')}
+        onClear={() => onChange({ note: '' })}
         className="border-b-0"
       />
     </BaseFormCard>
