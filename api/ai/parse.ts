@@ -8,7 +8,7 @@ import {
   isDiaryExtractionResult,
   isHealthExtractionResult,
   isMoneyExtractionResult,
-} from '../../src/types/ai';
+} from '../_lib/ai-schema';
 
 type AIProvider = 'gemini' | 'openai';
 type ParseKind = 'health' | 'diary' | 'money';
