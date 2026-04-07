@@ -24,4 +24,13 @@ type CreateGroupResponse = {
   traceId: string;
 };
 
-export type { CreateGroupPayload, CareGroupInfo, CreateGroupResponse };
+type GetGroupsResponse = {
+  data: CareGroupInfo[];
+};
+
+export type {
+  CreateGroupPayload,
+  CareGroupInfo,
+  CreateGroupResponse,
+  GetGroupsResponse,
+};
