@@ -30,7 +30,6 @@ const swiperConfig = {
 };
 
 function HealthSummary() {
-  const navigate = useNavigate();
   const { bloodPressure, bloodOxygen, temperature, weight, bloodSugar } =
     useHealth();
 
@@ -41,13 +40,6 @@ function HealthSummary() {
         {...swiperConfig}
         className="h-40 w-full [--swiper-pagination-bottom:8px] [--swiper-theme-color:var(--color-neutral-100)]"
       >
-        <SwiperSlide>
-          <DataCardSummary
-            category="AI分析摘要"
-            className="w-full"
-            content="--"
-          />
-        </SwiperSlide>
         <SwiperSlide>
           <div className="flex h-full gap-3">
             <DataCardBloodPressure
@@ -80,14 +72,6 @@ function HealthSummary() {
               time={weight.time}
             />
           </div>
-        </SwiperSlide>
-        <SwiperSlide style={{ width: '166px' }}>
-          <DataCardWeight
-            category="體重"
-            weight={weight}
-            className="h-full w-full"
-            time={time}
-          />
         </SwiperSlide>
         <SwiperSlide style={{ width: '250px' }}>
           <DataCardBloodSugar
