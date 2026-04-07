@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
@@ -41,7 +40,6 @@ function CareLogCreatePage() {
   const [draftEntry] = useState<CareLogEntry>(createDraftCareLogEntry);
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const [createdEntry, setCreatedEntry] = useState<CareLogEntry | null>(null);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const handleClose = () => {
     navigate('/calendar-page');
@@ -80,15 +78,8 @@ function CareLogCreatePage() {
           submitLabel="新增日誌"
           onClose={handleClose}
           onSubmit={handleCreate}
-          onVoiceInput={() => setShowRecordingDrawer(true)}
         />
       </section>
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
-      />
 
       {modalKey ? (
         <CareLogModal

@@ -11,7 +11,6 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
@@ -54,7 +53,6 @@ function CalendarPage() {
   const [visibleMonth, setVisibleMonth] = useState<Date>(defaultSelectedDate);
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const markedDates = entries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
@@ -153,7 +151,6 @@ function CalendarPage() {
                 toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
                 footerMode="submitOnly"
                 onClose={() => setCreatingEntry(null)}
-                onVoiceInput={() => setShowRecordingDrawer(true)}
                 onSubmit={(entry) => {
                   try {
                     const createdDate = parseISO(entry.startsAt);
@@ -174,12 +171,6 @@ function CalendarPage() {
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
-      />
 
       {modalKey ? (
         <CareLogModal
