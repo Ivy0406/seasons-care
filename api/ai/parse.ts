@@ -348,6 +348,7 @@ type OpenAIResponsesOutput = {
 };
 
 export const runtime = 'nodejs';
+const UPSTREAM_TIMEOUT_MS = 15000;
 
 function json(body: object, init?: ResponseInit) {
   return Response.json(body, {
@@ -408,38 +409,69 @@ async function requestGeminiStructuredOutput(
   schema: object,
 ) {
   const apiKey = process.env.GEMINI_API_KEY;
+  const model = getGeminiModel();
 
   if (!apiKey) {
     throw new Error('gemini-parser-missing-key');
   }
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${getGeminiModel()}:generateContent`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `${prompt}\n\n使用者語音轉文字：\n${transcript}`,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          responseJsonSchema: schema,
+  console.error('ai-parse:gemini-request:start', {
+    model,
+    transcriptLength: transcript.length,
+    timeoutMs: UPSTREAM_TIMEOUT_MS,
+  });
+
+  let response: Response;
+
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
         },
-      }),
-    },
-  );
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `${prompt}\n\n使用者語音轉文字：\n${transcript}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseJsonSchema: schema,
+          },
+        }),
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      },
+    );
+  } catch (error) {
+    console.error('ai-parse:gemini-request:error', {
+      model,
+      message: error instanceof Error ? error.message : 'unknown-error',
+      name: error instanceof Error ? error.name : 'unknown-error',
+    });
+    throw new Error('gemini-parser-upstream-timeout-or-network-error');
+  }
+
+  console.error('ai-parse:gemini-request:done', {
+    model,
+    status: response.status,
+    ok: response.ok,
+  });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('ai-parse:gemini-request:bad-response', {
+      model,
+      status: response.status,
+      bodyPreview: errorText.slice(0, 400),
+    });
     throw new Error('gemini-parser-request-failed');
   }
 
@@ -453,51 +485,86 @@ async function requestOpenAIStructuredOutput(
   schemaName: string,
 ) {
   const apiKey = process.env.OPENAI_API_KEY;
+  const model = getOpenAIModel();
 
   if (!apiKey) {
     throw new Error('openai-parser-missing-key');
   }
 
-  const response = await fetch('https://api.openai.com/v1/responses', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: getOpenAIModel(),
-      input: [
-        {
-          role: 'system',
-          content: [
-            {
-              type: 'input_text',
-              text: prompt,
-            },
-          ],
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'input_text',
-              text: transcript,
-            },
-          ],
-        },
-      ],
-      text: {
-        format: {
-          type: 'json_schema',
-          name: schemaName,
-          strict: true,
-          schema,
-        },
+  console.error('ai-parse:openai-request:start', {
+    model,
+    schemaName,
+    transcriptLength: transcript.length,
+    timeoutMs: UPSTREAM_TIMEOUT_MS,
+  });
+
+  let response: Response;
+
+  try {
+    response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
       },
-    }),
+      body: JSON.stringify({
+        model,
+        input: [
+          {
+            role: 'system',
+            content: [
+              {
+                type: 'input_text',
+                text: prompt,
+              },
+            ],
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'input_text',
+                text: transcript,
+              },
+            ],
+          },
+        ],
+        text: {
+          format: {
+            type: 'json_schema',
+            name: schemaName,
+            strict: true,
+            schema,
+          },
+        },
+      }),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
+  } catch (error) {
+    console.error('ai-parse:openai-request:error', {
+      model,
+      schemaName,
+      message: error instanceof Error ? error.message : 'unknown-error',
+      name: error instanceof Error ? error.name : 'unknown-error',
+    });
+    throw new Error('openai-parser-upstream-timeout-or-network-error');
+  }
+
+  console.error('ai-parse:openai-request:done', {
+    model,
+    schemaName,
+    status: response.status,
+    ok: response.ok,
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('ai-parse:openai-request:bad-response', {
+      model,
+      schemaName,
+      status: response.status,
+      bodyPreview: errorText.slice(0, 400),
+    });
     throw new Error('openai-parser-request-failed');
   }
 
@@ -595,16 +662,40 @@ export default async function handler(request: Request) {
     return json({ error: 'invalid-transcript' }, { status: 400 });
   }
 
+  console.error('ai-parse:start', {
+    kind,
+    provider: getAIProvider(),
+    transcriptLength: transcript.length,
+  });
+
   try {
     if (kind === 'health') {
-      return json(await parseHealthTranscript(transcript), { status: 200 });
+      const result = await parseHealthTranscript(transcript);
+
+      console.error('ai-parse:success', {
+        kind,
+        provider: getAIProvider(),
+      });
+      return json(result, { status: 200 });
     }
 
     if (kind === 'diary') {
-      return json(await parseDiaryTranscript(transcript), { status: 200 });
+      const result = await parseDiaryTranscript(transcript);
+
+      console.error('ai-parse:success', {
+        kind,
+        provider: getAIProvider(),
+      });
+      return json(result, { status: 200 });
     }
 
-    return json(await parseMoneyTranscript(transcript), { status: 200 });
+    const result = await parseMoneyTranscript(transcript);
+
+    console.error('ai-parse:success', {
+      kind,
+      provider: getAIProvider(),
+    });
+    return json(result, { status: 200 });
   } catch (error) {
     console.error('ai-parse-failed', {
       kind,
