@@ -1,14 +1,16 @@
+type Measurement = number | '--';
+
 type HealthData = {
-  time: string | '';
+  time: string;
   summary: { content: string };
-  bloodPressure: { systolic: number | '--'; diastolic: number | '--' };
-  temperature: number | '--';
-  bloodOxygen: number | '--';
-  weight: number | '--';
+  bloodPressure: { systolic: Measurement; diastolic: Measurement };
+  temperature: Measurement;
+  bloodOxygen: Measurement;
+  weight: Measurement;
   bloodSugar: {
-    morning: number | '--';
-    noon: number | '--';
-    night: number | '--';
+    morning: Measurement;
+    noon: Measurement;
+    night: Measurement;
   };
 };
 
