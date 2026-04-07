@@ -38,32 +38,23 @@ type OpenAIResponsesOutput = {
   }>;
 };
 
-type VercelLikeRequest = {
-  method?: string;
-  body?: unknown;
-};
+export const runtime = 'nodejs';
 
-type VercelLikeResponse = {
-  setHeader: (name: string, value: string) => void;
-  status: (code: number) => VercelLikeResponse;
-  json: (body: unknown) => void;
-  end: (body?: string) => void;
-};
+function json(body: object, init?: ResponseInit) {
+  return Response.json(body, {
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+    ...init,
+  });
+}
 
-function parseRequestBody(body: unknown): AIParseRequestBody | null {
-  if (typeof body === 'string') {
-    try {
-      return JSON.parse(body) as AIParseRequestBody;
-    } catch {
-      return null;
-    }
+async function parseRequestBody(request: Request): Promise<AIParseRequestBody | null> {
+  try {
+    return (await request.json()) as AIParseRequestBody;
+  } catch {
+    return null;
   }
-
-  if (typeof body === 'object' && body !== null) {
-    return body as AIParseRequestBody;
-  }
-
-  return null;
 }
 
 function getAIProvider(): AIProvider {
@@ -270,45 +261,47 @@ async function parseMoneyTranscript(transcript: string) {
   return parsedResponse;
 }
 
-export default async function handler(
-  req: VercelLikeRequest,
-  res: VercelLikeResponse,
-) {
-  res.setHeader('Cache-Control', 'no-store');
-
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
-    return;
+export default async function handler(request: Request) {
+  if (request.method !== 'POST') {
+    return json(
+      { error: 'method-not-allowed' },
+      {
+        status: 405,
+        headers: {
+          Allow: 'POST',
+        },
+      },
+    );
   }
 
-  const body = parseRequestBody(req.body);
+  const body = await parseRequestBody(request);
   const transcript = body?.transcript?.trim() ?? '';
   const kind = body?.kind;
 
   if (kind !== 'health' && kind !== 'diary' && kind !== 'money') {
-    res.status(400).json({ error: 'invalid-kind' });
-    return;
+    return json({ error: 'invalid-kind' }, { status: 400 });
   }
 
   if (transcript === '' || transcript.length > 10000) {
-    res.status(400).json({ error: 'invalid-transcript' });
-    return;
+    return json({ error: 'invalid-transcript' }, { status: 400 });
   }
 
   try {
     if (kind === 'health') {
-      res.status(200).json(await parseHealthTranscript(transcript));
-      return;
+      return json(await parseHealthTranscript(transcript), { status: 200 });
     }
 
     if (kind === 'diary') {
-      res.status(200).json(await parseDiaryTranscript(transcript));
-      return;
+      return json(await parseDiaryTranscript(transcript), { status: 200 });
     }
 
-    res.status(200).json(await parseMoneyTranscript(transcript));
-  } catch {
-    res.status(500).json({ error: 'ai-parse-failed' });
+    return json(await parseMoneyTranscript(transcript), { status: 200 });
+  } catch (error) {
+    console.error('ai-parse-failed', {
+      kind,
+      provider: getAIProvider(),
+      message: error instanceof Error ? error.message : 'unknown-error',
+    });
+    return json({ error: 'ai-parse-failed' }, { status: 500 });
   }
 }
