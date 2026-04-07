@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { getBloodPressures } from '@/api/endpoints/health';
-import type { BloodPressureData } from '@/types/health';
+import { getBloodOxygens, getBloodPressures } from '@/api/endpoints/health';
+import type { BloodOxygenData, BloodPressureData } from '@/types/health';
 
 type HealthData = {
   bloodPressure: BloodPressureData;
+  bloodOxygen: BloodOxygenData;
   isLoading: boolean;
 };
 
@@ -15,17 +16,25 @@ function useHealth(): HealthData {
     systolic: '--',
     diastolic: '--',
   });
+  const [bloodOxygen, setBloodOxygen] = useState<BloodOxygenData>({
+    date: '--',
+    time: '--',
+    spO2: '--',
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getAllHealthData = async () => {
       setIsLoading(true);
       try {
-        const res = await getBloodPressures();
-        const records = res.data.data;
+        const [bpRes, boRes] = await Promise.all([
+          getBloodPressures(),
+          getBloodOxygens(),
+        ]);
 
-        if (records.length > 0) {
-          const latest = records.reduce((a, b) =>
+        const bpRecords = bpRes.data.data;
+        if (bpRecords.length > 0) {
+          const latest = bpRecords.reduce((a, b) =>
             new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
           );
           const dateObj = new Date(latest.recordDate);
@@ -39,6 +48,22 @@ function useHealth(): HealthData {
             diastolic: latest.diastolic,
           });
         }
+
+        const boRecords = boRes.data.data;
+        if (boRecords.length > 0) {
+          const latest = boRecords.reduce((a, b) =>
+            new Date(a.recordDate) > new Date(b.recordDate) ? a : b,
+          );
+          const dateObj = new Date(latest.recordDate);
+          setBloodOxygen({
+            date: dateObj.toLocaleDateString('zh-TW'),
+            time: dateObj.toLocaleTimeString('zh-TW', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            spO2: latest.spO2,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +72,7 @@ function useHealth(): HealthData {
     getAllHealthData();
   }, []);
 
-  return { bloodPressure, isLoading };
+  return { bloodPressure, bloodOxygen, isLoading };
 }
 
 export default useHealth;

@@ -32,7 +32,7 @@ const swiperConfig = {
 
 function HealthSummary() {
   const navigate = useNavigate();
-  const { bloodPressure } = useHealth();
+  const { bloodPressure, bloodOxygen } = useHealth();
 
   return (
     <section className="pt-3">
@@ -69,9 +69,9 @@ function HealthSummary() {
             />
             <DataCardOxygen
               category="血氧"
-              bloodOxygen="--"
+              bloodOxygen={bloodOxygen.spO2}
               className="flex-1"
-              time="--"
+              time={bloodOxygen.time}
             />
           </div>
         </SwiperSlide>

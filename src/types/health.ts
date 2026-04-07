@@ -19,6 +19,27 @@ type BloodOxygensResponse = {
   };
 };
 
+type BloodOxygenRecord = {
+  id: string;
+  careGroupId: string;
+  spO2: number;
+  notes?: string;
+  recordDate: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+};
+
+type GetBloodOxygensResponse = {
+  data: BloodOxygenRecord[];
+};
+
+type BloodOxygenData = {
+  date: string;
+  time: string;
+  spO2: number | '--';
+};
+
 type BloodPressuresPayload = {
   systolic: number;
   diastolic: number;
@@ -123,6 +144,9 @@ type WeightResponse = {
 export type {
   BloodOxygensPayload,
   BloodOxygensResponse,
+  BloodOxygenRecord,
+  GetBloodOxygensResponse,
+  BloodOxygenData,
   BloodPressuresPayload,
   BloodPressureRecord,
   BloodPressuresResponse,

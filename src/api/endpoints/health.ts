@@ -1,6 +1,7 @@
 import type {
   BloodOxygensPayload,
   BloodOxygensResponse,
+  GetBloodOxygensResponse,
   BloodPressuresPayload,
   BloodPressuresResponse,
   GetBloodPressuresResponse,
@@ -24,7 +25,7 @@ const createBloodOxygen = (payload: BloodOxygensPayload) => {
 
 const getBloodOxygens = () => {
   const careGroupId = localStorage.getItem('currentGroupId');
-  return apiClient.get(
+  return apiClient.get<GetBloodOxygensResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-oxygens`,
   );
 };
