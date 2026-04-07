@@ -22,7 +22,7 @@ const HEALTH_EXTRACTION_SCHEMA = {
     dateValue: {
       type: 'string',
       description:
-        'Date in YYYY/MM/DD format. Return an empty string if not mentioned.',
+        'Date in YYYY-MM-DD format. Return an empty string if not mentioned.',
     },
     timeValue: {
       type: 'string',
@@ -84,7 +84,7 @@ const HEALTH_EXTRACTION_PROMPT = `
 規則：
 1. 只能回傳符合 schema 的 JSON，不要加任何說明文字。
 2. 無法確認的欄位請回傳空字串，不要猜。
-3. dateValue 格式固定 YYYY/MM/DD。
+3. dateValue 格式固定 YYYY-MM-DD。
 4. timeValue 格式固定 HH:MM，使用 24 小時制。
 5. systolic、diastolic、bloodOxygen、bloodSugar 只回傳數字字串。
 6. temperature、weight 回傳可含小數點的數字字串。
@@ -138,7 +138,7 @@ const DIARY_EXTRACTION_SCHEMA = {
     dateValue: {
       type: 'string',
       description:
-        'Date in YYYY/MM/DD format. Return an empty string if not mentioned.',
+        'Date in YYYY-MM-DD format. Return an empty string if not mentioned.',
     },
     timeValue: {
       type: 'string',
@@ -185,7 +185,7 @@ const DIARY_EXTRACTION_PROMPT = `
 規則：
 1. 只能回傳符合 schema 的 JSON，不要加任何說明文字。
 2. 無法確認的欄位請回傳空字串，不要猜。
-3. dateValue 格式固定 YYYY/MM/DD。
+3. dateValue 格式固定 YYYY-MM-DD。
 4. timeValue 格式固定 HH:MM，使用 24 小時制。
 5. repeatPattern 只允許 none、daily、weeklyDay、monthly。
 6. isImportant 只回傳 true 或 false 字串。
@@ -253,7 +253,7 @@ const MONEY_EXTRACTION_SCHEMA = {
     dateValue: {
       type: 'string',
       description:
-        'Date in YYYY/MM/DD format. Return an empty string if not mentioned.',
+        'Date in YYYY-MM-DD format. Return an empty string if not mentioned.',
     },
     timeValue: {
       type: 'string',
@@ -302,7 +302,7 @@ const MONEY_EXTRACTION_PROMPT = `
 2. 無法確認的欄位請回傳空字串，不要猜。
 3. title 要優先填寫，請用 4 到 16 字的短標題概括主要支出，不要留空後只填 note。
 4. amount 只回傳數字字串，不要含幣別或標點。
-5. dateValue 格式固定 YYYY/MM/DD。
+5. dateValue 格式固定 YYYY-MM-DD。
 6. timeValue 格式固定 HH:MM，使用 24 小時制。
 7. category 只允許 none、medical、food、traffic、other。
 8. needsSplit 只回傳 true 或 false 字串。

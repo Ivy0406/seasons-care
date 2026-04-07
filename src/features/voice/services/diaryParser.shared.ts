@@ -29,7 +29,7 @@ function padTimeUnit(value: number) {
 }
 
 function formatDateValue(date: Date) {
-  return `${date.getFullYear()}/${padTimeUnit(date.getMonth() + 1)}/${padTimeUnit(date.getDate())}`;
+  return `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
 }
 
 function formatTimeValue(date: Date) {

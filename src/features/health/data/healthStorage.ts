@@ -130,7 +130,7 @@ function getLatestHealthData() {
 }
 
 function getRecordedAtFromDraft({ dateValue, timeValue }: HealthDraft) {
-  const isoDate = `${dateValue.replaceAll('/', '-')}T${timeValue}:00`;
+  const isoDate = `${dateValue}T${timeValue}:00`;
   const parsedDate = new Date(isoDate);
 
   if (Number.isNaN(parsedDate.getTime())) {
