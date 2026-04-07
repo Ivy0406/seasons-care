@@ -32,17 +32,7 @@ const swiperConfig = {
 
 function HealthSummary() {
   const navigate = useNavigate();
-  const healthData = useHealth();
-
-  const {
-    time,
-    summary,
-    bloodPressure,
-    temperature,
-    bloodOxygen,
-    weight,
-    bloodSugar,
-  } = healthData;
+  const { bloodPressure } = useHealth();
 
   return (
     <section className="pt-3">
@@ -65,7 +55,7 @@ function HealthSummary() {
           <DataCardSummary
             category="AI分析摘要"
             className="w-full"
-            content={summary.content}
+            content="--"
           />
         </SwiperSlide>
         <SwiperSlide>
@@ -75,13 +65,13 @@ function HealthSummary() {
               systolic={bloodPressure.systolic}
               diastolic={bloodPressure.diastolic}
               className="flex-1"
-              time={time}
+              time={bloodPressure.time}
             />
             <DataCardOxygen
               category="血氧"
-              bloodOxygen={bloodOxygen}
+              bloodOxygen="--"
               className="flex-1"
-              time={time}
+              time="--"
             />
           </div>
         </SwiperSlide>
@@ -89,26 +79,26 @@ function HealthSummary() {
           <div className="flex h-full gap-3">
             <DataCardTemperature
               category="體溫"
-              temperature={temperature}
+              temperature="--"
               className="flex-1"
-              time={time}
+              time="--"
             />
             <DataCardWeight
               category="體重"
-              weight={weight}
+              weight="--"
               className="flex-1"
-              time={time}
+              time="--"
             />
           </div>
         </SwiperSlide>
         <SwiperSlide>
           <DataCardBloodSugar
             category="血糖"
-            morning={bloodSugar.morning}
-            noon={bloodSugar.noon}
-            night={bloodSugar.night}
+            morning="--"
+            noon="--"
+            night="--"
             className="h-full w-full"
-            time={time}
+            time="--"
           />
         </SwiperSlide>
       </Swiper>
