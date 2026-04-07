@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Mic } from 'lucide-react';
 
 import avatars from '@/assets/images/avatars';
@@ -19,10 +20,8 @@ import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
 import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
 import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
 import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
-import mockGroups, {
-  type CareGroup,
-  type GroupMember,
-} from '@/features/groups/data/mockGroups';
+import type { GroupMember } from '@/features/groups/data/mockGroups';
+import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 import mockCurrentUser from '../data/mockCurrentUser';
@@ -39,8 +38,9 @@ const avatarSrcByKey = {
 } as const;
 
 function HomepageLayout() {
+  const queryClient = useQueryClient();
+  const { data: groups = [] } = useGetGroups();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [groups, setGroups] = useState<CareGroup[]>(mockGroups);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
@@ -52,7 +52,7 @@ function HomepageLayout() {
   const [isGroupActionDrawerOpen, setIsGroupActionDrawerOpen] = useState(false);
   const [isGroupMemberDrawerOpen, setIsGroupMemberDrawerOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState(
-    mockGroups.find((group) => group.isSelected)?.id ?? mockGroups[0]?.id ?? '',
+    localStorage.getItem('currentGroupId') ?? '',
   );
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const [pendingDeleteMember, setPendingDeleteMember] = useState<{
@@ -69,6 +69,12 @@ function HomepageLayout() {
     activeGroupId === null
       ? selectedGroup
       : (groups.find((group) => group.id === activeGroupId) ?? selectedGroup);
+
+  const handleSelectGroup = (groupId: string) => {
+    setSelectedGroupId(groupId);
+    localStorage.setItem('currentGroupId', groupId);
+    queryClient.invalidateQueries({ queryKey: ['health', groupId] });
+  };
   const currentUserAvatarSrc =
     avatarSrcByKey[mockCurrentUser.avatarKey] ?? avatars.avatar01;
 
@@ -151,19 +157,6 @@ function HomepageLayout() {
 
   const handleConfirmDeleteMember = () => {
     if (pendingDeleteMember === null) return;
-
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
-        group.id === pendingDeleteMember.groupId
-          ? {
-              ...group,
-              members: group.members.filter(
-                (member) => member.id !== pendingDeleteMember.member.id,
-              ),
-            }
-          : group,
-      ),
-    );
     setDeletedMemberName(pendingDeleteMember.member.name);
     setPendingDeleteMember(null);
   };
@@ -184,7 +177,7 @@ function HomepageLayout() {
 
         <section className="flex flex-col px-6">
           <NavigationGroupTrigger
-            groupName={selectedGroup.name}
+            groupName={selectedGroup?.recipientName ?? ''}
             onClick={() => setIsHomepageGroupDrawerOpen(true)}
           />
 
@@ -199,14 +192,9 @@ function HomepageLayout() {
             </div>
 
             <UserGroup>
-              {selectedGroup.members.map((member) => (
-                <SingleAvatar
-                  key={member.id}
-                  src={member.avatarSrc}
-                  name={member.name}
-                  className="size-8 bg-neutral-300"
-                />
-              ))}
+              <span className="font-paragraph-sm text-neutral-700">
+                {selectedGroup?.memberCount ?? 0} 位成員
+              </span>
             </UserGroup>
           </div>
         </section>
@@ -260,7 +248,7 @@ function HomepageLayout() {
         <GroupManagementDrawer
           groups={groups}
           selectedGroupId={selectedGroupId}
-          onSelectGroup={setSelectedGroupId}
+          onSelectGroup={handleSelectGroup}
           onManageGroup={handleOpenGroupActions}
           onJoinGroup={handleOpenGroupJoin}
           onCreateGroup={handleOpenGroupCreate}
@@ -301,7 +289,7 @@ function HomepageLayout() {
 
       <GroupMemberManagementDrawer
         open={isGroupMemberDrawerOpen}
-        group={activeGroup}
+        group={null}
         onOpenChange={handleGroupMemberDrawerChange}
         onRequestDeleteMember={handleRequestDeleteMember}
         onInviteMembers={handleOpenGroupInvite}
