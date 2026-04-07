@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 
-import createGroup from '@/api/endpoints/group';
+import { createGroup } from '@/api/endpoints/group';
 import type { CreateGroupPayload } from '@/types/group';
 
 const useCreateGroup = () => {
