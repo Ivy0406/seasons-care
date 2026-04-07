@@ -186,7 +186,7 @@ function RecordingDrawer({
           <AudioLines
             className={
               isListening && !isProcessing
-                ? 'text-primary-default size-10 scale-110 animate-pulse transition-all duration-300 ease-out'
+                ? 'text-primary-default size-10 scale-130 animate-pulse transition-all duration-200 ease-out'
                 : 'size-10 text-neutral-500'
             }
           />
