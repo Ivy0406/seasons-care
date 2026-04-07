@@ -15,6 +15,8 @@ import type {
   MoneyExtractionResult,
 } from '@/types/ai';
 
+import requestAIProxyParse from './proxy';
+
 function getGeminiModel() {
   return import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash';
 }
@@ -39,6 +41,18 @@ async function parseGeminiResponse(response: Response) {
   return JSON.parse(responseText) as unknown;
 }
 
+function getProxyKind(schema: object) {
+  if (schema === HEALTH_EXTRACTION_SCHEMA) {
+    return 'health';
+  }
+
+  if (schema === DIARY_EXTRACTION_SCHEMA) {
+    return 'diary';
+  }
+
+  return 'money';
+}
+
 async function requestGeminiStructuredOutput(
   transcript: string,
   prompt: string,
@@ -47,7 +61,7 @@ async function requestGeminiStructuredOutput(
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error('gemini-health-parser-missing-key');
+    return requestAIProxyParse(getProxyKind(schema), transcript);
   }
 
   const response = await fetch(

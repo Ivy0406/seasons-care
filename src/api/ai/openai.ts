@@ -15,6 +15,8 @@ import type {
   MoneyExtractionResult,
 } from '@/types/ai';
 
+import requestAIProxyParse from './proxy';
+
 type OpenAIResponsesOutput = {
   output?: Array<{
     type?: string;
@@ -42,6 +44,18 @@ async function parseOpenAIResponse(response: Response) {
   return JSON.parse(outputText) as unknown;
 }
 
+function getProxyKind(schemaName: string) {
+  if (schemaName === 'health_extraction') {
+    return 'health';
+  }
+
+  if (schemaName === 'diary_extraction') {
+    return 'diary';
+  }
+
+  return 'money';
+}
+
 async function requestOpenAIStructuredOutput(
   transcript: string,
   prompt: string,
@@ -51,7 +65,7 @@ async function requestOpenAIStructuredOutput(
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
   if (!apiKey) {
-    throw new Error('openai-health-parser-missing-key');
+    return requestAIProxyParse(getProxyKind(schemaName), transcript);
   }
 
   const response = await fetch('https://api.openai.com/v1/responses', {
