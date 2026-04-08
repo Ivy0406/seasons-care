@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Mic } from 'lucide-react';
 
-import avatars from '@/assets/images/avatars';
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import Modal from '@/components/common/Modal';
@@ -14,32 +14,27 @@ import {
 import SideMenu from '@/components/common/SideMenu';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
+import { CURRENT_USER_KEY, CURRENT_GROUP_ID_KEY } from '@/constants/auth';
 import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
 import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
 import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
 import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
 import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
 import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
-import type { GroupMember } from '@/features/groups/data/mockGroups';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
-
-import mockCurrentUser from '../data/mockCurrentUser';
+import type { UserInfo } from '@/types/auth';
+import type { GroupMember } from '@/types/group';
 
 import DailyOverviewTabs from './DailyOverviewTabs';
-
-const avatarSrcByKey = {
-  'Avatar-01': avatars.avatar01,
-  'Avatar-02': avatars.avatar02,
-  'Avatar-03': avatars.avatar03,
-  'Avatar-04': avatars.avatar04,
-  'Avatar-05': avatars.avatar05,
-  'Avatar-06': avatars.avatar06,
-} as const;
 
 function HomepageLayout() {
   const queryClient = useQueryClient();
   const { data: groups = [] } = useGetGroups();
+  const currentUser: UserInfo | null = JSON.parse(
+    localStorage.getItem(CURRENT_USER_KEY) ?? 'null',
+  );
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
@@ -52,9 +47,12 @@ function HomepageLayout() {
   const [isGroupActionDrawerOpen, setIsGroupActionDrawerOpen] = useState(false);
   const [isGroupMemberDrawerOpen, setIsGroupMemberDrawerOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState(
-    localStorage.getItem('currentGroupId') ?? '',
+    localStorage.getItem(CURRENT_GROUP_ID_KEY) ?? '',
   );
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
+  const { data: activeGroupMembers = [] } = useGetGroupMembers(
+    activeGroupId ?? selectedGroupId,
+  );
   const [pendingDeleteMember, setPendingDeleteMember] = useState<{
     groupId: string;
     member: GroupMember;
@@ -65,6 +63,12 @@ function HomepageLayout() {
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
+  const careDays = selectedGroup?.createdAt
+    ? Math.floor(
+        (Date.now() - new Date(selectedGroup.createdAt).getTime()) /
+          (1000 * 60 * 60 * 24),
+      ) + 1
+    : 0;
   const activeGroup =
     activeGroupId === null
       ? selectedGroup
@@ -72,11 +76,10 @@ function HomepageLayout() {
 
   const handleSelectGroup = (groupId: string) => {
     setSelectedGroupId(groupId);
-    localStorage.setItem('currentGroupId', groupId);
+    localStorage.setItem(CURRENT_GROUP_ID_KEY, groupId);
     queryClient.invalidateQueries({ queryKey: ['health', groupId] });
   };
-  const currentUserAvatarSrc =
-    avatarSrcByKey[mockCurrentUser.avatarKey] ?? avatars.avatar01;
+  const currentUserAvatarSrc = getAvatarSrcByKey(currentUser?.avatarKey ?? '');
 
   const handleGroupActionDrawerChange = (open: boolean) => {
     setIsGroupActionDrawerOpen(open);
@@ -157,7 +160,7 @@ function HomepageLayout() {
 
   const handleConfirmDeleteMember = () => {
     if (pendingDeleteMember === null) return;
-    setDeletedMemberName(pendingDeleteMember.member.name);
+    setDeletedMemberName(pendingDeleteMember.member.username);
     setPendingDeleteMember(null);
   };
 
@@ -186,15 +189,20 @@ function HomepageLayout() {
               <span className="">照護第</span>
               <span className="font-label-md relative inline-block px-1 leading-none">
                 <span className="bg-primary-default absolute inset-x-0 bottom-0 h-[45%]" />
-                <span className="font-heading-lg relative">125</span>
+                <span className="font-heading-lg relative">{careDays}</span>
               </span>
               <span className="">天</span>
             </div>
 
             <UserGroup>
-              <span className="font-paragraph-sm text-neutral-700">
-                {selectedGroup?.memberCount ?? 0} 位成員
-              </span>
+              {activeGroupMembers.map((member) => (
+                <SingleAvatar
+                  key={member.userId}
+                  src={getAvatarSrcByKey(member.avatarKey)}
+                  name={member.username}
+                  className="size-8 ring-2 ring-neutral-900"
+                />
+              ))}
             </UserGroup>
           </div>
         </section>
@@ -202,7 +210,7 @@ function HomepageLayout() {
         <section className="bg-primary-default mx-6 mt-5 flex gap-5 overflow-hidden rounded-xl border-2 border-neutral-900 px-3 py-5">
           <SingleAvatar
             src={currentUserAvatarSrc}
-            name={mockCurrentUser.userName}
+            name={currentUser?.userName ?? ''}
             className="size-18.25 ring-2 ring-neutral-900"
           />
           <div className="flex-1">
@@ -220,7 +228,7 @@ function HomepageLayout() {
 
         <section className="mx-6 mt-8 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
           <p className="font-label-md pl-6 text-neutral-900">
-            {mockCurrentUser.userName}，你好 <br />
+            {currentUser?.userName ?? ''}，你好 <br />
             今天想要記錄什麼照護資訊呢？
           </p>
           <RecordingDrawer
@@ -289,7 +297,8 @@ function HomepageLayout() {
 
       <GroupMemberManagementDrawer
         open={isGroupMemberDrawerOpen}
-        group={null}
+        groupId={activeGroupId}
+        members={activeGroupMembers}
         onOpenChange={handleGroupMemberDrawerChange}
         onRequestDeleteMember={handleRequestDeleteMember}
         onInviteMembers={handleOpenGroupInvite}
