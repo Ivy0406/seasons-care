@@ -2,12 +2,17 @@ import apiClient from '@/api/client';
 import type {
   CreateGroupPayload,
   CreateGroupResponse,
-  GetGroupsResponse,
+  GetGroupDetailResponse,
+  GetMyGroupsResponse,
 } from '@/types/group';
 
 const createGroup = (payload: CreateGroupPayload) =>
   apiClient.post<CreateGroupResponse>('/api/care-groups', payload);
 
-const getGroups = () => apiClient.get<GetGroupsResponse>('/api/care-groups');
+const getMyGroups = () =>
+  apiClient.get<GetMyGroupsResponse>('/api/care-groups');
 
-export { createGroup, getGroups };
+const getGroupDetail = (id: string) =>
+  apiClient.get<GetGroupDetailResponse>(`/api/care-groups/${id}`);
+
+export { createGroup, getMyGroups, getGroupDetail };

@@ -32,6 +32,7 @@ type GetMyGroupsResponse = {
 type GroupMember = {
   userId: string;
   username: string;
+  avatarKey: string;
   role: number;
   joinedAt: string;
 };
