@@ -3,6 +3,9 @@ import type {
   ReactNode,
   TextareaHTMLAttributes,
 } from 'react';
+import { useMemo, useState } from 'react';
+
+import { format, getDaysInMonth, parse } from 'date-fns';
 
 import FormDiaryRepeatSelector, {
   type FormDiaryRepeatValue,
@@ -12,6 +15,13 @@ import ListFormOptionSelector from '@/components/common/ListFormOptionSelector';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import ToggleButton from '@/components/common/ToggleButton';
 import Input from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import cn from '@/lib/utils';
 
 type ListFormRowProps = {
@@ -87,10 +97,81 @@ type ListFormDateTimeRowProps = {
   label: string;
   dateValue: string;
   timeValue: string;
+  onDateChange?: (value: string) => void;
+  onTimeChange?: (value: string) => void;
   onDateClick?: () => void;
   onTimeClick?: () => void;
   className?: string;
 };
+
+function parseDateValue(value: string) {
+  const parsedDate = parse(value, 'yyyy/MM/dd', new Date());
+
+  return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate;
+}
+
+function parseTimeValue(value: string) {
+  const [rawHour = '09', rawMinute = '00'] = value.split(':');
+  const hour24 = Number(rawHour);
+  const minute = Number(rawMinute);
+
+  if (
+    Number.isNaN(hour24) ||
+    Number.isNaN(minute) ||
+    hour24 < 0 ||
+    hour24 > 23
+  ) {
+    return {
+      period: '上午' as const,
+      hour12: 9,
+      minute: 0,
+    };
+  }
+
+  return {
+    period: hour24 < 12 ? ('上午' as const) : ('下午' as const),
+    hour12: hour24 % 12 === 0 ? 12 : hour24 % 12,
+    minute,
+  };
+}
+
+function to24HourTime(period: '上午' | '下午', hour12: number, minute: number) {
+  const normalizedHour = hour12 % 12;
+  const hour24 = period === '下午' ? normalizedHour + 12 : normalizedHour;
+
+  return `${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function formatDateValue(date: Date) {
+  return format(date, 'yyyy/MM/dd');
+}
+
+function updateDateSegment(
+  currentDate: Date | undefined,
+  segment: 'year' | 'month' | 'day',
+  value: number,
+) {
+  const baseDate = currentDate ?? new Date();
+  const nextDate = new Date(baseDate);
+
+  if (segment === 'year') {
+    nextDate.setFullYear(value);
+  }
+
+  if (segment === 'month') {
+    nextDate.setMonth(value - 1);
+  }
+
+  const maxDay = getDaysInMonth(nextDate);
+
+  if (segment === 'day') {
+    nextDate.setDate(Math.min(value, maxDay));
+    return nextDate;
+  }
+
+  nextDate.setDate(Math.min(baseDate.getDate(), maxDay));
+  return nextDate;
+}
 
 function ListFormRow({
   label,
@@ -323,27 +404,238 @@ function ListFormDateTimeRow({
   label,
   dateValue,
   timeValue,
+  onDateChange,
+  onTimeChange,
   onDateClick,
   onTimeClick,
   className,
 }: ListFormDateTimeRowProps) {
+  const [isDateOpen, setIsDateOpen] = useState(false);
+  const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const selectedDate = parseDateValue(dateValue);
+  const parsedTime = parseTimeValue(timeValue);
+  const currentYear = new Date().getFullYear();
+  const selectedYear = selectedDate?.getFullYear() ?? currentYear;
+  const selectedMonth = (selectedDate?.getMonth() ?? new Date().getMonth()) + 1;
+  const selectedDay = selectedDate?.getDate() ?? new Date().getDate();
+  const yearOptions = useMemo(
+    () => Array.from({ length: 11 }, (_, index) => currentYear - 5 + index),
+    [currentYear],
+  );
+  const dayOptions = useMemo(() => {
+    const daysInMonth = getDaysInMonth(
+      new Date(selectedYear, selectedMonth - 1, 1),
+    );
+
+    return Array.from({ length: daysInMonth }, (_, index) => index + 1);
+  }, [selectedMonth, selectedYear]);
+
+  const handleDateUpdate = (date: Date | undefined, closePanel = false) => {
+    if (!date || !onDateChange) return;
+
+    onDateChange(formatDateValue(date));
+
+    if (closePanel) {
+      setIsDateOpen(false);
+    }
+  };
+
+  const handleDateSegmentChange = (
+    segment: 'year' | 'month' | 'day',
+    value: string,
+  ) => {
+    if (!onDateChange) return;
+
+    const nextDate = updateDateSegment(selectedDate, segment, Number(value));
+
+    handleDateUpdate(nextDate, segment === 'day');
+  };
+
+  const handleTimeChange = (value: string) => {
+    onTimeChange?.(value);
+  };
+
+  const handleTimeSegmentChange = (
+    segment: 'period' | 'hour' | 'minute',
+    value: string,
+  ) => {
+    const nextPeriod =
+      segment === 'period' ? (value as '上午' | '下午') : parsedTime.period;
+    const nextHour = segment === 'hour' ? Number(value) : parsedTime.hour12;
+    const nextMinute = segment === 'minute' ? Number(value) : parsedTime.minute;
+
+    handleTimeChange(to24HourTime(nextPeriod, nextHour, nextMinute));
+
+    if (segment === 'minute') {
+      setIsTimeOpen(false);
+    }
+  };
+
+  const handleTimeToggle = () => {
+    if (onTimeChange) {
+      if (isTimeOpen) {
+        setIsTimeOpen(false);
+        return;
+      }
+
+      setIsDateOpen(false);
+      setIsTimeOpen(true);
+      return;
+    }
+
+    onTimeClick?.();
+  };
+
   return (
     <ListFormRow label={label} htmlFor={label} className={className}>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onDateClick}
-          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
-        >
-          {dateValue}
-        </button>
-        <button
-          type="button"
-          onClick={onTimeClick}
-          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
-        >
-          {timeValue}
-        </button>
+      <div className="relative flex items-center gap-2">
+        <div className="relative min-w-28">
+          <button
+            type="button"
+            onClick={() => {
+              if (onDateChange) {
+                if (isDateOpen) {
+                  setIsDateOpen(false);
+                  return;
+                }
+
+                setIsTimeOpen(false);
+                setIsDateOpen(true);
+                return;
+              }
+              onDateClick?.();
+            }}
+            className="font-label-md flex h-8 w-full cursor-pointer items-center justify-center gap-1 rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+          >
+            {dateValue}
+          </button>
+          {onDateChange && isDateOpen ? (
+            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900">
+              <div className="flex gap-2">
+                <Select
+                  value={String(selectedYear)}
+                  onValueChange={(value) => {
+                    if (value) handleDateSegmentChange('year', value);
+                  }}
+                >
+                  <SelectTrigger className="bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}年
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(selectedMonth)}
+                  onValueChange={(value) => {
+                    if (value) handleDateSegmentChange('month', value);
+                  }}
+                >
+                  <SelectTrigger className="bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {Array.from({ length: 12 }, (_, index) => index + 1).map(
+                      (month) => (
+                        <SelectItem key={month} value={String(month)}>
+                          {month}月
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(selectedDay)}
+                  onValueChange={(value) => {
+                    if (value) handleDateSegmentChange('day', value);
+                  }}
+                >
+                  <SelectTrigger className="bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {dayOptions.map((day) => (
+                      <SelectItem key={day} value={String(day)}>
+                        {day}日
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : null}
+        </div>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={handleTimeToggle}
+            className="font-label-md flex h-8 w-full cursor-pointer items-center justify-center gap-1 rounded-lg bg-neutral-200 px-2 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+          >
+            {timeValue}
+          </button>
+          {onTimeChange && isTimeOpen ? (
+            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900">
+              <div className="flex gap-2">
+                <Select
+                  value={parsedTime.period}
+                  onValueChange={(value) => {
+                    if (value) handleTimeSegmentChange('period', value);
+                  }}
+                >
+                  <SelectTrigger className="w-20 bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end" className="w-auto min-w-0">
+                    <SelectItem value="上午">上午</SelectItem>
+                    <SelectItem value="下午">下午</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(parsedTime.hour12)}
+                  onValueChange={(value) => {
+                    if (value) handleTimeSegmentChange('hour', value);
+                  }}
+                >
+                  <SelectTrigger className="w-15 bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end" className="w-auto min-w-0">
+                    {Array.from({ length: 12 }, (_, index) => index + 1).map(
+                      (hour) => (
+                        <SelectItem key={hour} value={String(hour)}>
+                          {hour}時
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(parsedTime.minute)}
+                  onValueChange={(value) => {
+                    if (value) handleTimeSegmentChange('minute', value);
+                  }}
+                >
+                  <SelectTrigger className="w-15 bg-neutral-100" size="sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end" className="w-auto min-w-0">
+                    {Array.from({ length: 12 }, (_, index) => index * 5).map(
+                      (minute) => (
+                        <SelectItem key={minute} value={String(minute)}>
+                          {String(minute).padStart(2, '0')}分
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
     </ListFormRow>
   );

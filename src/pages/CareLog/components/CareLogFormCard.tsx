@@ -143,6 +143,8 @@ function CareLogFormCard({
                 label="時間"
                 dateValue={dateValue}
                 timeValue={timeValue}
+                onDateChange={setDateValue}
+                onTimeChange={setTimeValue}
                 className="border-neutral-900"
               />
               <ListFormRepeatRow
