@@ -13,6 +13,16 @@ import {
 const getCurrentCareGroupId = () =>
   window.localStorage.getItem('currentGroupId');
 
+function getErrorDetail(error: unknown) {
+  if (!axios.isAxiosError(error)) return undefined;
+
+  const detail = error.response?.data?.detail;
+
+  return typeof detail === 'string' && detail.trim().length > 0
+    ? detail
+    : undefined;
+}
+
 function useCreateCareLogEntry() {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,22 +44,24 @@ function useCreateCareLogEntry() {
 
       return toCareLogEntry(response.data.data, entry);
     } catch (error) {
+      const detail = getErrorDetail(error);
+
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 400:
-            toast.error('請確認日誌資料格式是否正確');
+            toast.error(detail ?? '請確認日誌資料格式是否正確');
             break;
           case 401:
-            toast.error('請先登入後再新增日誌');
+            toast.error(detail ?? '請先登入後再新增日誌');
             break;
           case 403:
-            toast.error('你沒有權限在此群組新增日誌');
+            toast.error(detail ?? '你沒有權限在此群組新增日誌');
             break;
           case 404:
-            toast.error('找不到目前的照護群組');
+            toast.error(detail ?? '找不到目前的照護群組');
             break;
           default:
-            toast.error('新增日誌失敗，請稍後再試');
+            toast.error(detail ?? '新增日誌失敗，請稍後再試');
             break;
         }
       }
