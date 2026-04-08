@@ -16,6 +16,7 @@ type BaseDrawerProps = {
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
+  handleClassName?: string;
   onOpenChange?: (open: boolean) => void;
 };
 function BaseDrawer({
@@ -26,6 +27,7 @@ function BaseDrawer({
   children,
   footer,
   className,
+  handleClassName,
 }: BaseDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange} modal={modal}>
@@ -36,6 +38,7 @@ function BaseDrawer({
           'rounded-t-3xl border-0 bg-neutral-100 px-6 pb-7',
           className,
         )}
+        handleClassName={handleClassName}
         aria-describedby={undefined}
       >
         <DrawerHeader className="sr-only">
