@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import { Mic } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import avatars from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
@@ -24,6 +26,7 @@ import mockGroups, {
   type GroupMember,
 } from '@/features/groups/data/mockGroups';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 
 import mockCurrentUser from '../data/mockCurrentUser';
 
@@ -39,6 +42,7 @@ const avatarSrcByKey = {
 } as const;
 
 function HomepageLayout() {
+  const navigate = useNavigate();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [groups, setGroups] = useState<CareGroup[]>(mockGroups);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
@@ -62,6 +66,7 @@ function HomepageLayout() {
   const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
     null,
   );
+  const { setVoiceTranscript, clearVoiceInput } = useVoiceInput();
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -245,6 +250,24 @@ function HomepageLayout() {
                 <Mic strokeWidth={1} className="stroke-[1.5]!" />
               </CircleButtonPrimary>
             }
+            onFinish={async ({ transcript }) => {
+              if (transcript.trim() === '') {
+                return { shouldClose: false };
+              }
+
+              const result = await setVoiceTranscript(transcript);
+
+              if (!result.hasDetectedContent) {
+                clearVoiceInput();
+                toast.error(
+                  '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+                );
+                return { shouldClose: false };
+              }
+
+              navigate('/data-form');
+              return { shouldClose: true };
+            }}
           />
         </section>
 

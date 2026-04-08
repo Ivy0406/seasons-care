@@ -3,7 +3,7 @@ import type {
   ReactNode,
   TextareaHTMLAttributes,
 } from 'react';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
 import { format, getDaysInMonth, parse } from 'date-fns';
 
@@ -26,7 +26,7 @@ import cn from '@/lib/utils';
 
 type ListFormRowProps = {
   label: string;
-  htmlFor: string;
+  htmlFor?: string;
   children: ReactNode;
   className?: string;
 };
@@ -467,6 +467,8 @@ function ListFormRow({
   children,
   className,
 }: ListFormRowProps) {
+  const LabelTag = htmlFor ? 'label' : 'div';
+
   return (
     <div
       className={cn(
@@ -474,12 +476,12 @@ function ListFormRow({
         className,
       )}
     >
-      <label
-        htmlFor={htmlFor}
+      <LabelTag
+        {...(htmlFor ? { htmlFor } : {})}
         className="font-label-md shrink-0 text-neutral-900"
       >
         {label}
-      </label>
+      </LabelTag>
       <div className="flex min-w-0 flex-1 items-center justify-end">
         {children}
       </div>
@@ -492,13 +494,15 @@ function ListFormNameRow({
   inputProps,
   className,
 }: ListFormTextRowProps) {
-  const htmlFor = inputProps?.id ?? inputProps?.name ?? label;
+  const fallbackId = useId();
+  const htmlFor = inputProps?.id ?? inputProps?.name ?? fallbackId;
 
   return (
     <ListFormRow label={label} htmlFor={htmlFor} className={className}>
       <Input
         placeholder="輸入名稱"
         className="font-paragraph-md h-auto border-0 bg-transparent px-0 py-0 pr-4 text-right text-neutral-900 shadow-none placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        id={htmlFor}
         {...inputProps}
       />
     </ListFormRow>
@@ -513,7 +517,7 @@ function ListFormGenderRow({
   className,
 }: ListFormGenderRowProps) {
   return (
-    <ListFormRow label={label} htmlFor={label} className={className}>
+    <ListFormRow label={label} className={className}>
       <div className="relative min-w-0">
         <ListFormOptionSelector
           value={value}
@@ -559,7 +563,7 @@ function ListFormParticipantsRow({
   className,
 }: ListFormParticipantsRowProps) {
   return (
-    <ListFormRow label={label} htmlFor={label} className={className}>
+    <ListFormRow label={label} className={className}>
       <div className="flex items-center justify-end gap-2">
         <SingleAvatar
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png"
@@ -593,7 +597,7 @@ function ListFormImportantRow({
   className,
 }: ListFormImportantRowProps) {
   return (
-    <ListFormRow label={label} htmlFor={label} className={className}>
+    <ListFormRow label={label} className={className}>
       <ToggleButton
         checked={checked}
         onCheckedChange={onCheckedChange}
@@ -609,7 +613,8 @@ function ListFormNoteRow({
   onClear,
   className,
 }: ListFormNoteRowProps) {
-  const htmlFor = textareaProps?.id ?? textareaProps?.name ?? label;
+  const fallbackId = useId();
+  const htmlFor = textareaProps?.id ?? textareaProps?.name ?? fallbackId;
   const hasTextareaValue = Boolean(textareaProps?.value?.toString().trim());
 
   return (
@@ -642,12 +647,14 @@ function ListFormInputRow({
   inputProps,
   className,
 }: ListFormInputRowProps) {
-  const htmlFor = inputProps?.id ?? inputProps?.name ?? label;
+  const fallbackId = useId();
+  const htmlFor = inputProps?.id ?? inputProps?.name ?? fallbackId;
 
   return (
     <ListFormRow label={label} htmlFor={htmlFor} className={className}>
       <div className="flex flex-1 items-center justify-end gap-1">
         <Input
+          id={htmlFor}
           className="font-label-md zpy-0 h-auto border-0 bg-transparent px-0 text-right text-neutral-900 placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           {...inputProps}
         />
@@ -669,7 +676,7 @@ function ListFormSelectRow({
   className,
 }: ListFormSelectRowProps) {
   return (
-    <ListFormRow label={label} htmlFor={label} className={className}>
+    <ListFormRow label={label} className={className}>
       <div className="relative min-w-0">
         <ListFormOptionSelector
           value={value}
@@ -687,11 +694,7 @@ function ListFormRepeatRow({
   className,
 }: ListFormRepeatRowProps) {
   return (
-    <ListFormRow
-      label="是否標示為重複"
-      htmlFor="是否標示為重複"
-      className={className}
-    >
+    <ListFormRow label="是否標示為重複" className={className}>
       <div className="relative min-w-0">
         <FormDiaryRepeatSelector value={value} onChange={onChange} />
       </div>
