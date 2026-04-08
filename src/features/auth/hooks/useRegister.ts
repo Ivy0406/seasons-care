@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { login, register } from '@/api/endpoints/auth';
-import setupProfile from '@/api/endpoints/user';
+import { setupProfile } from '@/api/endpoints/user';
 
 type AccountData = {
   account: string;
@@ -60,6 +60,15 @@ const useRegister = () => {
         userName: profile.name,
         avatarKey: profile.avatarKey,
       });
+      const existing = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify({
+          ...existing,
+          userName: profile.name,
+          avatarKey: profile.avatarKey,
+        }),
+      );
       navigate('/onboarding');
     } catch (error) {
       if (axios.isAxiosError(error)) {
