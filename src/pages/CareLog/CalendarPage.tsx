@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { format, isSameDay, parseISO } from 'date-fns';
+import { format, isSameDay, isValid, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { Plus } from 'lucide-react';
+import { useLocation } from 'react-router';
 
 import Calendar from '@/components/common/Calendar';
 import {
@@ -11,7 +12,6 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
@@ -21,6 +21,7 @@ import {
   getStoredCareLogEntries,
   saveCareLogEntries,
 } from '@/pages/CareLog/data/careLogStorage';
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const defaultSelectedDate = new Date();
@@ -44,17 +45,52 @@ function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
   };
 }
 
+function getSelectedDateFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('selectedDate' in state)) {
+    return undefined;
+  }
+
+  const { selectedDate } = state as { selectedDate?: unknown };
+
+  if (selectedDate instanceof Date) {
+    return isValid(selectedDate) ? selectedDate : undefined;
+  }
+
+  if (typeof selectedDate !== 'string') {
+    return undefined;
+  }
+
+  const parsedDate = parseISO(selectedDate);
+
+  return isValid(parsedDate) ? parsedDate : undefined;
+}
+
 function CalendarPage() {
+  const location = useLocation();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const initialSelectedDate = getSelectedDateFromState(location.state);
   const [entries, setEntries] = useState<CareLogEntry[]>(
     getStoredCareLogEntries,
   );
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    defaultSelectedDate,
+    initialSelectedDate ?? defaultSelectedDate,
   );
-  const [visibleMonth, setVisibleMonth] = useState<Date>(defaultSelectedDate);
+  const [visibleMonth, setVisibleMonth] = useState<Date>(
+    initialSelectedDate ?? defaultSelectedDate,
+  );
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
+
+  useEffect(() => {
+    const routedSelectedDate = getSelectedDateFromState(location.state);
+
+    if (!routedSelectedDate) {
+      return;
+    }
+
+    setSelectedDate(routedSelectedDate);
+    setVisibleMonth(routedSelectedDate);
+  }, [location.state]);
 
   const markedDates = entries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =

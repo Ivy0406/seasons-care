@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
@@ -13,6 +12,7 @@ import {
   saveCareLogEntries,
   getStoredCareLogEntries,
 } from '@/pages/CareLog/data/careLogStorage';
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const defaultParticipant = {
@@ -21,8 +21,28 @@ const defaultParticipant = {
   src: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png',
 };
 
-function createDraftCareLogEntry(): CareLogEntry {
-  const startsAt = new Date();
+function getSelectedDateFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('selectedDate' in state)) {
+    return undefined;
+  }
+
+  const { selectedDate } = state as { selectedDate?: unknown };
+
+  if (selectedDate instanceof Date) {
+    return isValid(selectedDate) ? selectedDate : undefined;
+  }
+
+  if (typeof selectedDate !== 'string') {
+    return undefined;
+  }
+
+  const parsedDate = parseISO(selectedDate);
+
+  return isValid(parsedDate) ? parsedDate : undefined;
+}
+
+function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
+  const startsAt = selectedDate;
 
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`,
@@ -37,14 +57,27 @@ function createDraftCareLogEntry(): CareLogEntry {
 }
 
 function CareLogCreatePage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
-  const [draftEntry] = useState<CareLogEntry>(createDraftCareLogEntry);
+  const initialSelectedDate = getSelectedDateFromState(location.state);
+  const [draftEntry] = useState<CareLogEntry>(() =>
+    createDraftCareLogEntry(initialSelectedDate),
+  );
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const [createdEntry, setCreatedEntry] = useState<CareLogEntry | null>(null);
 
   const handleClose = () => {
-    navigate('/calendar-page');
+    navigate('/calendar-page', {
+      state: initialSelectedDate
+        ? {
+            selectedDate: format(
+              initialSelectedDate,
+              "yyyy-MM-dd'T'HH:mm:ssxxx",
+            ),
+          }
+        : null,
+    });
   };
 
   const handleCreate = async (entry: CareLogEntry) => {
