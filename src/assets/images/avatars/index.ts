@@ -1,15 +1,14 @@
-import avatar01 from './Avatar-01.png';
-import avatar02 from './Avatar-02.png';
-import avatar03 from './Avatar-03.png';
-import avatar04 from './Avatar-04.png';
-import avatar05 from './Avatar-05.png';
-import avatar06 from './Avatar-06.png';
+const avatarImageModules = import.meta.glob<string>('./Avatar-*.png', {
+  eager: true,
+  import: 'default',
+});
 
-export default {
-  avatar01,
-  avatar02,
-  avatar03,
-  avatar04,
-  avatar05,
-  avatar06,
-};
+export default function getAvatarSrcByKey(avatarKey: string): string {
+  return avatarImageModules[`./${avatarKey}.png`] ?? '';
+}
+
+export function getAvatarKeys(): string[] {
+  return Object.keys(avatarImageModules)
+    .sort()
+    .map((path) => path.replace('./', '').replace('.png', ''));
+}
