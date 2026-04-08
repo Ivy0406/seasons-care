@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { login, register } from '@/api/endpoints/auth';
-import { setupProfile } from '@/api/endpoints/user';
+import setupProfile from '@/api/endpoints/user';
+import { TOKEN_KEY, CURRENT_USER_KEY } from '@/constants/auth';
 
 type AccountData = {
   account: string;
@@ -33,7 +34,7 @@ const useRegister = () => {
         email: data.account,
         password: data.password,
       });
-      Cookies.set('userToken', loginRes.data.data.token);
+      Cookies.set(TOKEN_KEY, loginRes.data.data.token, { expires: 100 });
       setStep('profile');
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -60,9 +61,11 @@ const useRegister = () => {
         userName: profile.name,
         avatarKey: profile.avatarKey,
       });
-      const existing = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
+      const existing = JSON.parse(
+        localStorage.getItem(CURRENT_USER_KEY) ?? '{}',
+      );
       localStorage.setItem(
-        'currentUser',
+        CURRENT_USER_KEY,
         JSON.stringify({
           ...existing,
           userName: profile.name,
