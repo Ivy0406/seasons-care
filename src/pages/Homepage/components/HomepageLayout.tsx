@@ -270,6 +270,7 @@ function HomepageLayout() {
       <BaseDrawer
         open={isGroupEntryDrawerOpen}
         onOpenChange={setIsGroupEntryDrawerOpen}
+        handleOnly
       >
         <GroupEntryDrawer
           open={isGroupEntryDrawerOpen}

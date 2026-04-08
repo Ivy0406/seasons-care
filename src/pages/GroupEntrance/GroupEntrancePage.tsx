@@ -29,6 +29,7 @@ function GroupEntrancePage() {
       <BaseDrawer
         open={isGroupEntryDrawerOpen}
         onOpenChange={setIsGroupEntryDrawerOpen}
+        handleOnly
       >
         <GroupEntryDrawer
           open={isGroupEntryDrawerOpen}
