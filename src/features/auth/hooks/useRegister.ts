@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { login, register } from '@/api/endpoints/auth';
 import setupProfile from '@/api/endpoints/user';
+import { CURRENT_GROUP_ID_KEY, CURRENT_USER_ID_KEY } from '@/constants/auth';
 
 type AccountData = {
   account: string;
@@ -33,7 +34,17 @@ const useRegister = () => {
         email: data.account,
         password: data.password,
       });
-      Cookies.set('userToken', loginRes.data.data.token);
+      const { token, user, defaultCareGroupId } = loginRes.data.data;
+
+      Cookies.set('userToken', token);
+      window.localStorage.setItem(CURRENT_USER_ID_KEY, user.id);
+
+      if (defaultCareGroupId) {
+        window.localStorage.setItem(CURRENT_GROUP_ID_KEY, defaultCareGroupId);
+      } else {
+        window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
+      }
+
       setStep('profile');
     } catch (error) {
       if (axios.isAxiosError(error)) {

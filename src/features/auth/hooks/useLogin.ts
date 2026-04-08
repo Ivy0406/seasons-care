@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { login } from '@/api/endpoints/auth';
+import { CURRENT_GROUP_ID_KEY, CURRENT_USER_ID_KEY } from '@/constants/auth';
 
 type LoginData = {
   account: string;
@@ -23,8 +24,17 @@ const useLogin = () => {
         email: data.account,
         password: data.password,
       });
-      const { token, careGroupCount } = res.data.data;
+      const { token, user, careGroupCount, defaultCareGroupId } = res.data.data;
+
       Cookies.set('userToken', token, { expires: 100 });
+      window.localStorage.setItem(CURRENT_USER_ID_KEY, user.id);
+
+      if (defaultCareGroupId) {
+        window.localStorage.setItem(CURRENT_GROUP_ID_KEY, defaultCareGroupId);
+      } else {
+        window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
+      }
+
       if (careGroupCount === 0) {
         navigate('/group-entrance');
       } else {
