@@ -11,6 +11,7 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
@@ -20,7 +21,7 @@ import {
   getStoredCareLogEntries,
   saveCareLogEntries,
 } from '@/pages/CareLog/data/careLogStorage';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const defaultSelectedDate = new Date();
 
@@ -44,6 +45,7 @@ function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
 }
 
 function CalendarPage() {
+  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
   const [entries, setEntries] = useState<CareLogEntry[]>(
     getStoredCareLogEntries,
   );
@@ -147,14 +149,22 @@ function CalendarPage() {
                 entry={creatingEntry}
                 title="新日誌"
                 submitLabel="新增日誌"
+                isSubmitting={isLoading}
                 cardClassName="bg-primary-default"
                 toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
                 footerMode="submitOnly"
                 onClose={() => setCreatingEntry(null)}
-                onSubmit={(entry) => {
+                onSubmit={async (entry) => {
                   try {
-                    const createdDate = parseISO(entry.startsAt);
-                    const nextEntries = [entry, ...entries];
+                    const createdEntry = await handleCreateCareLogEntry(entry);
+
+                    if (createdEntry === null) {
+                      setModalKey('createError');
+                      return;
+                    }
+
+                    const createdDate = parseISO(createdEntry.startsAt);
+                    const nextEntries = [createdEntry, ...entries];
 
                     saveCareLogEntries(nextEntries);
                     setEntries(nextEntries);

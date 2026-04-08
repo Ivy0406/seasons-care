@@ -1,5 +1,5 @@
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type CareLogEditFormCardProps = {
   entry: CareLogEntry;

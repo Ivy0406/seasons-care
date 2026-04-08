@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
@@ -12,7 +13,7 @@ import {
   saveCareLogEntries,
   getStoredCareLogEntries,
 } from '@/pages/CareLog/data/careLogStorage';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const defaultParticipant = {
   id: 'current-user',
@@ -37,6 +38,7 @@ function createDraftCareLogEntry(): CareLogEntry {
 
 function CareLogCreatePage() {
   const navigate = useNavigate();
+  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
   const [draftEntry] = useState<CareLogEntry>(createDraftCareLogEntry);
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const [createdEntry, setCreatedEntry] = useState<CareLogEntry | null>(null);
@@ -45,12 +47,19 @@ function CareLogCreatePage() {
     navigate('/calendar-page');
   };
 
-  const handleCreate = (entry: CareLogEntry) => {
+  const handleCreate = async (entry: CareLogEntry) => {
     try {
-      const nextEntries = [entry, ...getStoredCareLogEntries()];
+      const createdCareLogEntry = await handleCreateCareLogEntry(entry);
+
+      if (createdCareLogEntry === null) {
+        setModalKey('createError');
+        return;
+      }
+
+      const nextEntries = [createdCareLogEntry, ...getStoredCareLogEntries()];
 
       saveCareLogEntries(nextEntries);
-      setCreatedEntry(entry);
+      setCreatedEntry(createdCareLogEntry);
       setModalKey('createSuccess');
     } catch {
       setModalKey('createError');
@@ -76,6 +85,7 @@ function CareLogCreatePage() {
           entry={draftEntry}
           title="新增日誌"
           submitLabel="新增日誌"
+          isSubmitting={isLoading}
           onClose={handleClose}
           onSubmit={handleCreate}
         />

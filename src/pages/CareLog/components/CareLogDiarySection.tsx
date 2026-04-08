@@ -10,7 +10,7 @@ import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import type {
   CareLogEntry,
   CareLogFilterValue,
-} from '@/pages/CareLog/data/mockCareLogEntries';
+} from '@/pages/CareLog/types';
 
 type CareLogDiarySectionProps = {
   items: CareLogEntry[];

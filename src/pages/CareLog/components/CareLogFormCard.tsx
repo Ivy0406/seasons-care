@@ -19,14 +19,15 @@ import {
 } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type CareLogFormCardProps = {
   entry: CareLogEntry;
   title: string;
   submitLabel: string;
   onClose: () => void;
-  onSubmit: (entry: CareLogEntry) => void;
+  onSubmit: (entry: CareLogEntry) => void | Promise<void>;
+  isSubmitting?: boolean;
   cardClassName?: string;
   toneClassName?: string;
   footerMode?: 'default' | 'submitOnly';
@@ -38,6 +39,7 @@ function CareLogFormCard({
   submitLabel,
   onClose,
   onSubmit,
+  isSubmitting = false,
   cardClassName = 'bg-neutral-800',
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
   footerMode = 'default',
@@ -64,6 +66,7 @@ function CareLogFormCard({
   }, [entry]);
 
   const isSubmitDisabled =
+    isSubmitting ||
     titleValue.trim().length === 0 ||
     dateValue.trim().length === 0 ||
     timeValue.trim().length === 0;
