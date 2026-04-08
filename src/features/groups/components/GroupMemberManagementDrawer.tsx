@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 
 import { Minus, Plus } from 'lucide-react';
 
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
-import type { CareGroup, GroupMember } from '@/features/groups/data/mockGroups';
+import type { GroupMember } from '@/types/group';
 
 type GroupMemberManagementDrawerProps = {
   open: boolean;
-  group: CareGroup | null;
+  groupId: string | null;
+  members: GroupMember[];
   onOpenChange: (open: boolean) => void;
   onRequestDeleteMember: (groupId: string, member: GroupMember) => void;
   onInviteMembers: () => void;
@@ -17,13 +19,14 @@ type GroupMemberManagementDrawerProps = {
 
 function GroupMemberManagementDrawer({
   open,
-  group,
+  groupId,
+  members,
   onOpenChange,
   onRequestDeleteMember,
   onInviteMembers,
 }: GroupMemberManagementDrawerProps) {
   const [isEditMode, setIsEditMode] = useState(false);
-  const isAddMemberDisabled = (group?.members.length ?? 0) >= 4;
+  const isAddMemberDisabled = members.length >= 4;
 
   useEffect(() => {
     if (!open) {
@@ -33,7 +36,7 @@ function GroupMemberManagementDrawer({
 
   useEffect(() => {
     setIsEditMode(false);
-  }, [group?.id]);
+  }, [groupId]);
 
   return (
     <BaseDrawer open={open} onOpenChange={onOpenChange}>
@@ -73,33 +76,31 @@ function GroupMemberManagementDrawer({
           </p>
         )}
         <div className="overflow-hidden rounded-[12px] bg-neutral-300">
-          {group ? (
-            group.members.map((member) => (
+          {members.length > 0 ? (
+            members.map((member) => (
               <div
-                key={member.id}
+                key={member.userId}
                 className="flex items-center justify-between gap-4 border-b border-neutral-400 px-4 py-3 last:border-b-0"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <SingleAvatar
-                    src={member.avatarSrc}
-                    name={member.name}
+                    src={getAvatarSrcByKey(member.avatarKey)}
+                    name={member.username}
                     className="size-10 bg-neutral-400 ring-2"
                   />
                   <div className="min-w-0">
-                    <p className="font-paragraph-md truncate">{member.name}</p>
+                    <p className="font-paragraph-md truncate">{member.username}</p>
                   </div>
                 </div>
 
                 {isEditMode ? (
                   <button
                     type="button"
-                    aria-label={`移除${member.name}`}
+                    aria-label={`移除${member.username}`}
                     onClick={(event) => {
                       event.currentTarget.blur();
-
-                      if (!group) return;
-
-                      onRequestDeleteMember(group.id, member);
+                      if (!groupId) return;
+                      onRequestDeleteMember(groupId, member);
                     }}
                   >
                     <Minus size={16} />
