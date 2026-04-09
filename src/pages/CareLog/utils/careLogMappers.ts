@@ -1,5 +1,8 @@
+import getAvatarSrcByKey from '@/assets/images/avatars';
+import type { CalendarDiaryCardParticipant } from '@/components/common/DiaryCard';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import type { CareLogApiItem, CreateCareLogPayload } from '@/types/careLog';
+import type { GroupMember } from '@/types/group';
 
 const toCreateCareLogPayload = (
   entry: CareLogEntry,
@@ -29,9 +32,32 @@ function toCareLogStatus(
   return fallbackStatus;
 }
 
+function toCareLogParticipants(
+  participants: CareLogApiItem['participants'],
+  groupMembers: GroupMember[],
+  fallbackParticipants: CalendarDiaryCardParticipant[] = [],
+) {
+  if (!participants || participants.length === 0) {
+    return fallbackParticipants;
+  }
+
+  return participants.map((participantId) => {
+    const matchedMember = groupMembers.find(
+      (member) => member.userId === participantId,
+    );
+
+    return {
+      id: participantId,
+      name: matchedMember?.username ?? '成員',
+      src: matchedMember ? getAvatarSrcByKey(matchedMember.avatarKey) : '',
+    };
+  });
+}
+
 const toCareLogEntry = (
   item: CareLogApiItem,
   fallbackEntry?: CareLogEntry,
+  groupMembers: GroupMember[] = [],
 ): CareLogEntry => ({
   id: item.id,
   title: item.title,
@@ -43,12 +69,18 @@ const toCareLogEntry = (
     fallbackEntry?.startsAt ??
     new Date().toISOString(),
   repeatPattern: item.repeatPattern ?? fallbackEntry?.repeatPattern ?? 'none',
-  participants: fallbackEntry?.participants ?? [],
+  participants: toCareLogParticipants(
+    item.participants,
+    groupMembers,
+    fallbackEntry?.participants,
+  ),
   status: toCareLogStatus(item.status, fallbackEntry?.status),
   isImportant: item.isImportant ?? fallbackEntry?.isImportant ?? false,
 });
 
-const toCareLogEntries = (items: CareLogApiItem[]) =>
-  items.map((item) => toCareLogEntry(item));
+const toCareLogEntries = (
+  items: CareLogApiItem[],
+  groupMembers: GroupMember[] = [],
+) => items.map((item) => toCareLogEntry(item, undefined, groupMembers));
 
 export { toCreateCareLogPayload, toCareLogEntry, toCareLogEntries };

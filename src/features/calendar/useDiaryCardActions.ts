@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import type { CareLogModalVariant } from '@/pages/CareLog/components/CareLogModal';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type UseDiaryCardActionsOptions = {
   items: CareLogEntry[];

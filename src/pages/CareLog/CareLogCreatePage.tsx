@@ -8,10 +8,6 @@ import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import {
-  saveCareLogEntries,
-  getStoredCareLogEntries,
-} from '@/pages/CareLog/data/careLogStorage';
 import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
@@ -89,9 +85,6 @@ function CareLogCreatePage() {
         return;
       }
 
-      const nextEntries = [createdCareLogEntry, ...getStoredCareLogEntries()];
-
-      saveCareLogEntries(nextEntries);
       setCreatedEntry(createdCareLogEntry);
       setModalKey('createSuccess');
     } catch {

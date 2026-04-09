@@ -18,11 +18,8 @@ import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import {
-  getStoredCareLogEntries,
-  saveCareLogEntries,
-} from '@/pages/CareLog/data/careLogStorage';
 import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const defaultSelectedDate = new Date();
@@ -69,11 +66,10 @@ function getSelectedDateFromState(state: unknown) {
 function CalendarPage() {
   const location = useLocation();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { entries: fetchedEntries } = useGetCareLogEntries();
   const initialSelectedDate = getSelectedDateFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [entries, setEntries] = useState<CareLogEntry[]>(
-    getStoredCareLogEntries,
-  );
+  const [entries, setEntries] = useState<CareLogEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     initialSelectedDate ?? defaultSelectedDate,
   );
@@ -93,6 +89,10 @@ function CalendarPage() {
     setSelectedDate(routedSelectedDate);
     setVisibleMonth(routedSelectedDate);
   }, [location.state]);
+
+  useEffect(() => {
+    setEntries(fetchedEntries);
+  }, [fetchedEntries]);
 
   const markedDates = entries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
@@ -145,22 +145,14 @@ function CalendarPage() {
           onCreateEntry={openCreateEntry}
           onUpdateEntry={(updatedEntry) => {
             setEntries((currentEntries) => {
-              const nextEntries = currentEntries.map((entry) =>
+              return currentEntries.map((entry) =>
                 entry.id === updatedEntry.id ? updatedEntry : entry,
               );
-
-              saveCareLogEntries(nextEntries);
-              return nextEntries;
             });
           }}
           onDeleteEntry={(entryId) => {
             setEntries((currentEntries) => {
-              const nextEntries = currentEntries.filter(
-                (entry) => entry.id !== entryId,
-              );
-
-              saveCareLogEntries(nextEntries);
-              return nextEntries;
+              return currentEntries.filter((entry) => entry.id !== entryId);
             });
           }}
         />
@@ -199,7 +191,6 @@ function CalendarPage() {
                     const createdDate = parseISO(createdEntry.startsAt);
                     const nextEntries = [createdEntry, ...entries];
 
-                    saveCareLogEntries(nextEntries);
                     setEntries(nextEntries);
                     setSelectedDate(createdDate);
                     setVisibleMonth(createdDate);
