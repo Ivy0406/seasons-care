@@ -1,15 +1,23 @@
 export type CareLogType = 'diary';
+export type CareLogStatus = 'pending' | 'completed';
+export type CareLogRepeatPattern = 'none' | 'daily' | 'weeklyDay' | 'monthly';
 
 export type CareLogApiItem = {
   id: string;
   title: string;
-  content: string;
-  logType: string;
-  recordDate: string;
-  careGroupId: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
+  description?: string;
+  content?: string;
+  startsAt?: string;
+  recordDate?: string;
+  repeatPattern?: CareLogRepeatPattern;
+  participants?: string[];
+  status?: CareLogStatus;
+  isImportant?: boolean;
+  logType?: string;
+  careGroupId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
 };
 
 export type CareLogPagination = {
@@ -38,9 +46,12 @@ export type CareLogProblemDetails = {
 
 export type CreateCareLogPayload = {
   title: string;
-  content: string;
-  logType: CareLogType;
-  recordDate: string;
+  description: string;
+  startsAt: string;
+  participants: string[];
+  status?: CareLogStatus;
+  isImportant?: boolean;
+  repeatPattern?: CareLogRepeatPattern;
 };
 
 export type CreateCareLogResponse = CareLogApiResponse<CareLogApiItem>;

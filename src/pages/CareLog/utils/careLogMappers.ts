@@ -1,12 +1,33 @@
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import type { CareLogApiItem, CreateCareLogPayload } from '@/types/careLog';
 
-const toCreateCareLogPayload = (entry: CareLogEntry): CreateCareLogPayload => ({
-  title: entry.title,
-  content: entry.description,
-  logType: 'diary',
-  recordDate: entry.startsAt,
-});
+const toCreateCareLogPayload = (
+  entry: CareLogEntry,
+  currentUserId: string,
+): CreateCareLogPayload => {
+  const payload: CreateCareLogPayload = {
+    title: entry.title,
+    description: entry.description,
+    startsAt: new Date(entry.startsAt).toISOString(),
+    repeatPattern: entry.repeatPattern ?? 'none',
+    participants: [currentUserId],
+    status: entry.status,
+    isImportant: entry.isImportant ?? false,
+  };
+
+  return payload;
+};
+
+function toCareLogStatus(
+  status: CareLogApiItem['status'],
+  fallbackStatus: CareLogEntry['status'] = 'pending',
+) {
+  if (status === 'pending' || status === 'completed') {
+    return status;
+  }
+
+  return fallbackStatus;
+}
 
 const toCareLogEntry = (
   item: CareLogApiItem,
@@ -14,12 +35,17 @@ const toCareLogEntry = (
 ): CareLogEntry => ({
   id: item.id,
   title: item.title,
-  description: item.content,
-  startsAt: item.recordDate,
-  repeatPattern: fallbackEntry?.repeatPattern ?? 'none',
+  description:
+    item.description ?? item.content ?? fallbackEntry?.description ?? '',
+  startsAt:
+    item.startsAt ??
+    item.recordDate ??
+    fallbackEntry?.startsAt ??
+    new Date().toISOString(),
+  repeatPattern: item.repeatPattern ?? fallbackEntry?.repeatPattern ?? 'none',
   participants: fallbackEntry?.participants ?? [],
-  status: fallbackEntry?.status ?? 'pending',
-  isImportant: fallbackEntry?.isImportant ?? false,
+  status: toCareLogStatus(item.status, fallbackEntry?.status),
+  isImportant: item.isImportant ?? fallbackEntry?.isImportant ?? false,
 });
 
 const toCareLogEntries = (items: CareLogApiItem[]) =>
