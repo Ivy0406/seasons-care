@@ -245,7 +245,7 @@ function DataFormCardCarousel() {
             }
           }}
         >
-          {isLastSlide ? '完成' : '確認'}
+          {isLastSlide ? '儲存全部' : '確認'}
         </RoundedButtonSecondary>
 
         <button
@@ -279,7 +279,7 @@ function DataFormCardCarousel() {
       <Modal
         open={showSuccessModal}
         variant="success"
-        title="已完成確認"
+        title="新增成功！"
         autoCloseMs={1500}
         onClose={handleCloseResultFlow}
       />

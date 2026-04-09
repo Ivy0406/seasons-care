@@ -31,3 +31,4 @@ dist-ssr
 
 # OMX local state
 .omx/
+.vercel

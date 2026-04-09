@@ -616,10 +616,14 @@ async function parseMoneyTranscript(transcript: string) {
   return parsedResponse;
 }
 
+<<<<<<< HEAD
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse,
 ) {
+=======
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+>>>>>>> fix/create-health-data
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method !== 'POST') {
