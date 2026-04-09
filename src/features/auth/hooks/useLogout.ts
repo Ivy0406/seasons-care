@@ -5,6 +5,7 @@ import Cookie from 'js-cookie';
 import TOKEN_KEY, {
   CURRENT_GROUP_ID_KEY,
   CURRENT_USER_ID_KEY,
+  CURRENT_USER_KEY,
 } from '@/constants/auth';
 
 function useLogout() {
@@ -12,6 +13,7 @@ function useLogout() {
 
   const handleLogout = () => {
     Cookie.remove(TOKEN_KEY);
+    window.localStorage.removeItem(CURRENT_USER_KEY);
     window.localStorage.removeItem(CURRENT_USER_ID_KEY);
     window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
     navigate('/login');

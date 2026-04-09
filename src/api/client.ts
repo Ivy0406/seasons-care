@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
-import TOKEN_KEY from '@/constants/auth';
+import { TOKEN_KEY } from '@/constants/auth';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

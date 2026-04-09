@@ -6,7 +6,12 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { login } from '@/api/endpoints/auth';
-import { CURRENT_GROUP_ID_KEY, CURRENT_USER_ID_KEY } from '@/constants/auth';
+import {
+  CURRENT_GROUP_ID_KEY,
+  CURRENT_USER_ID_KEY,
+  CURRENT_USER_KEY,
+  TOKEN_KEY,
+} from '@/constants/auth';
 
 type LoginData = {
   account: string;
@@ -26,7 +31,8 @@ const useLogin = () => {
       });
       const { token, user, careGroupCount, defaultCareGroupId } = res.data.data;
 
-      Cookies.set('userToken', token, { expires: 100 });
+      Cookies.set(TOKEN_KEY, token, { expires: 100 });
+      window.localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
       window.localStorage.setItem(CURRENT_USER_ID_KEY, user.id);
 
       if (defaultCareGroupId) {

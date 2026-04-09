@@ -1,12 +1,12 @@
 import { Plus } from 'lucide-react';
 
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
-import type { CareGroup } from '@/features/groups/data/mockGroups';
+import type { CareGroupInfo } from '@/types/group';
 
 import GroupManageContent from './GroupManageContent';
 
 type GroupManagementDrawerProps = {
-  groups: CareGroup[];
+  groups: CareGroupInfo[];
   selectedGroupId: string;
   onSelectGroup: (groupId: string) => void;
   onManageGroup: (groupId: string) => void;
