@@ -13,6 +13,7 @@ import {
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
 import CreateDataCard from '@/features/health/components/CreateDataCard';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
+import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 type SubmitModalState = {
   open: boolean;
@@ -31,6 +32,7 @@ const REPORT_DATA = {
 
 function HealthReportPage() {
   const [showCreateCard, setShowCreateCard] = useState(false);
+  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [submitModal, setSubmitModal] = useState<SubmitModalState>({
     open: false,
     variant: 'success',
@@ -70,9 +72,13 @@ function HealthReportPage() {
       >
         <AlertDialogPortal>
           <AlertDialogBackdrop />
-          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateDataCard
               onClose={() => setShowCreateCard(false)}
+              onVoiceInput={() => {
+                setShowCreateCard(false);
+                setShowRecordingDrawer(true);
+              }}
               onSuccess={() => {
                 setShowCreateCard(false);
                 setSubmitModal({
@@ -92,6 +98,12 @@ function HealthReportPage() {
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
+
+      <RecordingDrawer
+        open={showRecordingDrawer}
+        onOpenChange={setShowRecordingDrawer}
+        onFinish={() => setShowRecordingDrawer(false)}
+      />
 
       <Modal
         open={submitModal.open}

@@ -39,7 +39,6 @@ function CreateDataCard({
             title=""
             onClose={onClose}
             onInputClick={() => {
-              onClose();
               onVoiceInput?.();
             }}
           />
