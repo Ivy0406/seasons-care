@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ChevronLeft, RotateCw } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -10,6 +11,24 @@ import 'swiper/css/pagination';
 
 import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
+import type { HealthDraft } from '@/features/health/types';
+import type { MoneyDraft } from '@/features/money/types';
+import {
+  createEmptyDiaryDraft,
+  hasDiaryDraftContent,
+  mergeDiaryDraft,
+} from '@/features/voice/services/diaryParser';
+import {
+  createEmptyHealthDraft,
+  mergeHealthDraft,
+} from '@/features/voice/services/healthParser';
+import {
+  createEmptyMoneyDraft,
+  hasMoneyDraftContent,
+  mergeMoneyDraft,
+} from '@/features/voice/services/moneyParser';
+import { useVoiceInput } from '@/features/voice/VoiceInputContext';
+import type { DiaryDraft } from '@/pages/CareLog/types';
 
 import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
@@ -31,15 +50,149 @@ const swiperConfig = {
   noSwiping: false,
 };
 
+function hasHealthDraftContent(draft: HealthDraft) {
+  return (
+    draft.systolic.trim() !== '' ||
+    draft.diastolic.trim() !== '' ||
+    draft.temperature.trim() !== '' ||
+    draft.bloodOxygen.trim() !== '' ||
+    draft.weight.trim() !== '' ||
+    draft.bloodSugar.trim() !== ''
+  );
+}
+
 function DataFormCardCarousel() {
   const navigate = useNavigate();
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
+  const [fallbackHealthDraft, setFallbackHealthDraft] = useState<HealthDraft>(
+    createEmptyHealthDraft(),
+  );
+  const [fallbackDiaryDraft, setFallbackDiaryDraft] = useState<DiaryDraft>(
+    createEmptyDiaryDraft(),
+  );
+  const [fallbackMoneyDraft, setFallbackMoneyDraft] = useState<MoneyDraft>(
+    createEmptyMoneyDraft(),
+  );
+  const {
+    transcript,
+    healthDraft,
+    diaryDrafts,
+    moneyDraft,
+    setVoiceTranscript,
+    updateHealthDraft,
+    updateDiaryDraft,
+    updateMoneyDraft,
+    clearVoiceInput,
+  } = useVoiceInput();
 
-  const isLastSlide = activeIndex === 2;
+  const hasVoiceTranscript = transcript.trim() !== '';
+  const activeHealthDraft = hasVoiceTranscript
+    ? healthDraft
+    : fallbackHealthDraft;
+  const activeDiaryDrafts = hasVoiceTranscript
+    ? diaryDrafts
+    : [fallbackDiaryDraft];
+  const activeMoneyDraft = hasVoiceTranscript ? moneyDraft : fallbackMoneyDraft;
+  const shouldShowHealthForm = hasVoiceTranscript
+    ? hasHealthDraftContent(activeHealthDraft)
+    : true;
+  const visibleDiaryDrafts = activeDiaryDrafts.filter((draft) =>
+    hasDiaryDraftContent(draft),
+  );
+  const shouldShowDiaryForm = hasVoiceTranscript
+    ? visibleDiaryDrafts.length > 0
+    : true;
+  let renderedDiaryDrafts = activeDiaryDrafts;
+
+  if (hasVoiceTranscript) {
+    renderedDiaryDrafts = visibleDiaryDrafts;
+  }
+  const shouldShowMoneyForm = hasVoiceTranscript
+    ? hasMoneyDraftContent(activeMoneyDraft)
+    : true;
+
+  const handleHealthDraftChange = (updates: Partial<HealthDraft>) => {
+    if (hasVoiceTranscript) {
+      updateHealthDraft(updates);
+      return;
+    }
+
+    setFallbackHealthDraft((currentDraft) =>
+      mergeHealthDraft(currentDraft, updates),
+    );
+  };
+
+  const handleDiaryDraftChange = (id: string, updates: Partial<DiaryDraft>) => {
+    if (hasVoiceTranscript) {
+      updateDiaryDraft(id, updates);
+      return;
+    }
+
+    setFallbackDiaryDraft((currentDraft) =>
+      currentDraft.id === id
+        ? mergeDiaryDraft(currentDraft, updates)
+        : currentDraft,
+    );
+  };
+
+  const handleMoneyDraftChange = (updates: Partial<MoneyDraft>) => {
+    if (hasVoiceTranscript) {
+      updateMoneyDraft(updates);
+      return;
+    }
+
+    setFallbackMoneyDraft((currentDraft) =>
+      mergeMoneyDraft(currentDraft, updates),
+    );
+  };
+
+  const visibleSlides = [
+    shouldShowHealthForm
+      ? {
+          key: 'health',
+          content: (
+            <HealthDataFormCard
+              value={activeHealthDraft}
+              onChange={handleHealthDraftChange}
+            />
+          ),
+        }
+      : null,
+    ...(shouldShowDiaryForm
+      ? renderedDiaryDrafts.map((draft, index) => ({
+          key: `diary-${draft.id}`,
+          content: (
+            <DiaryDataFormCard
+              title={`新日誌 ${index + 1}`}
+              value={draft}
+              onChange={(updates) => handleDiaryDraftChange(draft.id, updates)}
+            />
+          ),
+        }))
+      : []),
+    shouldShowMoneyForm
+      ? {
+          key: 'money',
+          content: (
+            <MoneyDataFormCard
+              value={activeMoneyDraft}
+              onChange={handleMoneyDraftChange}
+            />
+          ),
+        }
+      : null,
+  ].filter((slide) => slide !== null);
+
+  const isLastSlide = activeIndex === visibleSlides.length - 1;
+
+  const handleCloseResultFlow = () => {
+    setShowSuccessModal(false);
+    clearVoiceInput();
+    navigate('/homepage');
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-800 pt-5 pb-10">
@@ -55,22 +208,27 @@ function DataFormCardCarousel() {
       </div>
 
       <div className="mt-6 flex-1 overflow-hidden">
+        {transcript ? (
+          <section className="mx-4 mb-4 rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4">
+            <p className="font-label-md mb-2 text-neutral-900">語音內容</p>
+            <p className="font-paragraph-md whitespace-pre-wrap text-neutral-700">
+              {transcript}
+            </p>
+          </section>
+        ) : null}
+
         <Swiper
           modules={[Pagination]}
           {...swiperConfig}
           onSwiper={setSwiper}
-          onSlideChange={(s) => setActiveIndex(s.activeIndex)}
+          onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
           className="w-full"
         >
-          <SwiperSlide className="px-4">
-            <HealthDataFormCard />
-          </SwiperSlide>
-          <SwiperSlide className="px-4">
-            <DiaryDataFormCard />
-          </SwiperSlide>
-          <SwiperSlide className="px-4">
-            <MoneyDataFormCard />
-          </SwiperSlide>
+          {visibleSlides.map((slide) => (
+            <SwiperSlide key={slide.key} className="px-4">
+              {slide.content}
+            </SwiperSlide>
+          ))}
         </Swiper>
 
         <div className="form-carousel-pagination mt-4 flex justify-center gap-2 px-4 [--swiper-pagination-bullet-inactive-color:#adb5bd] [--swiper-theme-color:#ffffff]" />
@@ -103,6 +261,19 @@ function DataFormCardCarousel() {
       <RecordingDrawer
         open={showRecordingDrawer}
         onOpenChange={setShowRecordingDrawer}
+        onFinish={async ({ transcript: nextTranscript }) => {
+          const result = await setVoiceTranscript(nextTranscript);
+
+          if (!result.hasDetectedContent) {
+            clearVoiceInput();
+            toast.error(
+              '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+            );
+            return { shouldClose: false };
+          }
+
+          return { shouldClose: true };
+        }}
       />
 
       <Modal
@@ -110,20 +281,7 @@ function DataFormCardCarousel() {
         variant="success"
         title="新增成功！"
         autoCloseMs={1500}
-        onClose={() => {
-          setShowSuccessModal(false);
-          navigate('/homepage');
-        }}
-      />
-
-      <Modal
-        open={showErrorModal}
-        variant="error"
-        title="新增失敗！"
-        onClose={() => {
-          setShowErrorModal(false);
-          navigate('/homepage');
-        }}
+        onClose={handleCloseResultFlow}
       />
     </div>
   );

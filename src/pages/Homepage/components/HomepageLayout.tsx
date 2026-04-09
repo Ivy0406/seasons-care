@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Mic } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
@@ -24,6 +26,7 @@ import GroupMemberManagementDrawer from '@/features/groups/components/GroupMembe
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
@@ -35,6 +38,7 @@ function HomepageLayout() {
   const currentUser: UserInfo | null = JSON.parse(
     localStorage.getItem(CURRENT_USER_KEY) ?? 'null',
   );
+  const navigate = useNavigate();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
@@ -60,6 +64,7 @@ function HomepageLayout() {
   const [deletedMemberName, setDeletedMemberName] = useState<string | null>(
     null,
   );
+  const { setVoiceTranscript, clearVoiceInput } = useVoiceInput();
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
@@ -241,6 +246,24 @@ function HomepageLayout() {
                 <Mic strokeWidth={1} className="stroke-[1.5]!" />
               </CircleButtonPrimary>
             }
+            onFinish={async ({ transcript }) => {
+              if (transcript.trim() === '') {
+                return { shouldClose: false };
+              }
+
+              const result = await setVoiceTranscript(transcript);
+
+              if (!result.hasDetectedContent) {
+                clearVoiceInput();
+                toast.error(
+                  '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+                );
+                return { shouldClose: false };
+              }
+
+              navigate('/data-form');
+              return { shouldClose: true };
+            }}
           />
         </section>
 
