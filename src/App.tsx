@@ -10,6 +10,9 @@ function App() {
   const { pathname } = useLocation();
   const isFullWidthRoute =
     pathname === '/' ||
+    pathname === '/login' ||
+    pathname === '/registration' ||
+    pathname === '/onboarding' ||
     pathname === '/calendar-page' ||
     pathname === '/calendar-page/new' ||
     pathname === '/data-form' ||
