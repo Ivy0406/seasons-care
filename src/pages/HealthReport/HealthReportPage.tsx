@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
+import { PageNavigationBar } from '@/components/common/NavigationBar';
 import { RoundedButtonPro } from '@/components/common/RoundedButtons';
 import {
   AlertDialog,
@@ -12,6 +13,7 @@ import {
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
 import CreateDataCard from '@/features/health/components/CreateDataCard';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
+import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 type SubmitModalState = {
   open: boolean;
@@ -30,6 +32,7 @@ const REPORT_DATA = {
 
 function HealthReportPage() {
   const [showCreateCard, setShowCreateCard] = useState(false);
+  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [submitModal, setSubmitModal] = useState<SubmitModalState>({
     open: false,
     variant: 'success',
@@ -37,12 +40,10 @@ function HealthReportPage() {
   });
 
   return (
-    <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-10 text-neutral-900">
-      <div className="mx-auto mt-14 flex w-full max-w-200 items-center px-6 py-3">
-        <h1 className="font-heading-lg">近期報告</h1>
-      </div>
+    <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-20">
+      <PageNavigationBar title="健康" />
 
-      <section className="bg-primary-default w-full py-5">
+      <section className="w-full bg-neutral-800 py-5 text-neutral-50">
         <div className="mx-auto w-full max-w-200 px-6">
           <AIAnalysisReport
             patientName={REPORT_DATA.patientName}
@@ -71,9 +72,13 @@ function HealthReportPage() {
       >
         <AlertDialogPortal>
           <AlertDialogBackdrop />
-          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateDataCard
               onClose={() => setShowCreateCard(false)}
+              onVoiceInput={() => {
+                setShowCreateCard(false);
+                setShowRecordingDrawer(true);
+              }}
               onSuccess={() => {
                 setShowCreateCard(false);
                 setSubmitModal({
@@ -93,6 +98,12 @@ function HealthReportPage() {
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
+
+      <RecordingDrawer
+        open={showRecordingDrawer}
+        onOpenChange={setShowRecordingDrawer}
+        onFinish={() => setShowRecordingDrawer(false)}
+      />
 
       <Modal
         open={submitModal.open}

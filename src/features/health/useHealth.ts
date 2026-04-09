@@ -15,15 +15,6 @@ import type {
   WeightData,
 } from '@/types/health';
 
-type HealthData = {
-  bloodPressure: BloodPressureData;
-  bloodOxygen: BloodOxygenData;
-  temperature: TemperatureData;
-  weight: WeightData;
-  bloodSugar: BloodSugarData;
-  isLoading: boolean;
-};
-
 function getTimeSlot(recordDate: string): 'morning' | 'noon' | 'night' {
   const hour = new Date(recordDate).getHours();
   if (hour < 12) return 'morning';
@@ -31,7 +22,7 @@ function getTimeSlot(recordDate: string): 'morning' | 'noon' | 'night' {
   return 'night';
 }
 
-function useHealth(): HealthData {
+function useHealth() {
   const [bloodPressure, setBloodPressure] = useState<BloodPressureData>({
     date: '--',
     time: '--',

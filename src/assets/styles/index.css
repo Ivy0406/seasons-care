@@ -133,9 +133,9 @@
 }
 
 .custom-pagination .swiper-pagination-bullet {
-  @apply h-1.5 w-1.5 bg-neutral-200 opacity-100;
+  @apply h-1.5 w-1.5 bg-neutral-300 opacity-100;
 }
 
 .custom-pagination .swiper-pagination-bullet-active {
-  @apply bg-neutral-900;
+  @apply bg-primary-default;
 }

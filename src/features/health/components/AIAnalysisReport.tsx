@@ -23,10 +23,10 @@ function AIAnalysisReport({
   return (
     <div className={cn('flex flex-col gap-3', className)}>
       <div className="flex items-center justify-between">
-        <h2 className="font-heading-sm text-neutral-900">AI分析報告</h2>
+        <h2 className="font-heading-sm text-neutral-50">AI分析報告</h2>
         <RoundedButtonPro
           onClick={onViewHistory}
-          className="font-label-md h-[33px] w-[141px] px-4"
+          className="font-label-md h-8.25 w-fit px-1"
         >
           查看過往紀錄
         </RoundedButtonPro>
@@ -41,12 +41,16 @@ function AIAnalysisReport({
           </p>
         </div>
         <div className="flex flex-col gap-2 border-b-2 border-neutral-900 p-3">
-          <CardLabelSecondary>關鍵數據洞察</CardLabelSecondary>
+          <CardLabelSecondary className="bg-neutral-800 text-neutral-50">
+            關鍵數據洞察
+          </CardLabelSecondary>
           <p className="font-paragraph-md text-neutral-900">{keyInsight}</p>
         </div>
 
         <div className="flex flex-col gap-2 p-3">
-          <CardLabelSecondary>健康行動建議</CardLabelSecondary>
+          <CardLabelSecondary className="bg-neutral-800 text-neutral-50">
+            健康行動建議
+          </CardLabelSecondary>
           <p className="font-paragraph-md text-neutral-900">
             {actionSuggestion}
           </p>
