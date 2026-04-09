@@ -32,7 +32,7 @@ const swiperConfig = {
 function HealthSummary() {
   const healthData = useHealth();
 
-  const { time, bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
+  const { bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
     healthData;
 
   return (
@@ -48,31 +48,31 @@ function HealthSummary() {
             systolic={bloodPressure.systolic}
             diastolic={bloodPressure.diastolic}
             className="h-full w-full"
-            time={time}
+            time={bloodPressure.time}
           />
         </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
           <DataCardOxygen
             category="血氧"
-            bloodOxygen={bloodOxygen}
+            bloodOxygen={bloodOxygen.spO2}
             className="h-full w-full"
-            time={time}
+            time={bloodOxygen.time}
           />
         </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
           <DataCardTemperature
             category="體溫"
-            temperature={temperature}
+            temperature={temperature.value}
             className="h-full w-full"
-            time={time}
+            time={temperature.time}
           />
         </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
           <DataCardWeight
             category="體重"
-            weight={weight}
+            weight={weight.value}
             className="h-full w-full"
-            time={time}
+            time={weight.time}
           />
         </SwiperSlide>
         <SwiperSlide style={{ width: '250px' }}>
@@ -82,7 +82,7 @@ function HealthSummary() {
             noon={bloodSugar.noon}
             night={bloodSugar.night}
             className="h-full w-full"
-            time={time}
+            time=""
           />
         </SwiperSlide>
       </Swiper>
