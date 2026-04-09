@@ -101,7 +101,6 @@ function CareLogFormCard({
             title="日誌"
             onClose={onClose}
             onInputClick={() => {
-              onClose();
               onVoiceInput?.();
             }}
           />
