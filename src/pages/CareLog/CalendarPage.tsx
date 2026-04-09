@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { format, isSameDay, isValid, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import { Plus } from 'lucide-react';
 import { useLocation } from 'react-router';
 
 import Calendar from '@/components/common/Calendar';
+import { PageNavigationBar } from '@/components/common/NavigationBar';
+import SideMenu from '@/components/common/SideMenu';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -69,6 +70,7 @@ function CalendarPage() {
   const location = useLocation();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
   const initialSelectedDate = getSelectedDateFromState(location.state);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [entries, setEntries] = useState<CareLogEntry[]>(
     getStoredCareLogEntries,
   );
@@ -108,17 +110,12 @@ function CalendarPage() {
   return (
     <main className="flex min-h-screen w-full flex-col pb-10 text-neutral-900">
       <section>
-        <div className="mx-auto flex w-full max-w-200 items-center justify-between px-6 py-3.75">
-          <h2 className="font-heading-lg">日誌</h2>
-          <button
-            type="button"
-            aria-label="新增日誌"
-            className="inline-flex size-10 items-center justify-center text-neutral-900"
-            onClick={() => openCreateEntry()}
-          >
-            <Plus className="size-8" strokeWidth={2} />
-          </button>
-        </div>
+        <PageNavigationBar
+          wrapperClassName="border-b-0"
+          className="px-4 ring-0"
+          title="日誌"
+          onMenuClick={() => setIsSideMenuOpen(true)}
+        />
       </section>
 
       <section className="bg-primary-default border-y border-neutral-900">
@@ -225,6 +222,8 @@ function CalendarPage() {
           onClose={() => setModalKey(null)}
         />
       ) : null}
+
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
   );
 }

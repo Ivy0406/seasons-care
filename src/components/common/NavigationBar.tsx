@@ -45,6 +45,7 @@ type PageNavigationBarProps = {
   title: string;
   onMenuClick?: () => void;
   titleClassName?: string;
+  wrapperClassName?: string;
   className?: string;
 };
 
@@ -139,7 +140,7 @@ function NavigationMenuButton({
         className,
       )}
     >
-      <Menu className="size-8" strokeWidth={1.5} />
+      <Menu className="size-6" strokeWidth={1.5} />
     </button>
   );
 }
@@ -283,10 +284,11 @@ function PageNavigationBar({
   title,
   onMenuClick,
   titleClassName,
+  wrapperClassName,
   className,
 }: PageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
+    <div className={cn('border-b-2 border-neutral-900', wrapperClassName)}>
       <div
         className={cn(
           'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
@@ -295,7 +297,7 @@ function PageNavigationBar({
       >
         <NavigationTitle
           as="span"
-          className={cn('font-label-lg justify-self-start', titleClassName)}
+          className={cn('font-heading-lg justify-self-start', titleClassName)}
         >
           {title}
         </NavigationTitle>
