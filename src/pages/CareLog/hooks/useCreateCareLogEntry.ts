@@ -4,17 +4,34 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 import { createCareLogEntry } from '@/api/endpoints/careLog';
-import { CURRENT_GROUP_ID_KEY, CURRENT_USER_ID_KEY } from '@/constants/auth';
+import { CURRENT_GROUP_ID_KEY, CURRENT_USER_KEY } from '@/constants/auth';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import {
   toCareLogEntry,
   toCreateCareLogPayload,
 } from '@/pages/CareLog/utils/careLogMappers';
+import type { UserInfo } from '@/types/auth';
 
 const getCurrentCareGroupId = () =>
   window.localStorage.getItem(CURRENT_GROUP_ID_KEY);
 
-const getCurrentUserId = () => window.localStorage.getItem(CURRENT_USER_ID_KEY);
+function getCurrentUserId() {
+  const rawCurrentUser = window.localStorage.getItem(CURRENT_USER_KEY);
+
+  if (rawCurrentUser) {
+    try {
+      const currentUser = JSON.parse(rawCurrentUser) as Partial<UserInfo>;
+
+      if (typeof currentUser.id === 'string' && currentUser.id.length > 0) {
+        return currentUser.id;
+      }
+    } catch {
+      window.localStorage.removeItem(CURRENT_USER_KEY);
+    }
+  }
+
+  return null;
+}
 
 function getErrorDetail(error: unknown) {
   if (!axios.isAxiosError(error)) return undefined;
