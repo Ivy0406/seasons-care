@@ -1,5 +1,6 @@
 import { EllipsisVertical } from 'lucide-react';
 
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import {
   CardLabelPrimary,
   CardLabelSecondary,
@@ -14,20 +15,28 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import type { ExpenseItem } from '@/features/money/types';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 import ItemDetails from './ItemDetails';
 
 function EntryCard({ item }: { item: ExpenseItem }) {
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
+  const creator = groupMembers.find((m) => m.userId === item.createdBy);
+
   return (
     <AlertDialog>
       <AlertDialogTrigger className="block w-full text-left">
         <div className="w-full rounded-sm border-2 border-neutral-900 bg-neutral-100 p-4">
-          <div className="flex items-center justify-between">
-            <span className="font-label-lg text-neutral-900">{item.name}</span>
+          <div className="flex items-center justify-between border-b-2 border-neutral-900 pb-3">
+            <span className="font-label-lg text-neutral-900">{item.title}</span>
             <div className="flex items-center gap-2">
-              {item.isSplit && <CardLabelPrimary>已分帳</CardLabelPrimary>}
-              {item.needSplit && !item.isSplit && (
+              {item.splitStatus === 'settled' && (
+                <CardLabelPrimary>已分帳</CardLabelPrimary>
+              )}
+              {item.splitStatus === 'pending' && (
                 <CardLabelSecondary>需分帳</CardLabelSecondary>
               )}
               <button
@@ -40,17 +49,17 @@ function EntryCard({ item }: { item: ExpenseItem }) {
             </div>
           </div>
 
-          <div className="my-3 border-b border-neutral-900" />
-
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-2">
             <span className="font-label-lg text-neutral-900">
               $ {item.amount.toLocaleString()}
             </span>
-            <SingleAvatar
-              src={item.creator.src}
-              name={item.creator.name}
-              className="size-7"
-            />
+            {creator && (
+              <SingleAvatar
+                src={getAvatarSrcByKey(creator.avatarKey)}
+                name={creator.username}
+                className="size-7"
+              />
+            )}
           </div>
         </div>
       </AlertDialogTrigger>
@@ -64,7 +73,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
             toneClassName="bg-neutral-800 text-neutral-50"
           >
             <DataFormCard.Content>
-              <ItemDetails {...item} />
+              <ItemDetails item={item} />
             </DataFormCard.Content>
 
             <DataFormCard.Footer>
