@@ -5,6 +5,8 @@ import FilterDropdownButton, {
 } from '@/components/common/FilterDropdownButton';
 import type { ExpenseItem } from '@/features/money/types';
 
+import useActivedMoneyTab from '../hooks/useActivedMoneyTab';
+
 import EntryCard from './EntryCard';
 
 type SplitFilter = 'all' | 'pending' | 'settled' | 'none';
@@ -28,11 +30,21 @@ const filterItems = (items: ExpenseItem[], filter: SplitFilter) => {
 function CardsList({ items }: CardsListProps) {
   const [filter, setFilter] = useState<SplitFilter>('all');
   const filteredItems = filterItems(items, filter);
+  const { activeTab } = useActivedMoneyTab();
+
+  const isDailyTab = activeTab === 'daily';
+  const isMonthlyTab = activeTab === 'monthly';
 
   return (
     <section className="px-6 py-5">
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="font-heading-md text-neutral-900">當日花費</h2>
+        {isDailyTab && (
+          <h2 className="font-heading-md text-neutral-900">當日花費</h2>
+        )}
+        {isMonthlyTab && (
+          <h2 className="font-heading-md text-neutral-900">當月花費</h2>
+        )}
+
         <FilterDropdownButton
           className="h-8 w-fit"
           buttonClassName="bg-neutral-100 w-35.25"

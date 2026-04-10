@@ -1,6 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import cn from '@/lib/utils';
 
+import useActivedMoneyTab from '../hooks/useActivedMoneyTab';
+
 import DailyContent from './DailyContent';
 import MonthlyContent from './MonthlyContent';
 
@@ -8,8 +10,13 @@ type MoneyTabs = 'daily' | 'monthly';
 const moneyTabsList: MoneyTabs[] = ['daily', 'monthly'];
 
 function MoneyTabsCard() {
+  const { activeTab, setActivedMoneyTab } = useActivedMoneyTab();
   return (
-    <Tabs defaultValue="daily" className="w-full">
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => setActivedMoneyTab(value as MoneyTabs)}
+      className="w-full"
+    >
       <div className="w-full overflow-hidden border-b-2 border-neutral-900">
         <TabsList className="h-10 w-full gap-0 rounded-none border-b-2 border-neutral-900 bg-transparent p-0">
           {moneyTabsList.map((value) => (
