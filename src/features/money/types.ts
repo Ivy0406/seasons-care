@@ -1,7 +1,4 @@
-type Recorder = {
-  name: string;
-  src: string;
-};
+type SplitStatus = 'pending' | 'settled' | 'none';
 
 type MoneyCategoryValue = 'none' | 'medical' | 'food' | 'traffic' | 'other';
 
@@ -19,15 +16,16 @@ type MoneyDraft = {
 
 type ExpenseItem = {
   id: string;
-  name: string;
-  date: string;
-  time: string;
-  category: string;
+  title: string;
   amount: number;
-  needSplit: boolean;
-  isSplit: boolean;
-  creator: Recorder;
-  description?: string;
+  category: string;
+  notes?: string;
+  expenseDate: string;
+  careGroupId: string;
+  createdAt: string;
+  updatedAt: string;
+  splitStatus: SplitStatus;
+  createdBy: string;
 };
 
 type ExpensesCategory = 'medical' | 'food' | 'traffic' | 'other';
@@ -47,7 +45,7 @@ type CategoryTotals = Record<ExpensesCategory, number>;
 type MoneyTab = 'daily' | 'monthly';
 
 export type {
-  Recorder,
+  SplitStatus,
   MoneyCategoryValue,
   MoneyDraft,
   ExpenseItem,
