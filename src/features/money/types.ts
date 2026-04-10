@@ -1,16 +1,11 @@
-export type Recorder = {
+type Recorder = {
   name: string;
   src: string;
 };
 
-export type MoneyCategoryValue =
-  | 'none'
-  | 'medical'
-  | 'food'
-  | 'traffic'
-  | 'other';
+type MoneyCategoryValue = 'none' | 'medical' | 'food' | 'traffic' | 'other';
 
-export type MoneyDraft = {
+type MoneyDraft = {
   title: string;
   amount: string;
   dateValue: string;
@@ -22,7 +17,7 @@ export type MoneyDraft = {
   summary: string;
 };
 
-export type ExpenseItem = {
+type ExpenseItem = {
   id: string;
   name: string;
   date: string;
@@ -33,4 +28,32 @@ export type ExpenseItem = {
   isSplit: boolean;
   creator: Recorder;
   description?: string;
+};
+
+type ExpensesCategory = 'medical' | 'food' | 'traffic' | 'other';
+
+type CategoryConfig = {
+  category: ExpensesCategory;
+  label: string;
+  color: string;
+};
+
+type CategoryWithAmount = CategoryConfig & {
+  amount: number;
+};
+
+type CategoryTotals = Record<ExpensesCategory, number>;
+
+type MoneyTab = 'daily' | 'monthly';
+
+export type {
+  Recorder,
+  MoneyCategoryValue,
+  MoneyDraft,
+  ExpenseItem,
+  ExpensesCategory,
+  CategoryConfig,
+  CategoryWithAmount,
+  CategoryTotals,
+  MoneyTab,
 };
