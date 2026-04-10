@@ -37,10 +37,16 @@ function useGetCareLogEntries() {
     [groupMembers, query.data],
   );
 
+  const refetchEntries = async () => {
+    const result = await query.refetch();
+    return toCareLogEntries(result.data ?? [], groupMembers);
+  };
+
   return {
     ...query,
     entries,
     careGroupId,
+    refetchEntries,
   };
 }
 

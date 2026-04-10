@@ -54,7 +54,7 @@ function CalendarPage() {
     useDeleteCareLogEntry();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
-  const { entries: fetchedEntries } = useGetCareLogEntries();
+  const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const initialSelectedDate = getSelectedDateFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [entries, setEntries] = useState<CareLogEntry[]>([]);
@@ -179,9 +179,16 @@ function CalendarPage() {
               return false;
             }
 
-            setEntries((currentEntries) =>
-              currentEntries.filter((entry) => entry.id !== entryId),
+            const nextEntries = await refetchEntries();
+            const stillExists = nextEntries.some(
+              (entry) => entry.id === entryId,
             );
+
+            if (stillExists) {
+              return false;
+            }
+
+            setEntries(nextEntries);
 
             return true;
           }}
