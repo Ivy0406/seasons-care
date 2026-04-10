@@ -10,12 +10,7 @@ import CareLogModal, {
 } from '@/pages/CareLog/components/CareLogModal';
 import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
-
-const defaultParticipant = {
-  id: 'current-user',
-  name: '王希銘',
-  src: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png',
-};
+import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 
 function getSelectedDateFromState(state: unknown) {
   if (!state || typeof state !== 'object' || !('selectedDate' in state)) {
@@ -35,21 +30,6 @@ function getSelectedDateFromState(state: unknown) {
   const parsedDate = parseISO(selectedDate);
 
   return isValid(parsedDate) ? parsedDate : undefined;
-}
-
-function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
-  const startsAt = selectedDate;
-
-  return {
-    id: globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`,
-    title: '',
-    description: '',
-    startsAt: format(startsAt, "yyyy-MM-dd'T'HH:mm:ssxxx"),
-    repeatPattern: 'none',
-    participants: [defaultParticipant],
-    status: 'pending',
-    isImportant: false,
-  };
 }
 
 function CareLogCreatePage() {
