@@ -2,6 +2,7 @@ import apiClient from '@/api/client';
 import type {
   CreateCareLogPayload,
   CreateCareLogResponse,
+  DeleteCareLogResponse,
   GetCareLogEntriesParams,
   GetCareLogEntriesResponse,
   UpdateCareLogPayload,
@@ -33,6 +34,11 @@ const updateCareLogEntry = (
     payload,
   );
 
+const deleteCareLogEntry = (careGroupId: string, careLogId: string) =>
+  apiClient.delete<DeleteCareLogResponse>(
+    buildCareLogEntryPath(careGroupId, careLogId),
+  );
+
 const getCareLogEntries = (
   careGroupId: string,
   params?: GetCareLogEntriesParams,
@@ -48,4 +54,9 @@ const getCareLogEntries = (
     },
   );
 
-export { createCareLogEntry, updateCareLogEntry, getCareLogEntries };
+export {
+  createCareLogEntry,
+  updateCareLogEntry,
+  deleteCareLogEntry,
+  getCareLogEntries,
+};

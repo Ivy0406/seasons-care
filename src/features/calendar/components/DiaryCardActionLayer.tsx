@@ -18,6 +18,7 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
   const {
     detailEntry,
     editingEntry,
+    isDeletingEntry,
     isUpdatingEntry,
     modalKey,
     selectedActionEntry,
@@ -102,7 +103,11 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
           open
           variant={modalKey}
           onClose={closeModal}
-          onConfirm={modalKey === 'deleteConfirm' ? confirmDelete : undefined}
+          onConfirm={
+            modalKey === 'deleteConfirm' && !isDeletingEntry
+              ? confirmDelete
+              : undefined
+          }
         />
       ) : null}
     </>

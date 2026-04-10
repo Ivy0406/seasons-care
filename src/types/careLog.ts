@@ -69,6 +69,8 @@ export type UpdateCareLogPayload = {
 
 export type UpdateCareLogResponse = CareLogApiResponse<CareLogApiItem>;
 
+export type DeleteCareLogResponse = CareLogApiResponse<null>;
+
 export type GetCareLogEntriesParams = {
   page?: number;
   pageSize?: number;

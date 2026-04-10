@@ -6,8 +6,9 @@ import type { CareLogEntry } from '@/pages/CareLog/types';
 type UseDiaryCardActionsOptions = {
   items: CareLogEntry[];
   onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
-  onDeleteEntry: (entryId: string) => void;
+  onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
   isUpdatingEntry?: boolean;
+  isDeletingEntry?: boolean;
 };
 
 export type UseDiaryCardActionsResult = {
@@ -16,11 +17,12 @@ export type UseDiaryCardActionsResult = {
   modalKey: CareLogModalVariant | null;
   selectedActionEntry: CareLogEntry | null;
   isUpdatingEntry: boolean;
+  isDeletingEntry: boolean;
   closeActions: () => void;
   closeDetail: () => void;
   closeEdit: () => void;
   closeModal: () => void;
-  confirmDelete: () => void;
+  confirmDelete: () => Promise<void>;
   openActions: (entryId: string) => void;
   openDetail: (entryId: string) => void;
   openEdit: (entryId: string) => void;
@@ -34,6 +36,7 @@ function useDiaryCardActions({
   onUpdateEntry,
   onDeleteEntry,
   isUpdatingEntry = false,
+  isDeletingEntry = false,
 }: UseDiaryCardActionsOptions): UseDiaryCardActionsResult {
   const [detailEntryId, setDetailEntryId] = useState<string | null>(null);
   const [selectedActionEntryId, setSelectedActionEntryId] = useState<
@@ -99,7 +102,7 @@ function useDiaryCardActions({
     setModalKey('deleteConfirm');
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     const entryId =
       pendingDeleteEntryId ?? selectedActionEntryId ?? detailEntryId;
 
@@ -109,7 +112,13 @@ function useDiaryCardActions({
       return;
     }
 
-    onDeleteEntry(entryId);
+    const didDelete = await onDeleteEntry(entryId);
+
+    if (!didDelete) {
+      setModalKey('deleteError');
+      return;
+    }
+
     setDetailEntryId(null);
     setEditingEntryId(null);
     setSelectedActionEntryId(null);
@@ -137,6 +146,7 @@ function useDiaryCardActions({
     detailEntry,
     editingEntry,
     isUpdatingEntry,
+    isDeletingEntry,
     modalKey,
     selectedActionEntry,
     closeActions,

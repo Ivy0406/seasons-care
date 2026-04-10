@@ -19,6 +19,7 @@ import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
 import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
@@ -49,6 +50,8 @@ function getSelectedDateFromState(state: unknown) {
 function CalendarPage() {
   const location = useLocation();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
+    useDeleteCareLogEntry();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
   const { entries: fetchedEntries } = useGetCareLogEntries();
@@ -129,6 +132,7 @@ function CalendarPage() {
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
           isUpdatingEntry={isUpdatingEntry}
+          isDeletingEntry={isDeletingEntry}
           onUpdateEntry={async (updatedEntry) => {
             const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);
 
@@ -144,10 +148,18 @@ function CalendarPage() {
 
             return true;
           }}
-          onDeleteEntry={(entryId) => {
-            setEntries((currentEntries) => {
-              return currentEntries.filter((entry) => entry.id !== entryId);
-            });
+          onDeleteEntry={async (entryId) => {
+            const didDelete = await handleDeleteCareLogEntry(entryId);
+
+            if (!didDelete) {
+              return false;
+            }
+
+            setEntries((currentEntries) =>
+              currentEntries.filter((entry) => entry.id !== entryId),
+            );
+
+            return true;
           }}
         />
       </section>
