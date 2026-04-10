@@ -3,7 +3,7 @@ import type {
   ReactNode,
   TextareaHTMLAttributes,
 } from 'react';
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { format, getDaysInMonth, parse } from 'date-fns';
 
@@ -193,6 +193,43 @@ function updateDateSegment(
   return nextDate;
 }
 
+function useDismissOnOutsideClick(
+  ref: React.RefObject<HTMLElement | null>,
+  isOpen: boolean,
+  onClose: () => void,
+) {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+
+      if (
+        target?.closest('[data-slot="select-content"]') ||
+        ref.current?.contains(target)
+      ) {
+        return;
+      }
+
+      onClose();
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose, ref]);
+}
+
 function InlineDatePicker({
   value,
   onChange,
@@ -204,6 +241,7 @@ function InlineDatePicker({
   panelClassName,
 }: InlineDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const selectedDate = parseDateValue(value, parseFormat);
   const currentDate = new Date();
   const selectedYear = selectedDate?.getFullYear() ?? currentDate.getFullYear();
@@ -243,8 +281,10 @@ function InlineDatePicker({
     handleDateUpdate(nextDate, segment === 'day');
   };
 
+  useDismissOnOutsideClick(rootRef, isOpen, () => setIsOpen(false));
+
   return (
-    <div className="relative" data-vaul-no-drag="">
+    <div ref={rootRef} className="relative" data-vaul-no-drag="">
       <button
         type="button"
         onClick={() => {
@@ -345,6 +385,7 @@ function ScrollableDatePicker({
   yearOptions,
 }: ScrollableDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const selectedDate = parseDateValue(value, parseFormat);
   const currentDate = new Date();
   const selectedYear = selectedDate?.getFullYear() ?? currentDate.getFullYear();
@@ -370,8 +411,10 @@ function ScrollableDatePicker({
     onChange(formatDateValue(nextDate, outputFormat));
   };
 
+  useDismissOnOutsideClick(rootRef, isOpen, () => setIsOpen(false));
+
   return (
-    <div className="relative" data-vaul-no-drag="">
+    <div ref={rootRef} className="relative" data-vaul-no-drag="">
       <button
         type="button"
         onClick={() => {
@@ -713,6 +756,7 @@ function ListFormDateTimeRow({
   className,
 }: ListFormDateTimeRowProps) {
   const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const timeRootRef = useRef<HTMLDivElement>(null);
   const parsedTime = parseTimeValue(timeValue);
   const currentYear = new Date().getFullYear();
   const yearOptions = useMemo(
@@ -754,6 +798,8 @@ function ListFormDateTimeRow({
     onTimeClick?.();
   };
 
+  useDismissOnOutsideClick(timeRootRef, isTimeOpen, () => setIsTimeOpen(false));
+
   return (
     <ListFormRow label={label} htmlFor={label} className={className}>
       <div className="relative flex items-center gap-2">
@@ -764,7 +810,7 @@ function ListFormDateTimeRow({
           yearOptions={yearOptions}
           triggerClassName="flex h-8 min-w-28 cursor-pointer items-center justify-center gap-1 rounded-lg px-3 py-1"
         />
-        <div className="relative">
+        <div ref={timeRootRef} className="relative">
           <button
             type="button"
             onClick={handleTimeToggle}
