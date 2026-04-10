@@ -133,6 +133,30 @@ function CalendarPage() {
           onCreateEntry={openCreateEntry}
           isUpdatingEntry={isUpdatingEntry}
           isDeletingEntry={isDeletingEntry}
+          onToggleStatus={async (entryId, status) => {
+            const targetEntry = entries.find((entry) => entry.id === entryId);
+
+            if (!targetEntry) {
+              return false;
+            }
+
+            const persistedEntry = await handleUpdateCareLogEntry({
+              ...targetEntry,
+              status,
+            });
+
+            if (persistedEntry === null) {
+              return false;
+            }
+
+            setEntries((currentEntries) =>
+              currentEntries.map((entry) =>
+                entry.id === persistedEntry.id ? persistedEntry : entry,
+              ),
+            );
+
+            return true;
+          }}
           onUpdateEntry={async (updatedEntry) => {
             const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);
 

@@ -14,6 +14,10 @@ type CareLogDiarySectionProps = {
   selectedDate?: Date;
   onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
   onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
+  onToggleStatus: (
+    entryId: string,
+    status: CareLogEntry['status'],
+  ) => Promise<boolean> | boolean;
   onCreateEntry: (date?: Date) => void;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
@@ -31,6 +35,7 @@ function CareLogDiarySection({
   selectedDate,
   onUpdateEntry,
   onDeleteEntry,
+  onToggleStatus,
   onCreateEntry,
   isUpdatingEntry = false,
   isDeletingEntry = false,
@@ -113,6 +118,10 @@ function CareLogDiarySection({
               item={item}
               onClick={() => diaryCardActions.openDetail(item.id)}
               onMoreClick={() => diaryCardActions.openActions(item.id)}
+              isStatusUpdating={isUpdatingEntry}
+              onStatusChange={(checked) =>
+                onToggleStatus(item.id, checked ? 'completed' : 'pending')
+              }
             />
           ))
         : emptyState}
