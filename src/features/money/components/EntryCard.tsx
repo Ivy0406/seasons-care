@@ -57,7 +57,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
               <SingleAvatar
                 src={getAvatarSrcByKey(creator.avatarKey)}
                 name={creator.username}
-                className="size-7"
+                className="size-7 ring-neutral-900"
               />
             )}
           </div>
