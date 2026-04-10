@@ -45,11 +45,26 @@ function toCareLogParticipants(
     const matchedMember = groupMembers.find(
       (member) => member.userId === participantId,
     );
+    const fallbackParticipant = fallbackParticipants.find(
+      (participant) => participant.id === participantId,
+    );
+
+    if (matchedMember) {
+      return {
+        id: participantId,
+        name: matchedMember.username,
+        src: getAvatarSrcByKey(matchedMember.avatarKey),
+      };
+    }
+
+    if (fallbackParticipant) {
+      return fallbackParticipant;
+    }
 
     return {
       id: participantId,
-      name: matchedMember?.username ?? '成員',
-      src: matchedMember ? getAvatarSrcByKey(matchedMember.avatarKey) : '',
+      name: '成員',
+      src: '',
     };
   });
 }
