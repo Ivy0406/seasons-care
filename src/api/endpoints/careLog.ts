@@ -4,10 +4,15 @@ import type {
   CreateCareLogResponse,
   GetCareLogEntriesParams,
   GetCareLogEntriesResponse,
+  UpdateCareLogPayload,
+  UpdateCareLogResponse,
 } from '@/types/careLog';
 
 const buildCareLogEntriesPath = (careGroupId: string) =>
   `/api/care-groups/${careGroupId}/care-logs`;
+
+const buildCareLogEntryPath = (careGroupId: string, careLogId: string) =>
+  `${buildCareLogEntriesPath(careGroupId)}/${careLogId}`;
 
 const createCareLogEntry = (
   careGroupId: string,
@@ -18,16 +23,29 @@ const createCareLogEntry = (
     payload,
   );
 
+const updateCareLogEntry = (
+  careGroupId: string,
+  careLogId: string,
+  payload: UpdateCareLogPayload,
+) =>
+  apiClient.put<UpdateCareLogResponse>(
+    buildCareLogEntryPath(careGroupId, careLogId),
+    payload,
+  );
+
 const getCareLogEntries = (
   careGroupId: string,
   params?: GetCareLogEntriesParams,
 ) =>
-  apiClient.get<GetCareLogEntriesResponse>(buildCareLogEntriesPath(careGroupId), {
-    params: {
-      Page: params?.page,
-      PageSize: params?.pageSize,
-      Sort: params?.sort,
+  apiClient.get<GetCareLogEntriesResponse>(
+    buildCareLogEntriesPath(careGroupId),
+    {
+      params: {
+        Page: params?.page,
+        PageSize: params?.pageSize,
+        Sort: params?.sort,
+      },
     },
-  });
+  );
 
-export { createCareLogEntry, getCareLogEntries };
+export { createCareLogEntry, updateCareLogEntry, getCareLogEntries };

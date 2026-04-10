@@ -20,6 +20,7 @@ export type DiaryCardItem = {
   title: string;
   description: string;
   startsAt: string;
+  updatedAt?: string;
   repeatPattern?: 'none' | 'daily' | 'weeklyDay' | 'monthly';
   participants: CalendarDiaryCardParticipant[];
   status: DiaryCardStatus;

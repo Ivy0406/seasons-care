@@ -1,7 +1,11 @@
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import type { CalendarDiaryCardParticipant } from '@/components/common/DiaryCard';
 import type { CareLogEntry } from '@/pages/CareLog/types';
-import type { CareLogApiItem, CreateCareLogPayload } from '@/types/careLog';
+import type {
+  CareLogApiItem,
+  CreateCareLogPayload,
+  UpdateCareLogPayload,
+} from '@/types/careLog';
 import type { GroupMember } from '@/types/group';
 
 const toCreateCareLogPayload = (
@@ -16,6 +20,21 @@ const toCreateCareLogPayload = (
     participants: [currentUserId],
     status: entry.status,
     isImportant: entry.isImportant ?? false,
+  };
+
+  return payload;
+};
+
+const toUpdateCareLogPayload = (entry: CareLogEntry): UpdateCareLogPayload => {
+  const payload: UpdateCareLogPayload = {
+    title: entry.title,
+    description: entry.description,
+    startsAt: new Date(entry.startsAt).toISOString(),
+    repeatPattern: entry.repeatPattern ?? 'none',
+    participants: entry.participants.map((participant) => participant.id),
+    status: entry.status,
+    isImportant: entry.isImportant ?? false,
+    updatedAt: entry.updatedAt,
   };
 
   return payload;
@@ -78,6 +97,7 @@ const toCareLogEntry = (
   title: item.title,
   description:
     item.description ?? item.content ?? fallbackEntry?.description ?? '',
+  updatedAt: item.updatedAt ?? fallbackEntry?.updatedAt,
   startsAt:
     item.startsAt ??
     item.recordDate ??
@@ -98,4 +118,9 @@ const toCareLogEntries = (
   groupMembers: GroupMember[] = [],
 ) => items.map((item) => toCareLogEntry(item, undefined, groupMembers));
 
-export { toCreateCareLogPayload, toCareLogEntry, toCareLogEntries };
+export {
+  toCreateCareLogPayload,
+  toUpdateCareLogPayload,
+  toCareLogEntry,
+  toCareLogEntries,
+};

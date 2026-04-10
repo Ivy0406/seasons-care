@@ -7,17 +7,15 @@ import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
-import type {
-  CareLogEntry,
-  CareLogFilterValue,
-} from '@/pages/CareLog/types';
+import type { CareLogEntry, CareLogFilterValue } from '@/pages/CareLog/types';
 
 type CareLogDiarySectionProps = {
   items: CareLogEntry[];
   selectedDate?: Date;
-  onUpdateEntry: (entry: CareLogEntry) => void;
+  onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
   onDeleteEntry: (entryId: string) => void;
   onCreateEntry: (date?: Date) => void;
+  isUpdatingEntry?: boolean;
 };
 
 const statusFilterOptions = [
@@ -33,12 +31,14 @@ function CareLogDiarySection({
   onUpdateEntry,
   onDeleteEntry,
   onCreateEntry,
+  isUpdatingEntry = false,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
     items,
     onUpdateEntry,
     onDeleteEntry,
+    isUpdatingEntry,
   });
   const now = new Date();
   const activeItems = items;

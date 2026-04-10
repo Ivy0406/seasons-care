@@ -18,6 +18,7 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
   const {
     detailEntry,
     editingEntry,
+    isUpdatingEntry,
     modalKey,
     selectedActionEntry,
     closeActions,
@@ -88,6 +89,7 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
               <CareLogEditFormCard
                 entry={editingEntry}
                 onClose={closeEdit}
+                isSubmitting={isUpdatingEntry}
                 onSubmit={submitEdit}
               />
             ) : null}

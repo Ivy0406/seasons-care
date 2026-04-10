@@ -56,6 +56,19 @@ export type CreateCareLogPayload = {
 
 export type CreateCareLogResponse = CareLogApiResponse<CareLogApiItem>;
 
+export type UpdateCareLogPayload = {
+  title: string;
+  description: string;
+  startsAt: string;
+  participants: string[];
+  status?: CareLogStatus;
+  isImportant?: boolean;
+  repeatPattern?: CareLogRepeatPattern;
+  updatedAt?: string;
+};
+
+export type UpdateCareLogResponse = CareLogApiResponse<CareLogApiItem>;
+
 export type GetCareLogEntriesParams = {
   page?: number;
   pageSize?: number;

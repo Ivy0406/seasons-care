@@ -5,8 +5,9 @@ import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type UseDiaryCardActionsOptions = {
   items: CareLogEntry[];
-  onUpdateEntry: (entry: CareLogEntry) => void;
+  onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
   onDeleteEntry: (entryId: string) => void;
+  isUpdatingEntry?: boolean;
 };
 
 export type UseDiaryCardActionsResult = {
@@ -14,6 +15,7 @@ export type UseDiaryCardActionsResult = {
   editingEntry: CareLogEntry | null;
   modalKey: CareLogModalVariant | null;
   selectedActionEntry: CareLogEntry | null;
+  isUpdatingEntry: boolean;
   closeActions: () => void;
   closeDetail: () => void;
   closeEdit: () => void;
@@ -24,13 +26,14 @@ export type UseDiaryCardActionsResult = {
   openEdit: (entryId: string) => void;
   requestDeleteFromActions: () => void;
   requestDeleteFromDetail: () => void;
-  submitEdit: (entry: CareLogEntry) => void;
+  submitEdit: (entry: CareLogEntry) => Promise<void>;
 };
 
 function useDiaryCardActions({
   items,
   onUpdateEntry,
   onDeleteEntry,
+  isUpdatingEntry = false,
 }: UseDiaryCardActionsOptions): UseDiaryCardActionsResult {
   const [detailEntryId, setDetailEntryId] = useState<string | null>(null);
   const [selectedActionEntryId, setSelectedActionEntryId] = useState<
@@ -114,8 +117,13 @@ function useDiaryCardActions({
     setModalKey('deleteSuccess');
   };
 
-  const submitEdit = (entry: CareLogEntry) => {
-    onUpdateEntry(entry);
+  const submitEdit = async (entry: CareLogEntry) => {
+    const didUpdate = await onUpdateEntry(entry);
+
+    if (!didUpdate) {
+      return;
+    }
+
     setEditingEntryId(null);
     setModalKey('updateSuccess');
   };
@@ -128,6 +136,7 @@ function useDiaryCardActions({
   return {
     detailEntry,
     editingEntry,
+    isUpdatingEntry,
     modalKey,
     selectedActionEntry,
     closeActions,
