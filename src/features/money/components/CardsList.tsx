@@ -7,13 +7,13 @@ import type { ExpenseItem } from '@/features/money/types';
 
 import EntryCard from './EntryCard';
 
-type SplitFilter = 'all' | 'needSplit' | 'isSplit' | 'noNeedSplit';
+type SplitFilter = 'all' | 'pending' | 'settled' | 'none';
 
 const SPLIT_FILTER_OPTIONS: FilterOption<SplitFilter>[] = [
   { label: '全部顯示', value: 'all' },
-  { label: '僅顯示需分帳', value: 'needSplit' },
-  { label: '僅顯示已分帳', value: 'isSplit' },
-  { label: '僅顯示無需分帳', value: 'noNeedSplit' },
+  { label: '僅顯示需分帳', value: 'pending' },
+  { label: '僅顯示已分帳', value: 'settled' },
+  { label: '僅顯示無需分帳', value: 'none' },
 ];
 
 type CardsListProps = {
@@ -21,16 +21,8 @@ type CardsListProps = {
 };
 
 const filterItems = (items: ExpenseItem[], filter: SplitFilter) => {
-  switch (filter) {
-    case 'needSplit':
-      return items.filter((item) => item.needSplit && !item.isSplit);
-    case 'isSplit':
-      return items.filter((item) => item.isSplit);
-    case 'noNeedSplit':
-      return items.filter((item) => !item.needSplit);
-    default:
-      return items;
-  }
+  if (filter === 'all') return items;
+  return items.filter((item) => item.splitStatus === filter);
 };
 
 function CardsList({ items }: CardsListProps) {
