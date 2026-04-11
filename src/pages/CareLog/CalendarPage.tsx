@@ -57,7 +57,6 @@ function CalendarPage() {
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const initialSelectedDate = getSelectedDateFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [entries, setEntries] = useState<CareLogEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     initialSelectedDate ?? defaultSelectedDate,
   );
@@ -78,15 +77,11 @@ function CalendarPage() {
     setVisibleMonth(routedSelectedDate);
   }, [location.state]);
 
-  useEffect(() => {
-    setEntries(fetchedEntries);
-  }, [fetchedEntries]);
-
-  const markedDates = entries.map((entry) => parseISO(entry.startsAt));
+  const markedDates = fetchedEntries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
     selectedDate === undefined
       ? []
-      : entries.filter((entry) =>
+      : fetchedEntries.filter((entry) =>
           isSameDay(parseISO(entry.startsAt), selectedDate),
         );
   const openCreateEntry = (date?: Date) => {
@@ -134,7 +129,9 @@ function CalendarPage() {
           isUpdatingEntry={isUpdatingEntry}
           isDeletingEntry={isDeletingEntry}
           onToggleStatus={async (entryId, status) => {
-            const targetEntry = entries.find((entry) => entry.id === entryId);
+            const targetEntry = fetchedEntries.find(
+              (entry) => entry.id === entryId,
+            );
 
             if (!targetEntry) {
               return false;
@@ -149,11 +146,7 @@ function CalendarPage() {
               return false;
             }
 
-            setEntries((currentEntries) =>
-              currentEntries.map((entry) =>
-                entry.id === persistedEntry.id ? persistedEntry : entry,
-              ),
-            );
+            await refetchEntries();
 
             return true;
           }}
@@ -164,11 +157,7 @@ function CalendarPage() {
               return false;
             }
 
-            setEntries((currentEntries) =>
-              currentEntries.map((entry) =>
-                entry.id === persistedEntry.id ? persistedEntry : entry,
-              ),
-            );
+            await refetchEntries();
 
             return true;
           }}
@@ -187,8 +176,6 @@ function CalendarPage() {
             if (stillExists) {
               return false;
             }
-
-            setEntries(nextEntries);
 
             return true;
           }}
@@ -226,9 +213,8 @@ function CalendarPage() {
                     }
 
                     const createdDate = parseISO(createdEntry.startsAt);
-                    const nextEntries = [createdEntry, ...entries];
 
-                    setEntries(nextEntries);
+                    await refetchEntries();
                     setSelectedDate(createdDate);
                     setVisibleMonth(createdDate);
                     setCreatingEntry(null);
