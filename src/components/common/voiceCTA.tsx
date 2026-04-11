@@ -37,7 +37,7 @@ export default function VoiceCTA({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 shrink-0" strokeWidth={2.2} />
-            <p className="font-label-md text-neutral-900">
+            <p className="font-label-md text-nowrap text-neutral-900">
               立即試用語音輸入{title}！
             </p>
           </div>
