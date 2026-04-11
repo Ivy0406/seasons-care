@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
+import onboardingSteps from '@/features/auth/constants/onboardingSteps';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
@@ -10,44 +11,10 @@ const OnboardingPage = () => {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
 
-  type MockStep = {
-    id: number;
-    title: string;
-    description: string;
-    buttonText: string;
-    image: string;
-  };
-  const mockSteps: MockStep[] = [
-    {
-      id: 0,
-      title: '照護點滴，一目了然。',
-      description: '數位化追蹤生理指標與用藥，\n精準掌握健康趨勢。',
-      buttonText: '讚！',
-      image:
-        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
-    },
-    {
-      id: 1,
-      title: '趨勢報表，智慧生成。',
-      description: 'AI 整合各類照護紀錄，\n產出關鍵指標統計報告。',
-      buttonText: '好酷！',
-      image:
-        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
-    },
-    {
-      id: 2,
-      title: '多人照護，同步協作。',
-      description: '共享行事曆與照護計畫，\n確保照護流程不中斷。',
-      buttonText: '等不及要開始使用了！',
-      image:
-        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
-    },
-  ];
-
   const [currentStep, setCurrentStep] = useState(0);
 
   const nextStep = () => {
-    if (currentStep < mockSteps.length - 1) {
+    if (currentStep < onboardingSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       navigate('/group-entrance');
@@ -82,50 +49,53 @@ const OnboardingPage = () => {
     }
   };
 
-  const { title, description, buttonText, image } = mockSteps[currentStep];
+  const { title, description, buttonText, image } =
+    onboardingSteps[currentStep];
 
   return (
-    <div
-      className="flex h-screen w-full flex-col items-center justify-end bg-neutral-100 pb-18"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-    >
-      <div className="h-120 w-full overflow-hidden">
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full object-cover transition-opacity duration-300"
-        />
-      </div>
-
-      <div className="flex h-26.5 w-full flex-col items-center gap-4 text-center">
-        <h2 className="font-heading-lg text-neutral-900">{title}</h2>
-        <p className="font-paragraph-md h-13 whitespace-pre-line text-neutral-600">
-          {description}
-        </p>
-      </div>
-
-      <div className="flex gap-2 py-5">
-        {mockSteps.map((step) => (
-          <button
-            key={step.id}
-            type="button"
-            onClick={() => setCurrentStep(step.id)}
-            aria-label={`Go to step ${step.id + 1}`}
-            className={`h-2 w-2 cursor-pointer rounded-full transition-all duration-300 ${
-              step.id === currentStep ? 'bg-neutral-900' : 'bg-neutral-300'
-            }`}
+    <main className="w-full bg-neutral-100">
+      <div
+        className="mx-auto flex h-screen w-full max-w-200 flex-col items-center justify-end px-6 pb-18"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        <div className="mb-10 h-120 w-full overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="h-full w-full object-contain transition-opacity duration-300"
           />
-        ))}
-      </div>
+        </div>
 
-      <div className="w-full">
-        <RoundedButtonPrimary onClick={nextStep}>
-          {buttonText}
-        </RoundedButtonPrimary>
+        <div className="flex h-26.5 w-full flex-col items-center gap-5 text-center">
+          <h2 className="font-heading-lg text-neutral-900">{title}</h2>
+          <p className="font-paragraph-md h-13 whitespace-pre-line text-neutral-600">
+            {description}
+          </p>
+        </div>
+
+        <div className="flex gap-2 py-5">
+          {onboardingSteps.map((step) => (
+            <button
+              key={step.id}
+              type="button"
+              onClick={() => setCurrentStep(step.id)}
+              aria-label={`Go to step ${step.id}`}
+              className={`h-2 w-2 cursor-pointer rounded-full transition-all duration-300 ${
+                step.id === currentStep ? 'bg-neutral-900' : 'bg-neutral-300'
+              }`}
+            />
+          ))}
+        </div>
+
+        <div className="w-full">
+          <RoundedButtonPrimary onClick={nextStep}>
+            {buttonText}
+          </RoundedButtonPrimary>
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 
