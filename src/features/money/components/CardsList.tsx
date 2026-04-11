@@ -27,10 +27,31 @@ const filterItems = (items: ExpenseItem[], filter: SplitFilter) => {
   return items.filter((item) => item.splitStatus === filter);
 };
 
+type DateGroup = { date: string; items: ExpenseItem[] };
+
+const formatDateLabel = (date: string) => date.replace(/-/g, '.');
+
+const groupByDate = (items: ExpenseItem[]): DateGroup[] => {
+  const sorted = [...items].sort((a, b) =>
+    b.expenseDate.localeCompare(a.expenseDate),
+  );
+  return sorted.reduce<DateGroup[]>((acc, item) => {
+    const dateKey = item.expenseDate.slice(0, 10);
+    const last = acc[acc.length - 1];
+    if (last?.date === dateKey) {
+      last.items.push(item);
+    } else {
+      acc.push({ date: dateKey, items: [item] });
+    }
+    return acc;
+  }, []);
+};
+
 function CardsList({ items }: CardsListProps) {
   const [filter, setFilter] = useState<SplitFilter>('all');
-  const filteredItems = filterItems(items, filter);
   const { activeTab } = useActivedMoneyTab();
+  const filteredItems = filterItems(items, filter);
+  const groups = groupByDate(filteredItems);
 
   const isDailyTab = activeTab === 'daily';
   const isMonthlyTab = activeTab === 'monthly';
@@ -55,9 +76,16 @@ function CardsList({ items }: CardsListProps) {
         />
       </div>
 
-      <div className="flex flex-col gap-3">
-        {filteredItems.map((item) => (
-          <EntryCard key={item.id} item={item} />
+      <div className="flex flex-col gap-5">
+        {groups.map((group) => (
+          <div key={group.date} className="flex flex-col gap-3">
+            <p className="font-label-md text-neutral-600">
+              {formatDateLabel(group.date)}
+            </p>
+            {group.items.map((item) => (
+              <EntryCard key={item.id} item={item} />
+            ))}
+          </div>
         ))}
       </div>
     </section>
