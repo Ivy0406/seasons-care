@@ -19,7 +19,7 @@ function isMoneyDraft(value: unknown): value is MoneyDraft {
       draft.category === 'traffic' ||
       draft.category === 'other') &&
     typeof draft.needsSplit === 'boolean' &&
-    typeof draft.note === 'string' &&
+    typeof draft.notes === 'string' &&
     typeof draft.transcript === 'string' &&
     typeof draft.summary === 'string'
   );

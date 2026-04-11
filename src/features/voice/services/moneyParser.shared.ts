@@ -72,7 +72,7 @@ function normalizeMoneyTitleAndNote(
 
   return {
     title: normalizedTitle,
-    note: normalizedNote,
+    notes: normalizedNote,
   };
 }
 
@@ -106,7 +106,7 @@ function getMoneyDraftSummarySource(
     timeValue: draft.timeValue,
     category: draft.category,
     needsSplit: draft.needsSplit,
-    note: draft.note,
+    notes: draft.notes,
     transcript: draft.transcript,
   };
 }
@@ -132,8 +132,8 @@ function buildMoneyDraftSummary(draft: Omit<MoneyDraft, 'summary'>) {
     summaryParts.push('需分帳');
   }
 
-  if (draft.note.trim() !== '') {
-    summaryParts.push(`備註「${draft.note.trim()}」`);
+  if (draft.notes.trim() !== '') {
+    summaryParts.push(`備註「${draft.notes.trim()}」`);
   }
 
   return summaryParts.length > 0
@@ -149,7 +149,7 @@ function createEmptyMoneyDraft(date = new Date()): MoneyDraft {
     timeValue: formatTimeValue(date),
     category: 'none',
     needsSplit: false,
-    note: '',
+    notes: '',
     transcript: '',
     summary: '請先錄音或手動輸入帳目內容。',
   };
@@ -161,7 +161,7 @@ function hasMoneyDraftContent(draft: MoneyDraft) {
     draft.amount.trim() !== '' ||
     draft.category !== 'none' ||
     draft.needsSplit ||
-    draft.note.trim() !== ''
+    draft.notes.trim() !== ''
   );
 }
 
