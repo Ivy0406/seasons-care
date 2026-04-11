@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { format } from 'date-fns';
+
 import {
   getBloodOxygens,
   getBloodPressures,
@@ -15,15 +17,6 @@ import type {
   WeightData,
 } from '@/types/health';
 
-type HealthData = {
-  bloodPressure: BloodPressureData;
-  bloodOxygen: BloodOxygenData;
-  temperature: TemperatureData;
-  weight: WeightData;
-  bloodSugar: BloodSugarData;
-  isLoading: boolean;
-};
-
 function getTimeSlot(recordDate: string): 'morning' | 'noon' | 'night' {
   const hour = new Date(recordDate).getHours();
   if (hour < 12) return 'morning';
@@ -31,7 +24,7 @@ function getTimeSlot(recordDate: string): 'morning' | 'noon' | 'night' {
   return 'night';
 }
 
-function useHealth(): HealthData {
+function useHealth() {
   const [bloodPressure, setBloodPressure] = useState<BloodPressureData>({
     date: '--',
     time: '--',
@@ -90,10 +83,7 @@ function useHealth(): HealthData {
           const dateObj = new Date(latest.recordDate);
           setBloodPressure({
             date: dateObj.toLocaleDateString('zh-TW'),
-            time: dateObj.toLocaleTimeString('zh-TW', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
+            time: format(dateObj, 'HH:mm'),
             systolic: latest.systolic,
             diastolic: latest.diastolic,
           });
@@ -109,10 +99,7 @@ function useHealth(): HealthData {
           const dateObj = new Date(latest.recordDate);
           setBloodOxygen({
             date: dateObj.toLocaleDateString('zh-TW'),
-            time: dateObj.toLocaleTimeString('zh-TW', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
+            time: format(dateObj, 'HH:mm'),
             spO2: latest.spO2,
           });
         }
@@ -127,10 +114,7 @@ function useHealth(): HealthData {
           const dateObj = new Date(latest.recordDate);
           setTemperature({
             date: dateObj.toLocaleDateString('zh-TW'),
-            time: dateObj.toLocaleTimeString('zh-TW', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
+            time: format(dateObj, 'HH:mm'),
             value: latest.value,
           });
         }
@@ -145,10 +129,7 @@ function useHealth(): HealthData {
           const dateObj = new Date(latest.recordDate);
           setWeight({
             date: dateObj.toLocaleDateString('zh-TW'),
-            time: dateObj.toLocaleTimeString('zh-TW', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
+            time: format(dateObj, 'HH:mm'),
             value: latest.value,
           });
         }
