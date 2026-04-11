@@ -40,7 +40,7 @@ function createMoneyDraftFromAIResult(
   const normalizedSummary = extraction.summary.trim();
   const normalizedContent = normalizeMoneyTitleAndNote(
     extraction.title,
-    extraction.note,
+    extraction.notes,
     transcript,
   );
 
@@ -52,7 +52,7 @@ function createMoneyDraftFromAIResult(
     timeValue: extraction.timeValue.trim() || draft.timeValue,
     category: normalizeMoneyCategory(extraction.category),
     needsSplit: extraction.needsSplit === 'true',
-    note: normalizedContent.note,
+    notes: normalizedContent.notes,
     ...(normalizedSummary ? { summary: normalizedSummary } : {}),
   });
 }

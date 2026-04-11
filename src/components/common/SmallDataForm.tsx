@@ -336,11 +336,11 @@ function MoneyDataSmallForm({
       <ListFormNoteRow
         label="備註"
         textareaProps={{
-          value: value.note,
-          onChange: (event) => onChange({ note: event.target.value }),
+          value: value.notes,
+          onChange: (event) => onChange({ notes: event.target.value }),
           placeholder: '',
         }}
-        onClear={() => onChange({ note: '' })}
+        onClear={() => onChange({ notes: '' })}
         className="border-b-0"
       />
     </BaseFormCard>

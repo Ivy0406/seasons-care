@@ -50,7 +50,7 @@ const parseMoneyTranscriptWithRule: ParseMoneyTranscript = async (
     };
   }
 
-  const { title, note } = normalizeMoneyTitleAndNote(
+  const { title, notes } = normalizeMoneyTitleAndNote(
     '',
     '',
     normalizedTranscript,
@@ -63,7 +63,7 @@ const parseMoneyTranscriptWithRule: ParseMoneyTranscript = async (
     amount: extractMoneyAmount(normalizedTranscript),
     category: extractMoneyCategory(normalizedTranscript),
     needsSplit: /分帳|平分|一起出/.test(normalizedTranscript),
-    note,
+    notes,
   };
 
   return {

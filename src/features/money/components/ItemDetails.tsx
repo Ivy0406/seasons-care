@@ -1,27 +1,30 @@
+import { format } from 'date-fns';
 import { X } from 'lucide-react';
 
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import {
   CardLabelPrimary,
   CardLabelSecondary,
 } from '@/components/common/CardLabel';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import { AlertDialogClose } from '@/components/ui/alert-dialog';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import type { ExpenseItem } from '@/features/money/types';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
-function ItemDetails({
-  name,
-  date,
-  time,
-  category,
-  amount,
-  needSplit,
-  isSplit,
-  creator,
-  description,
-}: ExpenseItem) {
-  let hashColor = 'text-neutral-900';
-  if (isSplit) hashColor = 'text-primary-default';
-  else if (needSplit) hashColor = 'text-secondary-dark';
+const SPLIT_HASH_COLOR: Record<string, string> = {
+  settled: 'text-primary-default',
+  pending: 'text-secondary-dark',
+  none: 'text-neutral-900',
+};
+
+function ItemDetails({ item }: { item: ExpenseItem }) {
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
+  const creator = groupMembers.find((m) => m.userId === item.createdBy);
+
+  const hashColor = SPLIT_HASH_COLOR[item.splitStatus] ?? 'text-neutral-900';
+  const displayDate = format(new Date(item.expenseDate), 'yyyy/MM/dd HH:mm');
 
   return (
     <div>
@@ -34,15 +37,15 @@ function ItemDetails({
         </AlertDialogClose>
       </div>
       <div className="flex flex-col gap-1">
-        <p className="font-paragraph-md text-neutral-900">
-          {date} {time}
-        </p>
-        <h2 className="font-heading-md text-neutral-900">{name}</h2>
+        <p className="font-paragraph-md text-neutral-900">{displayDate}</p>
+        <h2 className="font-heading-md text-neutral-900">{item.title}</h2>
       </div>
 
       <div className="mt-2 flex gap-2 text-neutral-900">
-        {isSplit && <CardLabelPrimary>已分帳</CardLabelPrimary>}
-        {needSplit && !isSplit && (
+        {item.splitStatus === 'settled' && (
+          <CardLabelPrimary>已分帳</CardLabelPrimary>
+        )}
+        {item.splitStatus === 'pending' && (
           <CardLabelSecondary>需分帳</CardLabelSecondary>
         )}
       </div>
@@ -51,30 +54,35 @@ function ItemDetails({
         <div className="font-paragraph-md flex items-center gap-2 text-neutral-900">
           <p>類別</p>
           <p>
-            <span className={`font-label-lg ${hashColor}`}>#</span> {category}
+            <span className={`font-label-lg ${hashColor}`}>#</span>{' '}
+            {item.category}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <p className="font-paragraph-md text-neutral-900">建立人</p>
-          <div className="flex items-center gap-1">
-            <SingleAvatar
-              src={creator.src}
-              name={creator.name}
-              className="size-7"
-            />
-            <p className="font-paragraph-md text-neutral-900">{creator.name}</p>
-          </div>
+          {creator && (
+            <div className="flex items-center gap-1">
+              <SingleAvatar
+                src={getAvatarSrcByKey(creator.avatarKey)}
+                name={creator.username}
+                className="size-7"
+              />
+              <p className="font-paragraph-md text-neutral-900">
+                {creator.username}
+              </p>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <p className="font-paragraph-md text-neutral-900">金額</p>
           <p className="font-heading-md text-neutral-900">
-            $ {amount.toLocaleString()}
+            $ {item.amount.toLocaleString()}
           </p>
         </div>
         <div className="min-h-8 border-t-2 border-neutral-900">
-          {description && (
+          {item.notes && (
             <p className="font-paragraph-md h-18 py-3 text-neutral-900">
-              {description}
+              {item.notes}
             </p>
           )}
         </div>
