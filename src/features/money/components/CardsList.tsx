@@ -79,9 +79,11 @@ function CardsList({ items }: CardsListProps) {
       <div className="flex flex-col gap-5">
         {groups.map((group) => (
           <div key={group.date} className="flex flex-col gap-3">
-            <p className="font-label-md text-neutral-600">
-              {formatDateLabel(group.date)}
-            </p>
+            {isMonthlyTab && (
+              <p className="font-label-md text-neutral-600">
+                {formatDateLabel(group.date)}
+              </p>
+            )}
             {group.items.map((item) => (
               <EntryCard key={item.id} item={item} />
             ))}

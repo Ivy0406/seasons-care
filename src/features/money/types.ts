@@ -9,7 +9,7 @@ type MoneyDraft = {
   timeValue: string;
   category: MoneyCategoryValue;
   needsSplit: boolean;
-  note: string;
+  notes: string;
   transcript: string;
   summary: string;
 };
