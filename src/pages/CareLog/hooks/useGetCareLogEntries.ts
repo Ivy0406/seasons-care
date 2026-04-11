@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { getCareLogEntries } from '@/api/endpoints/careLog';
 import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import careLogKeys from '@/pages/CareLog/queryKeys';
 import { toCareLogEntries } from '@/pages/CareLog/utils/careLogMappers';
 
 const getCurrentCareGroupId = () =>
@@ -17,7 +18,7 @@ function useGetCareLogEntries() {
   const { data: groupMembers = [] } = useGetGroupMembers(careGroupId ?? '');
 
   const query = useQuery({
-    queryKey: ['care-log-entries', careGroupId],
+    queryKey: careGroupId ? careLogKeys.list(careGroupId) : careLogKeys.all,
     queryFn: async () => {
       if (!careGroupId) return [];
 
