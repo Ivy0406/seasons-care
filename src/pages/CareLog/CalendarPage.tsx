@@ -169,15 +169,7 @@ function CalendarPage() {
             }
 
             const nextEntries = await refetchEntries();
-            const stillExists = nextEntries.some(
-              (entry) => entry.id === entryId,
-            );
-
-            if (stillExists) {
-              return false;
-            }
-
-            return true;
+            return !nextEntries.some((entry) => entry.id === entryId);
           }}
         />
       </section>
