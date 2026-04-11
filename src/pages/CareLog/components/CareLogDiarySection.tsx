@@ -99,9 +99,9 @@ function CareLogDiarySection({
   return (
     <section className="flex w-full flex-col gap-5">
       {selectedDate ? (
-        <header className="flex items-start justify-between gap-3">
+        <header className="flex items-start justify-between">
           <div className="flex flex-col justify-between">
-            <p>日誌列表</p>
+            <p className="font-heading-md">日誌列表</p>
           </div>
           <FilterDropdownButton
             value={statusFilter}
