@@ -67,7 +67,7 @@ function FilterDropdownButton<T extends string>({
       <button
         type="button"
         className={cn(
-          'font-label-md relative inline-grid max-w-full grid-cols-[minmax(0,1fr)_auto] items-center justify-between rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-[3px] whitespace-nowrap text-neutral-800',
+          'font-label-md relative inline-grid max-w-full grid-cols-[minmax(0,1fr)_auto] items-center justify-between rounded-full border-2 border-neutral-900 bg-neutral-200 px-1.5 py-0.75 whitespace-nowrap text-neutral-800',
           'transition-colors active:bg-neutral-200',
           buttonClassName,
         )}
@@ -93,7 +93,7 @@ function FilterDropdownButton<T extends string>({
           id={menuId}
           role="menu"
           className={cn(
-            'absolute top-full right-0 z-20 mt-1 min-w-full overflow-hidden rounded-[4px] border-2 border-neutral-900 bg-neutral-200',
+            'absolute top-full right-0 z-20 mt-1 max-h-48 min-w-full overflow-y-auto rounded-sm border-2 border-neutral-900 bg-neutral-200',
             menuClassName,
           )}
         >

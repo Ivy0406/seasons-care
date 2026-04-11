@@ -7,14 +7,16 @@ function RegistrationPage() {
     useRegister();
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      {step === 'account' && (
-        <RegisterAccount onNext={handleAccountNext} isLoading={isLoading} />
-      )}
-      {step === 'profile' && (
-        <SetupProfile onSubmit={handleProfileSubmit} isLoading={isLoading} />
-      )}
-    </div>
+    <main className="w-full bg-neutral-100">
+      <div className="mx-auto flex h-screen w-full max-w-200 items-center justify-center px-6">
+        {step === 'account' && (
+          <RegisterAccount onNext={handleAccountNext} isLoading={isLoading} />
+        )}
+        {step === 'profile' && (
+          <SetupProfile onSubmit={handleProfileSubmit} isLoading={isLoading} />
+        )}
+      </div>
+    </main>
   );
 }
 
