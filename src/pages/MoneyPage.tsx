@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
+import SideMenu from '@/components/common/SideMenu';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -21,6 +22,7 @@ function MoneyPage() {
   const { expenses } = useExpenses();
   const { selectedMonth } = useSelectedMonth();
   const { activeTab } = useActivedMoneyTab();
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
@@ -30,7 +32,11 @@ function MoneyPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20 text-neutral-900">
-      <PageNavigationBar title="帳目" className="px-6" />
+      <PageNavigationBar
+        title="帳目"
+        className="px-6"
+        onMenuClick={() => setIsSideMenuOpen(true)}
+      />
       <div className="pt-2">
         <MoneyTabsCard />
       </div>
@@ -65,6 +71,8 @@ function MoneyPage() {
         onOpenChange={setShowRecordingDrawer}
         onFinish={() => setShowRecordingDrawer(false)}
       />
+
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
   );
 }
