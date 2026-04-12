@@ -12,6 +12,7 @@ import {
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
 import useCreateGroup from '@/features/groups/hooks/useCreateGroup';
+import useUpdateGroup from '@/features/groups/hooks/useUpdateGroup';
 import cn from '@/lib/utils';
 
 type DrawerStep = 'entry' | 'create' | 'success';
@@ -24,7 +25,13 @@ type GroupEntryDrawerProps = {
   onInviteMembers?: () => void;
   initialStep?: DrawerStep;
   mode?: GroupEntryMode;
+  groupId?: string | null;
   initialGroupName?: string;
+  initialRecipientName?: string;
+  initialRecipientGender?: string;
+  initialRecipientBirthDate?: string;
+  initialDescription?: string;
+  initialHealthStatus?: string;
 };
 
 type DrawerIllustrationProps = {
@@ -114,15 +121,28 @@ function GroupEntryDrawer({
   onInviteMembers,
   initialStep = 'entry',
   mode = 'create',
+  groupId = null,
   initialGroupName = '',
+  initialRecipientName = '',
+  initialRecipientGender = 'male',
+  initialRecipientBirthDate = '2026-04-01',
+  initialDescription = '',
+  initialHealthStatus = '',
 }: GroupEntryDrawerProps) {
   const { isLoading, handleCreateGroup } = useCreateGroup();
+  const { isLoading: isUpdating, handleUpdateGroup } = useUpdateGroup();
   const [step, setStep] = useState<DrawerStep>(initialStep);
-  const [careRecipientName, setCareRecipientName] = useState(initialGroupName);
-  const [gender, setGender] = useState('male');
-  const [birthDate, setBirthDate] = useState('2026-04-01');
+  const [groupName, setGroupName] = useState(initialGroupName);
+  const [careRecipientName, setCareRecipientName] = useState('');
+  const [gender, setGender] = useState(initialRecipientGender);
+  const [birthDate, setBirthDate] = useState(initialRecipientBirthDate);
+  const [description] = useState(initialDescription);
+  const [healthStatus] = useState(initialHealthStatus);
   const isEditMode = mode === 'edit';
-  const canSubmit = careRecipientName.trim().length > 0;
+  const isSubmitting = isLoading || isUpdating;
+  const canSubmit = isEditMode
+    ? groupName.trim().length > 0
+    : careRecipientName.trim().length > 0;
   const successTitle = isEditMode ? '編輯完成！' : '創建完成！';
   const formTitle = isEditMode ? '編輯群組' : '建立照護群組';
   const formDescription = isEditMode
@@ -132,6 +152,11 @@ function GroupEntryDrawer({
   const successDescription = isEditMode
     ? '群組資訊已更新完成。'
     : '立即邀請成員，實現共同照護！';
+  let submitText = submitLabel;
+
+  if (isSubmitting) {
+    submitText = isEditMode ? '更新中...' : '建立中...';
+  }
 
   useEffect(() => {
     if (!open) {
@@ -140,8 +165,17 @@ function GroupEntryDrawer({
   }, [initialStep, open]);
 
   useEffect(() => {
-    setCareRecipientName(initialGroupName);
-  }, [initialGroupName, open]);
+    setGroupName(initialGroupName);
+    setCareRecipientName(initialRecipientName);
+    setGender(initialRecipientGender);
+    setBirthDate(initialRecipientBirthDate);
+  }, [
+    initialGroupName,
+    initialRecipientName,
+    initialRecipientBirthDate,
+    initialRecipientGender,
+    open,
+  ]);
 
   const handleClose = () => {
     if (step === 'success') {
@@ -155,7 +189,20 @@ function GroupEntryDrawer({
     if (!canSubmit) return;
 
     if (isEditMode) {
-      setStep('success');
+      if (!groupId) return;
+
+      const result = await handleUpdateGroup(groupId, {
+        name: groupName,
+        recipientName: careRecipientName,
+        recipientGender: gender,
+        recipientBirthDate: birthDate,
+        description,
+        healthStatus,
+      });
+
+      if (result) {
+        setStep('success');
+      }
       return;
     }
 
@@ -260,13 +307,23 @@ function GroupEntryDrawer({
 
         <div className="flex flex-col">
           <div className="mb-20 flex flex-col gap-2">
-            <ListFormNameRow
-              label="被照護者名稱"
-              inputProps={{
-                value: careRecipientName,
-                onChange: (event) => setCareRecipientName(event.target.value),
-              }}
-            />
+            {isEditMode ? (
+              <ListFormNameRow
+                label="群組名稱"
+                inputProps={{
+                  value: groupName,
+                  onChange: (event) => setGroupName(event.target.value),
+                }}
+              />
+            ) : (
+              <ListFormNameRow
+                label="被照護者名稱"
+                inputProps={{
+                  value: careRecipientName,
+                  onChange: (event) => setCareRecipientName(event.target.value),
+                }}
+              />
+            )}
             <ListFormGenderRow
               label="被照護者性別"
               value={gender}
@@ -287,9 +344,9 @@ function GroupEntryDrawer({
 
           <RoundedButtonPrimary
             onClick={handleSubmit}
-            disabled={!canSubmit || isLoading}
+            disabled={!canSubmit || isSubmitting}
           >
-            {isLoading ? '建立中...' : submitLabel}
+            {submitText}
           </RoundedButtonPrimary>
         </div>
       </div>
