@@ -5,6 +5,7 @@ import { zhTW } from 'date-fns/locale';
 import { useLocation } from 'react-router';
 
 import Calendar from '@/components/common/Calendar';
+import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
 import {
@@ -173,6 +174,11 @@ function CalendarPage() {
           }}
         />
       </section>
+
+      <FixedBottomButton
+        onClick={() => openCreateEntry(new Date())}
+        label="新增"
+      />
 
       <AlertDialog
         open={creatingEntry !== null}
