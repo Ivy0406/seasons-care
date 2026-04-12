@@ -38,6 +38,7 @@ type HomepageNavigationBarProps = {
   hasNotification?: boolean;
   onNotificationClick?: () => void;
   onMenuClick?: () => void;
+  selectedDate?: Date;
   className?: string;
 };
 
@@ -236,8 +237,11 @@ function NavigationGroupTrigger({
   );
 }
 
-function NavigationDateBadge() {
-  const dateLabel = useCurrentDateLabel();
+function NavigationDateBadge({ selectedDate }: { selectedDate?: Date }) {
+  const currentDateLabel = useCurrentDateLabel();
+  const dateLabel = selectedDate
+    ? createDateLabel(selectedDate)
+    : currentDateLabel;
 
   return (
     <div className="text-primary-dark inline-flex items-center gap-0.5 justify-self-start rounded-sm py-3">
@@ -251,6 +255,7 @@ function HomepageNavigationBar({
   hasNotification = false,
   onNotificationClick,
   onMenuClick,
+  selectedDate,
   className,
 }: HomepageNavigationBarProps) {
   return (
@@ -261,7 +266,7 @@ function HomepageNavigationBar({
           className,
         )}
       >
-        <NavigationDateBadge />
+        <NavigationDateBadge selectedDate={selectedDate} />
         <Link
           to="/homepage"
           aria-label="回到首頁"
