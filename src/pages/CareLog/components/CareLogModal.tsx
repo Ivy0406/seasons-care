@@ -12,7 +12,7 @@ type CareLogModalProps = {
   open: boolean;
   variant: CareLogModalVariant;
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
 };
 
 const modalContent = {

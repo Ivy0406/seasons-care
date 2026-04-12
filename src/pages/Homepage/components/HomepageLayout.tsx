@@ -42,6 +42,7 @@ function HomepageLayout() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
+  const [selectedDate] = useState(() => new Date());
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
     'create',
@@ -179,6 +180,7 @@ function HomepageLayout() {
       <main className="flex min-h-screen w-full flex-col pt-4 text-neutral-900">
         <HomepageNavigationBar
           hasNotification
+          selectedDate={selectedDate}
           onMenuClick={() => setIsSideMenuOpen(true)}
           className="px-6"
         />
@@ -268,7 +270,7 @@ function HomepageLayout() {
         </section>
 
         <section className="flex flex-1 flex-col pt-11">
-          <DailyOverviewTabs />
+          <DailyOverviewTabs selectedDate={selectedDate} />
         </section>
       </main>
 

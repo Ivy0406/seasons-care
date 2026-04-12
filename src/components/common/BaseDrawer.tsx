@@ -13,6 +13,7 @@ type BaseDrawerProps = {
   trigger?: ReactNode;
   open?: boolean;
   modal?: boolean;
+  handleOnly?: boolean;
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
@@ -23,6 +24,7 @@ function BaseDrawer({
   trigger,
   open,
   modal,
+  handleOnly,
   onOpenChange,
   children,
   footer,
@@ -30,7 +32,12 @@ function BaseDrawer({
   handleClassName,
 }: BaseDrawerProps) {
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} modal={modal}>
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      modal={modal}
+      handleOnly={handleOnly}
+    >
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
       <DrawerContent

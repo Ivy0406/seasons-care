@@ -1,5 +1,5 @@
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
 import mockCareLogEntries from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 const CARE_LOG_STORAGE_KEY = 'seasons-care:care-log-entries';
 

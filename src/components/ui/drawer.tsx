@@ -65,7 +65,7 @@ const DrawerContent = React.forwardRef<
       )}
       {...props}
     >
-      <div
+      <DrawerPrimitive.Handle
         className={cn(
           'mx-auto mt-2 hidden h-1 w-10 shrink-0 rounded-full bg-neutral-700 group-data-[vaul-drawer-direction=bottom]/drawer-content:block',
           handleClassName,

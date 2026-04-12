@@ -120,7 +120,7 @@ function GroupEntryDrawer({
   const [step, setStep] = useState<DrawerStep>(initialStep);
   const [careRecipientName, setCareRecipientName] = useState(initialGroupName);
   const [gender, setGender] = useState('male');
-  const [birthDate] = useState('2026-04-01');
+  const [birthDate, setBirthDate] = useState('2026-04-01');
   const isEditMode = mode === 'edit';
   const canSubmit = careRecipientName.trim().length > 0;
   const successTitle = isEditMode ? '編輯完成！' : '創建完成！';
@@ -278,7 +278,11 @@ function GroupEntryDrawer({
               ]}
               onChange={setGender}
             />
-            <ListFormBirthDateRow label="出生年月日" value={birthDate} />
+            <ListFormBirthDateRow
+              label="出生年月日"
+              value={birthDate}
+              onChange={setBirthDate}
+            />
           </div>
 
           <RoundedButtonPrimary

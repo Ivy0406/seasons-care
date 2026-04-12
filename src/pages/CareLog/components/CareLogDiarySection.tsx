@@ -7,17 +7,20 @@ import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
-import type {
-  CareLogEntry,
-  CareLogFilterValue,
-} from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry, CareLogFilterValue } from '@/pages/CareLog/types';
 
 type CareLogDiarySectionProps = {
   items: CareLogEntry[];
   selectedDate?: Date;
-  onUpdateEntry: (entry: CareLogEntry) => void;
-  onDeleteEntry: (entryId: string) => void;
+  onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
+  onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
+  onToggleStatus: (
+    entryId: string,
+    status: CareLogEntry['status'],
+  ) => Promise<boolean> | boolean;
   onCreateEntry: (date?: Date) => void;
+  isUpdatingEntry?: boolean;
+  isDeletingEntry?: boolean;
 };
 
 const statusFilterOptions = [
@@ -32,13 +35,18 @@ function CareLogDiarySection({
   selectedDate,
   onUpdateEntry,
   onDeleteEntry,
+  onToggleStatus,
   onCreateEntry,
+  isUpdatingEntry = false,
+  isDeletingEntry = false,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
     items,
     onUpdateEntry,
     onDeleteEntry,
+    isUpdatingEntry,
+    isDeletingEntry,
   });
   const now = new Date();
   const activeItems = items;
@@ -91,9 +99,9 @@ function CareLogDiarySection({
   return (
     <section className="flex w-full flex-col gap-5">
       {selectedDate ? (
-        <header className="flex items-start justify-between gap-3">
+        <header className="flex items-start justify-between">
           <div className="flex flex-col justify-between">
-            <p>日誌列表</p>
+            <p className="font-heading-md">日誌列表</p>
           </div>
           <FilterDropdownButton
             value={statusFilter}
@@ -110,6 +118,10 @@ function CareLogDiarySection({
               item={item}
               onClick={() => diaryCardActions.openDetail(item.id)}
               onMoreClick={() => diaryCardActions.openActions(item.id)}
+              isStatusUpdating={isUpdatingEntry}
+              onStatusChange={(checked) =>
+                onToggleStatus(item.id, checked ? 'completed' : 'pending')
+              }
             />
           ))
         : emptyState}

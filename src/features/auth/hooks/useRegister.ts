@@ -7,7 +7,12 @@ import { toast } from 'sonner';
 
 import { login, register } from '@/api/endpoints/auth';
 import setupProfile from '@/api/endpoints/user';
-import { TOKEN_KEY, CURRENT_USER_KEY } from '@/constants/auth';
+import {
+  CURRENT_GROUP_ID_KEY,
+  CURRENT_USER_ID_KEY,
+  CURRENT_USER_KEY,
+  TOKEN_KEY,
+} from '@/constants/auth';
 
 type AccountData = {
   account: string;
@@ -34,7 +39,18 @@ const useRegister = () => {
         email: data.account,
         password: data.password,
       });
-      Cookies.set(TOKEN_KEY, loginRes.data.data.token, { expires: 100 });
+      const { token, user, defaultCareGroupId } = loginRes.data.data;
+
+      Cookies.set(TOKEN_KEY, token, { expires: 100 });
+      window.localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+      window.localStorage.setItem(CURRENT_USER_ID_KEY, user.id);
+
+      if (defaultCareGroupId) {
+        window.localStorage.setItem(CURRENT_GROUP_ID_KEY, defaultCareGroupId);
+      } else {
+        window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
+      }
+
       setStep('profile');
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -61,17 +77,6 @@ const useRegister = () => {
         userName: profile.name,
         avatarKey: profile.avatarKey,
       });
-      const existing = JSON.parse(
-        localStorage.getItem(CURRENT_USER_KEY) ?? '{}',
-      );
-      localStorage.setItem(
-        CURRENT_USER_KEY,
-        JSON.stringify({
-          ...existing,
-          userName: profile.name,
-          avatarKey: profile.avatarKey,
-        }),
-      );
       navigate('/onboarding');
     } catch (error) {
       if (axios.isAxiosError(error)) {

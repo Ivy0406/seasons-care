@@ -11,6 +11,9 @@ import DiarySummary from './DiarySummary';
 import MoneySummary from './MoneySummary';
 
 type Tab = 'diary' | 'money' | 'health';
+type DailyOverviewTabsProps = {
+  selectedDate: Date;
+};
 
 const TABS_LIST: {
   value: Tab;
@@ -41,7 +44,7 @@ const TABS_LIST: {
 const triggerBaseClass =
   'font-heading-sm h-10 flex-1 rounded-t-lg border-2 border-b-0 border-neutral-900 text-neutral-900 shadow-none transition-none rounded-b-none';
 
-function DailyOverviewTabs() {
+function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('diary');
   const navigate = useNavigate();
 
@@ -66,9 +69,9 @@ function DailyOverviewTabs() {
 
         <TabsContent
           value="diary"
-          className="bg-primary-default flex flex-col items-center gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
+          className="bg-primary-default flex flex-col gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
-          <DiarySummary />
+          <DiarySummary selectedDate={selectedDate} />
           <ViewMoreButton onClick={() => navigate('/calendar-page')} />
         </TabsContent>
 

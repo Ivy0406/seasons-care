@@ -18,6 +18,8 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
   const {
     detailEntry,
     editingEntry,
+    isDeletingEntry,
+    isUpdatingEntry,
     modalKey,
     selectedActionEntry,
     closeActions,
@@ -88,6 +90,7 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
               <CareLogEditFormCard
                 entry={editingEntry}
                 onClose={closeEdit}
+                isSubmitting={isUpdatingEntry}
                 onSubmit={submitEdit}
               />
             ) : null}
@@ -100,7 +103,11 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
           open
           variant={modalKey}
           onClose={closeModal}
-          onConfirm={modalKey === 'deleteConfirm' ? confirmDelete : undefined}
+          onConfirm={
+            modalKey === 'deleteConfirm' && !isDeletingEntry
+              ? confirmDelete
+              : undefined
+          }
         />
       ) : null}
     </>
