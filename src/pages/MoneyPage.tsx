@@ -14,21 +14,15 @@ import CreateDataCard from '@/features/money/components/CreateDataCard';
 import MemberExpenseSummary from '@/features/money/components/MemberExpenseSummary';
 import MoneyTabsCard from '@/features/money/components/MoneyTabsCard';
 import useActivedMoneyTab from '@/features/money/hooks/useActivedMoneyTab';
-import useExpenses from '@/features/money/hooks/useExpenses';
-import useSelectedMonth from '@/features/money/hooks/useSelectedMonth';
+import useActiveExpenses from '@/features/money/hooks/useActiveExpenses';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 function MoneyPage() {
-  const { expenses } = useExpenses();
-  const { selectedMonth } = useSelectedMonth();
   const { activeTab } = useActivedMoneyTab();
+  const { monthlyExpenses, cardListItems } = useActiveExpenses();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
-
-  const monthlyExpenses = expenses.filter((e) =>
-    e.expenseDate.startsWith(selectedMonth),
-  );
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20 text-neutral-900">
@@ -43,7 +37,7 @@ function MoneyPage() {
       {activeTab === 'monthly' && (
         <MemberExpenseSummary expenses={monthlyExpenses} />
       )}
-      <CardsList items={monthlyExpenses} />
+      <CardsList items={cardListItems} />
       <FixedBottomButton onClick={() => setShowCreateCard(true)} label="新增" />
 
       <AlertDialog
