@@ -83,6 +83,7 @@ type ListFormSelectRowProps = {
   value: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
+  placeholder?: string;
   className?: string;
 };
 
@@ -716,6 +717,7 @@ function ListFormSelectRow({
   value,
   options,
   onChange,
+  placeholder,
   className,
 }: ListFormSelectRowProps) {
   return (
@@ -725,6 +727,7 @@ function ListFormSelectRow({
           value={value}
           options={options}
           onChange={onChange}
+          placeholder={placeholder}
         />
       </div>
     </ListFormRow>
