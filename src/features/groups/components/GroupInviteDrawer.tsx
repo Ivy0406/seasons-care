@@ -24,7 +24,7 @@ function GroupInviteDrawer({
   inviteCode = DEFAULT_INVITE_CODE,
 }: GroupInviteDrawerProps) {
   const [isCopiedModalOpen, setIsCopiedModalOpen] = useState(false);
-  const inviteLink = `https://seasons-care.app/invite/${inviteCode}`;
+  const inviteLink = `${window.location.origin}/#/homepage?inviteCode=${inviteCode}`;
 
   const handleCopyCode = async () => {
     await navigator.clipboard.writeText(inviteCode);

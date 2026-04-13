@@ -9,10 +9,15 @@ import useJoinGroup from '@/features/groups/hooks/useJoinGroup';
 
 type GroupJoinDrawerProps = {
   open: boolean;
+  initialInviteCode?: string;
   onOpenChange: (open: boolean) => void;
 };
 
-function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
+function GroupJoinDrawer({
+  open,
+  initialInviteCode = '',
+  onOpenChange,
+}: GroupJoinDrawerProps) {
   const { isLoading, handleJoinGroup } = useJoinGroup();
   const [inviteCode, setInviteCode] = useState('');
   const [isJoinSuccess, setIsJoinSuccess] = useState(false);
@@ -24,12 +29,18 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
     hasTouchedInviteCode && trimmedInviteCode !== '' && !isInviteCodeValid;
 
   useEffect(() => {
+    if (open) {
+      setInviteCode(initialInviteCode.toUpperCase());
+      setHasTouchedInviteCode(false);
+      return;
+    }
+
     if (!open) {
       setInviteCode('');
       setIsJoinSuccess(false);
       setHasTouchedInviteCode(false);
     }
-  }, [open]);
+  }, [initialInviteCode, open]);
 
   const handleSubmitJoinGroup = async () => {
     setHasTouchedInviteCode(true);
