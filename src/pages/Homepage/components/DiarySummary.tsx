@@ -5,6 +5,7 @@ import { isSameDay, parseISO } from 'date-fns';
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
+import CareLogEmptyState from '@/pages/CareLog/components/CareLogEmptyState';
 import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
@@ -78,6 +79,9 @@ function DiarySummary({ selectedDate }: { selectedDate: Date }) {
   return (
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
+        {filteredEntries.length === 0 ? (
+          <CareLogEmptyState message="當日尚未有紀錄，快來新增吧！" />
+        ) : null}
         {STATUS_ORDER.map((status) => {
           const cards = grouped[status];
           if (cards.length === 0) return null;
