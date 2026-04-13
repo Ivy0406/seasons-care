@@ -39,6 +39,7 @@ type HomepageNavigationBarProps = {
   onNotificationClick?: () => void;
   onMenuClick?: () => void;
   selectedDate?: Date;
+  onDateClick?: () => void;
   className?: string;
 };
 
@@ -46,7 +47,6 @@ type PageNavigationBarProps = {
   title: string;
   onMenuClick?: () => void;
   titleClassName?: string;
-  wrapperClassName?: string;
   className?: string;
 };
 
@@ -141,7 +141,7 @@ function NavigationMenuButton({
         className,
       )}
     >
-      <Menu className="size-6" strokeWidth={1.5} />
+      <Menu className="size-8" strokeWidth={1.5} />
     </button>
   );
 }
@@ -237,17 +237,35 @@ function NavigationGroupTrigger({
   );
 }
 
-function NavigationDateBadge({ selectedDate }: { selectedDate?: Date }) {
+type NavigationDateBadgeProps = {
+  selectedDate?: Date;
+  onClick?: () => void;
+};
+
+function NavigationDateBadge({
+  selectedDate,
+  onClick,
+}: NavigationDateBadgeProps) {
   const currentDateLabel = useCurrentDateLabel();
   const dateLabel = selectedDate
     ? createDateLabel(selectedDate)
     : currentDateLabel;
+  const WrapperTag = onClick ? 'button' : 'div';
 
   return (
-    <div className="text-primary-dark inline-flex items-center gap-0.5 justify-self-start rounded-sm py-3">
+    <WrapperTag
+      {...(onClick
+        ? {
+            type: 'button' as const,
+            onClick,
+            'aria-label': `選擇日期，目前為${dateLabel.day}${dateLabel.weekday}`,
+          }
+        : {})}
+      className="text-primary-dark inline-flex items-center gap-0.5 justify-self-start rounded-sm py-3"
+    >
       <p className="font-label-lg">{dateLabel.day}</p>
       <p className="font-label-md">{dateLabel.weekday}</p>
-    </div>
+    </WrapperTag>
   );
 }
 
@@ -256,6 +274,7 @@ function HomepageNavigationBar({
   onNotificationClick,
   onMenuClick,
   selectedDate,
+  onDateClick,
   className,
 }: HomepageNavigationBarProps) {
   return (
@@ -266,7 +285,10 @@ function HomepageNavigationBar({
           className,
         )}
       >
-        <NavigationDateBadge selectedDate={selectedDate} />
+        <NavigationDateBadge
+          selectedDate={selectedDate}
+          onClick={onDateClick}
+        />
         <Link
           to="/homepage"
           aria-label="回到首頁"
@@ -289,11 +311,10 @@ function PageNavigationBar({
   title,
   onMenuClick,
   titleClassName,
-  wrapperClassName,
   className,
 }: PageNavigationBarProps) {
   return (
-    <div className={cn('border-b-2 border-neutral-900', wrapperClassName)}>
+    <div className="border-b-2 border-neutral-900">
       <div
         className={cn(
           'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
@@ -302,7 +323,7 @@ function PageNavigationBar({
       >
         <NavigationTitle
           as="span"
-          className={cn('font-heading-lg justify-self-start', titleClassName)}
+          className={cn('font-label-lg justify-self-start', titleClassName)}
         >
           {title}
         </NavigationTitle>
