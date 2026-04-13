@@ -11,7 +11,7 @@ type GroupActionDrawerProps = {
   onOpenChange: (open: boolean) => void;
   onManageMembers?: () => void;
   onEditGroup?: () => void;
-  onDeleteGroup?: () => void;
+  onLeaveGroup?: () => void;
   className?: string;
 };
 
@@ -57,7 +57,7 @@ function GroupActionDrawer({
   onOpenChange,
   onManageMembers,
   onEditGroup,
-  onDeleteGroup,
+  onLeaveGroup,
   className,
 }: GroupActionDrawerProps) {
   return (
@@ -98,7 +98,7 @@ function GroupActionDrawer({
             label="退出群組"
             tone="danger"
             icon={<SquareArrowRightExit className="size-6" strokeWidth={2} />}
-            onClick={onDeleteGroup}
+            onClick={onLeaveGroup}
           />
         </div>
       </div>
