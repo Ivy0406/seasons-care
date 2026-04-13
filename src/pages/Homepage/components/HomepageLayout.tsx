@@ -385,7 +385,7 @@ function HomepageLayout() {
         </section>
 
         <section className="flex flex-1 flex-col pt-11">
-          <DailyOverviewTabs />
+          <DailyOverviewTabs selectedDate={selectedDate} />
         </section>
       </main>
 
