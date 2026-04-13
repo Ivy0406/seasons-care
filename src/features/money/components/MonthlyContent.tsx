@@ -1,3 +1,4 @@
+
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
@@ -12,7 +13,6 @@ import type {
   CategoryTotals,
   CategoryWithAmount,
   ExpenseItem,
-  ExpensesCategory,
 } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import cn from '@/lib/utils';
@@ -20,33 +20,21 @@ import cn from '@/lib/utils';
 import useExpenses from '../hooks/useExpenses';
 import useSelectedMonth, { MONTH_OPTIONS } from '../hooks/useSelectedMonth';
 
-function normalizeCategoryKey(category: string): ExpensesCategory {
-  if (category.includes('醫療') || category === 'medical') return 'medical';
-  if (category.includes('飲食') || category === 'food') return 'food';
-  if (category.includes('交通') || category === 'traffic') return 'traffic';
-  return 'other';
-}
-
 function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
   const totals = { ...INITIAL_CATEGORY_TOTALS };
   expenses.forEach((expense) => {
-    const categoryKey = normalizeCategoryKey(expense.category);
-    totals[categoryKey] += expense.amount;
+    totals[expense.category] += expense.amount;
   });
   return totals;
 }
 
 function MonthlyContent() {
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
-  const { expenses } = useExpenses();
+  const { expenses } = useExpenses(selectedMonth);
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
 
-  const monthlyExpenses = expenses.filter((expense) =>
-    expense.expenseDate.startsWith(selectedMonth),
-  );
-
-  const categoryTotals = calculateCategoryTotals(monthlyExpenses);
+  const categoryTotals = calculateCategoryTotals(expenses);
 
   const categoriesWithAmount: CategoryWithAmount[] =
     EXPENSE_CATEGORY_CONFIGS.map((config) => ({
