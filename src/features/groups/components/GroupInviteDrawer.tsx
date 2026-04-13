@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Link as LinkIcon, Link2, Share, X } from 'lucide-react';
+import QRCode from 'react-qr-code';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import Modal from '@/components/common/Modal';
@@ -12,26 +13,24 @@ type GroupInviteDrawerProps = {
   inviteCode?: string;
 };
 
-const DEFAULT_INVITE_CODE = '14673156';
-
-function MockQrCode() {
-  return <div className="mx-auto size-[145px] bg-neutral-300" />;
-}
-
 function GroupInviteDrawer({
   open,
   onOpenChange,
-  inviteCode = DEFAULT_INVITE_CODE,
+  inviteCode = '',
 }: GroupInviteDrawerProps) {
   const [isCopiedModalOpen, setIsCopiedModalOpen] = useState(false);
   const inviteLink = `${window.location.origin}/#/homepage?inviteCode=${inviteCode}`;
+  const hasInviteCode = inviteCode !== '';
 
   const handleCopyCode = async () => {
+    if (!hasInviteCode) return;
     await navigator.clipboard.writeText(inviteCode);
     setIsCopiedModalOpen(true);
   };
 
   const handleShareLink = async () => {
+    if (!hasInviteCode) return;
+
     if (navigator.share) {
       await navigator.share({
         title: '邀請加入照護群組',
@@ -64,14 +63,30 @@ function GroupInviteDrawer({
             你的邀請連結將在30天後過期。
           </p>
 
-          <MockQrCode />
+          <div className="mx-auto rounded-[8px] bg-neutral-50 p-3">
+            {hasInviteCode ? (
+              <QRCode
+                value={inviteLink}
+                size={145}
+                bgColor="transparent"
+                fgColor="#212529"
+              />
+            ) : (
+              <div className="flex size-[145px] items-center justify-center text-center text-sm text-neutral-600">
+                邀請碼載入中
+              </div>
+            )}
+          </div>
 
-          <p className="font-label-lg mt-3 text-center">{inviteCode}</p>
+          <p className="font-label-lg mt-3 text-center">
+            {hasInviteCode ? inviteCode : '---'}
+          </p>
 
           <div className="mt-9 flex flex-col gap-3">
             <RoundedButtonSecondary
               className="border border-neutral-900"
               onClick={handleCopyCode}
+              disabled={!hasInviteCode}
             >
               <span className="inline-flex items-center gap-2">
                 <Link2 className="size-5" strokeWidth={2.5} />
@@ -82,6 +97,7 @@ function GroupInviteDrawer({
             <RoundedButtonSecondary
               className="border border-neutral-900"
               onClick={handleShareLink}
+              disabled={!hasInviteCode}
             >
               <span className="inline-flex items-center gap-2">
                 <Share className="size-5" strokeWidth={2.5} />
