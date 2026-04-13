@@ -89,6 +89,8 @@ type ListFormDateTimeRowProps = {
   label: string;
   dateValue: string;
   timeValue: string;
+  onDateChange?: (value: string) => void;
+  onTimeChange?: (value: string) => void;
   onDateClick?: () => void;
   onTimeClick?: () => void;
   className?: string;
@@ -334,27 +336,53 @@ function ListFormDateTimeRow({
   label,
   dateValue,
   timeValue,
+  onDateChange,
+  onTimeChange,
   onDateClick,
   onTimeClick,
   className,
 }: ListFormDateTimeRowProps) {
+  const isInlineEditable =
+    onDateChange !== undefined || onTimeChange !== undefined;
+
   return (
     <ListFormRow label={label} className={className}>
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onDateClick}
-          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
-        >
-          {dateValue}
-        </button>
-        <button
-          type="button"
-          onClick={onTimeClick}
-          className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
-        >
-          {timeValue}
-        </button>
+        {isInlineEditable ? (
+          <>
+            <input
+              type="date"
+              value={dateValue.replaceAll('/', '-')}
+              onChange={(event) =>
+                onDateChange?.(event.target.value.replaceAll('-', '/'))
+              }
+              className="font-label-md h-8 rounded-lg border-none bg-neutral-200 px-3 py-1 text-neutral-600 outline-none"
+            />
+            <input
+              type="time"
+              value={timeValue}
+              onChange={(event) => onTimeChange?.(event.target.value)}
+              className="font-label-md h-8 rounded-lg border-none bg-neutral-200 px-3 py-1 text-neutral-600 outline-none"
+            />
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={onDateClick}
+              className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+            >
+              {dateValue}
+            </button>
+            <button
+              type="button"
+              onClick={onTimeClick}
+              className="font-label-md flex h-8 items-center rounded-lg bg-neutral-200 px-3 py-1 text-neutral-600 transition-colors hover:bg-neutral-300 active:bg-neutral-400"
+            >
+              {timeValue}
+            </button>
+          </>
+        )}
       </div>
     </ListFormRow>
   );
