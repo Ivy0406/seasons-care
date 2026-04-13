@@ -4,6 +4,7 @@ import { Minus, Plus } from 'lucide-react';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
+import { CardLabelPrimary } from '@/components/common/CardLabel';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import type { GroupMember } from '@/types/group';
@@ -89,7 +90,16 @@ function GroupMemberManagementDrawer({
                     className="size-10 bg-neutral-400 ring-2"
                   />
                   <div className="min-w-0">
-                    <p className="font-paragraph-md truncate">{member.username}</p>
+                    <div className="flex min-w-0 items-center gap-1">
+                      <p className="font-paragraph-md truncate">
+                        {member.username}
+                      </p>
+                      {member.role === 0 ? (
+                        <CardLabelPrimary className="font-paragraph-xs h-auto px-0.25 py-0 text-xs">
+                          管理者
+                        </CardLabelPrimary>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 

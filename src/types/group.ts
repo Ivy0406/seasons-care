@@ -4,6 +4,19 @@ type CreateGroupPayload = {
   recipientBirthDate: string;
 };
 
+type UpdateGroupPayload = {
+  name: string;
+  recipientName: string;
+  recipientGender: string;
+  recipientBirthDate: string;
+  description: string;
+  healthStatus: string;
+};
+
+type JoinGroupPayload = {
+  inviteCode: string;
+};
+
 type CareGroupInfo = {
   id: string;
   name: string;
@@ -29,6 +42,24 @@ type GetMyGroupsResponse = {
   data: CareGroupInfo[];
 };
 
+type UpdateGroupResponse = {
+  success: boolean;
+  message: string;
+  data: CareGroupInfo;
+};
+
+type DeleteGroupMemberResponse = {
+  success: boolean;
+  message: string;
+  data: null;
+};
+
+type JoinGroupResponse = {
+  success: boolean;
+  message: string;
+  data: string;
+};
+
 type GroupMember = {
   userId: string;
   username: string;
@@ -49,9 +80,14 @@ type GetGroupDetailResponse = {
 
 export type {
   CreateGroupPayload,
+  UpdateGroupPayload,
+  JoinGroupPayload,
   CareGroupInfo,
   CreateGroupResponse,
   GetMyGroupsResponse,
+  UpdateGroupResponse,
+  DeleteGroupMemberResponse,
+  JoinGroupResponse,
   GroupMember,
   CareGroupDetail,
   GetGroupDetailResponse,

@@ -149,6 +149,10 @@ function InputFieldGroupId(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
   return <InputField type="text" placeholder="請輸入照護群組 ID" {...props} />;
 }
 
+function InputFieldInviteCode(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
+  return <InputField type="text" placeholder="請輸入邀請碼" {...props} />;
+}
+
 export {
   FieldWrapper,
   InputField,
@@ -156,4 +160,5 @@ export {
   InputFieldPassword,
   InputFieldName,
   InputFieldGroupId,
+  InputFieldInviteCode,
 };

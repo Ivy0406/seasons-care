@@ -3,36 +3,57 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
-import { InputFieldGroupId } from '@/components/common/InputField';
+import { InputFieldInviteCode } from '@/components/common/InputField';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
+import useJoinGroup from '@/features/groups/hooks/useJoinGroup';
 
 type GroupJoinDrawerProps = {
   open: boolean;
+  initialInviteCode?: string;
   onOpenChange: (open: boolean) => void;
 };
 
-function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
-  const [groupId, setGroupId] = useState('');
+function GroupJoinDrawer({
+  open,
+  initialInviteCode = '',
+  onOpenChange,
+}: GroupJoinDrawerProps) {
+  const { isLoading, handleJoinGroup } = useJoinGroup();
+  const [inviteCode, setInviteCode] = useState('');
   const [isJoinSuccess, setIsJoinSuccess] = useState(false);
-  const [hasTouchedGroupId, setHasTouchedGroupId] = useState(false);
-  const trimmedGroupId = groupId.trim();
-  const isGroupIdValid = /^[a-zA-Z0-9]{8}$/.test(trimmedGroupId);
-  const canSubmit = trimmedGroupId.length === 8;
-  const showGroupIdError =
-    hasTouchedGroupId && trimmedGroupId !== '' && !isGroupIdValid;
+  const [hasTouchedInviteCode, setHasTouchedInviteCode] = useState(false);
+  const trimmedInviteCode = inviteCode.trim().toUpperCase();
+  const isInviteCodeValid = /^[a-zA-Z0-9]{8}$/.test(trimmedInviteCode);
+  const canSubmit = trimmedInviteCode.length === 8 && !isLoading;
+  const showInviteCodeError =
+    hasTouchedInviteCode && trimmedInviteCode !== '' && !isInviteCodeValid;
 
   useEffect(() => {
-    if (!open) {
-      setGroupId('');
-      setIsJoinSuccess(false);
-      setHasTouchedGroupId(false);
+    if (open) {
+      setInviteCode(initialInviteCode.toUpperCase());
+      setHasTouchedInviteCode(false);
+      return;
     }
-  }, [open]);
 
-  const handleJoinGroup = () => {
-    setHasTouchedGroupId(true);
+    if (!open) {
+      setInviteCode('');
+      setIsJoinSuccess(false);
+      setHasTouchedInviteCode(false);
+    }
+  }, [initialInviteCode, open]);
 
-    if (!isGroupIdValid) return;
+  const handleSubmitJoinGroup = async () => {
+    setHasTouchedInviteCode(true);
+
+    if (!isInviteCodeValid) return;
+
+    const joinedGroup = await handleJoinGroup({
+      inviteCode: trimmedInviteCode,
+    });
+
+    if (joinedGroup === null) {
+      return;
+    }
 
     setIsJoinSuccess(true);
   };
@@ -90,27 +111,29 @@ function GroupJoinDrawer({ open, onOpenChange }: GroupJoinDrawerProps) {
           </div>
 
           <p className="font-paragraph-md mt-17 mb-3 text-center text-neutral-700">
-            請輸入要加入的群組 ID
+            請輸入要加入的邀請碼
           </p>
 
-          <InputFieldGroupId
-            value={groupId}
-            onChange={(event) => setGroupId(event.target.value)}
-            onBlur={() => setHasTouchedGroupId(true)}
+          <InputFieldInviteCode
+            value={inviteCode}
+            onChange={(event) =>
+              setInviteCode(event.target.value.toUpperCase())
+            }
+            onBlur={() => setHasTouchedInviteCode(true)}
             onClear={() => {
-              setGroupId('');
-              setHasTouchedGroupId(false);
+              setInviteCode('');
+              setHasTouchedInviteCode(false);
             }}
-            error={showGroupIdError ? '格式錯誤' : undefined}
+            error={showInviteCodeError ? '格式錯誤' : undefined}
           />
 
           <RoundedButtonPrimary
             type="button"
-            onClick={handleJoinGroup}
+            onClick={handleSubmitJoinGroup}
             disabled={!canSubmit}
             className="mt-22"
           >
-            確認加入
+            {isLoading ? '加入中...' : '確認加入'}
           </RoundedButtonPrimary>
         </div>
       )}
