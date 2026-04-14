@@ -307,7 +307,7 @@ function InlineDatePicker({
         <div
           data-vaul-no-drag=""
           className={cn(
-            'absolute top-full right-0 z-50 mt-2 touch-pan-y rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900',
+            'absolute top-full right-0 z-50 mt-2 touch-pan-y rounded-sm bg-neutral-200 p-2 text-neutral-900 shadow-md ring-2 ring-neutral-900',
             panelClassName,
           )}
         >
@@ -822,7 +822,7 @@ function ListFormDateTimeRow({
             {timeValue}
           </button>
           {onTimeChange && isTimeOpen ? (
-            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900">
+            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 text-neutral-900 shadow-md ring-2 ring-neutral-900">
               <div className="flex gap-2">
                 <Select
                   value={parsedTime.period}
