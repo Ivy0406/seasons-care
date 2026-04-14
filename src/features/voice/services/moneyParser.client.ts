@@ -29,7 +29,7 @@ function normalizeMoneyCategory(
     return category;
   }
 
-  return 'none';
+  return null;
 }
 
 function createMoneyDraftFromAIResult(

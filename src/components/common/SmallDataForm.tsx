@@ -316,7 +316,7 @@ function MoneyDataSmallForm({
       />
       <ListFormSelectRow
         label="類別"
-        value={value.category}
+        value={value.category ?? ''}
         placeholder="請選擇類別"
         options={[
           { value: 'medical', label: '醫療支出' },
