@@ -13,6 +13,7 @@ import {
   CURRENT_USER_KEY,
   TOKEN_KEY,
 } from '@/constants/auth';
+import type { UserInfo } from '@/types/auth';
 
 type AccountData = {
   account: string;
@@ -77,6 +78,21 @@ const useRegister = () => {
         userName: profile.name,
         avatarKey: profile.avatarKey,
       });
+      const currentUser: UserInfo | null = JSON.parse(
+        window.localStorage.getItem(CURRENT_USER_KEY) ?? 'null',
+      );
+
+      if (currentUser) {
+        window.localStorage.setItem(
+          CURRENT_USER_KEY,
+          JSON.stringify({
+            ...currentUser,
+            userName: profile.name,
+            avatarKey: profile.avatarKey,
+            isProfileCompleted: true,
+          }),
+        );
+      }
       navigate('/onboarding');
     } catch (error) {
       if (axios.isAxiosError(error)) {

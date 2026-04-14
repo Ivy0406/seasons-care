@@ -1,4 +1,5 @@
 type CreateGroupPayload = {
+  name: string;
   recipientName: string;
   recipientGender: string;
   recipientBirthDate: string;

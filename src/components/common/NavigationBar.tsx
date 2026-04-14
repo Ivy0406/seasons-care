@@ -44,10 +44,13 @@ type HomepageNavigationBarProps = {
 };
 
 type PageNavigationBarProps = {
-  title: string;
+  title?: string;
   onMenuClick?: () => void;
   titleClassName?: string;
   className?: string;
+  showTitle?: boolean;
+  showMenuButton?: boolean;
+  centerBrandLinkToHomepage?: boolean;
 };
 
 type HomepageGroupNavigationBarProps = {
@@ -308,10 +311,13 @@ function HomepageNavigationBar({
 }
 
 function PageNavigationBar({
-  title,
+  title = '',
   onMenuClick,
   titleClassName,
   className,
+  showTitle = true,
+  showMenuButton = true,
+  centerBrandLinkToHomepage = true,
 }: PageNavigationBarProps) {
   return (
     <div className="border-b-2 border-neutral-900">
@@ -321,23 +327,37 @@ function PageNavigationBar({
           className,
         )}
       >
-        <NavigationTitle
-          as="span"
-          className={cn('font-label-lg justify-self-start', titleClassName)}
-        >
-          {title}
-        </NavigationTitle>
-        <Link
-          to="/homepage"
-          aria-label="回到首頁"
-          className="justify-self-center"
-        >
-          <BrandMark className="h-8.25 w-auto" />
-        </Link>
-        <NavigationMenuButton
-          onClick={onMenuClick}
-          className="justify-self-end"
-        />
+        {showTitle ? (
+          <NavigationTitle
+            as="span"
+            className={cn('font-label-lg justify-self-start', titleClassName)}
+          >
+            {title}
+          </NavigationTitle>
+        ) : (
+          <div />
+        )}
+        {centerBrandLinkToHomepage ? (
+          <Link
+            to="/homepage"
+            aria-label="回到首頁"
+            className="justify-self-center"
+          >
+            <BrandMark className="h-8.25 w-auto" />
+          </Link>
+        ) : (
+          <div className="justify-self-center">
+            <BrandMark className="h-8.25 w-auto" />
+          </div>
+        )}
+        {showMenuButton ? (
+          <NavigationMenuButton
+            onClick={onMenuClick}
+            className="justify-self-end"
+          />
+        ) : (
+          <div />
+        )}
       </div>
     </div>
   );
