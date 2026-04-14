@@ -7,9 +7,11 @@ import ItemDetails from './ItemDetails';
 function ItemDetailsCard({
   item,
   onDeleteClick,
+  onEditClick,
 }: {
   item: ExpenseItem;
   onDeleteClick: () => void;
+  onEditClick: () => void;
 }) {
   return (
     <DataFormCard
@@ -30,7 +32,10 @@ function ItemDetailsCard({
           >
             刪除帳目
           </Button>
-          <Button className="bg-secondary-default flex-1 rounded-full text-neutral-900">
+          <Button
+            className="bg-secondary-default flex-1 rounded-full text-neutral-900"
+            onClick={onEditClick}
+          >
             編輯帳目
           </Button>
         </div>

@@ -23,6 +23,7 @@ import type { ExpenseItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 import ItemDetailsCard from './ItemDetailsCard';
+import UpdateDataCard from './UpdateDataCard';
 
 function EntryCard({ item }: { item: ExpenseItem }) {
   const { currentGroupId } = useCurrentGroupId();
@@ -30,6 +31,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showError, setShowError] = useState(false);
@@ -38,7 +40,13 @@ function EntryCard({ item }: { item: ExpenseItem }) {
 
   const handleDeleteClick = () => {
     setDialogOpen(false);
+    setUpdateOpen(false);
     setConfirmOpen(true);
+  };
+
+  const handleEditClick = () => {
+    setDialogOpen(false);
+    setUpdateOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -100,7 +108,24 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         <AlertDialogPortal>
           <AlertDialogBackdrop />
           <AlertDialogPopup className="border-0 bg-transparent">
-            <ItemDetailsCard item={item} onDeleteClick={handleDeleteClick} />
+              <ItemDetailsCard
+              item={item}
+              onDeleteClick={handleDeleteClick}
+              onEditClick={handleEditClick}
+            />
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
+
+      <AlertDialog open={updateOpen} onOpenChange={setUpdateOpen}>
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="border-0 bg-transparent">
+            <UpdateDataCard
+              item={item}
+              onClose={() => setUpdateOpen(false)}
+              onDeleteClick={handleDeleteClick}
+            />
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
@@ -110,6 +135,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         onOpenChange={setDrawerOpen}
         editLabel="編輯帳目"
         deleteLabel="刪除帳目"
+        onEdit={handleEditClick}
         onDelete={handleDeleteClick}
       />
 
