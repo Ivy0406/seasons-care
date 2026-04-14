@@ -8,7 +8,7 @@ import {
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
 import { hasMoneyIntent } from '@/features/voice/services/voiceIntent';
 
-function extractMoneyCategory(transcript: string): MoneyCategoryValue {
+function extractMoneyCategory(transcript: string): MoneyCategoryValue | null {
   if (/醫療|掛號|回診|藥費|檢查|住院/.test(transcript)) {
     return 'medical';
   }
@@ -25,7 +25,7 @@ function extractMoneyCategory(transcript: string): MoneyCategoryValue {
     return 'other';
   }
 
-  return 'none';
+  return null;
 }
 
 function extractMoneyAmount(transcript: string) {
