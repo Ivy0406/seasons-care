@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { format, isSameDay, parseISO } from 'date-fns';
+import { isSameDay, parseISO } from 'date-fns';
 
 import { getBloodSugars } from '@/api/endpoints/health';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
