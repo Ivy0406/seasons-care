@@ -68,7 +68,7 @@ function MonthlyContent() {
           options={MONTH_OPTIONS}
           onChange={setSelectedMonth}
         />
-        <UserGroup className="absolute right-0">
+        <UserGroup className="absolute right-0" showArrow={false}>
           {groupMembers.map((member) => (
             <SingleAvatar
               key={member.userId}

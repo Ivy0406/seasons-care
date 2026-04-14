@@ -179,7 +179,7 @@ function HomepageLayout() {
     setIsGroupEntryDrawerOpen(true);
   };
 
-  const handleOpenGroupInvite = (_inviteCode?: string) => {
+  const handleOpenGroupInvite = () => {
     setIsHomepageGroupDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
@@ -189,6 +189,7 @@ function HomepageLayout() {
   };
 
   const handleOpenGroupMembers = () => {
+    setActiveGroupId((prev) => prev ?? selectedGroupId);
     setIsGroupActionDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupInviteDrawerOpen(false);
@@ -310,7 +311,10 @@ function HomepageLayout() {
               <span className="">天</span>
             </div>
 
-            <UserGroup className="w-fit max-w-25 min-w-0">
+            <UserGroup
+              className="w-fit max-w-25 min-w-0"
+              onClick={handleOpenGroupMembers}
+            >
               {activeGroupMembers.map((member) => (
                 <SingleAvatar
                   key={member.userId}
