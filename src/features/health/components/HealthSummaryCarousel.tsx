@@ -12,7 +12,7 @@ import {
   DataCardBloodSugar,
 } from '@/components/common/DataCard';
 
-import useHealth from './useHealth';
+import useHealth from '../useHealth';
 
 // slidesOffsetBefore/After 對應父層 TabsContent 的 px-6（24px）
 const swiperConfig = {
@@ -29,14 +29,13 @@ const swiperConfig = {
   },
 };
 
-function HealthSummary() {
-  const healthData = useHealth();
-
+function HealthSummaryCarousel() {
   const { bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
-    healthData;
+    useHealth();
 
   return (
     <section className="pt-3">
+      <p className="font-heading-sm px-6 pb-5 text-neutral-900">今日健康摘要</p>
       <Swiper
         modules={[Pagination]}
         {...swiperConfig}
@@ -91,4 +90,4 @@ function HealthSummary() {
   );
 }
 
-export default HealthSummary;
+export default HealthSummaryCarousel;
