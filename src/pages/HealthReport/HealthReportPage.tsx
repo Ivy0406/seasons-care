@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
 import CreateDataCard from '@/features/health/components/CreateDataCard';
+import HealthSummaryCarousel from '@/features/health/components/HealthSummaryCarousel';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
@@ -56,13 +57,17 @@ function HealthReportPage() {
           />
         </div>
       </section>
-
+      <section>
+        <HealthSummaryCarousel />
+      </section>
       <div className="mx-auto w-full max-w-200 px-6">
         <WeeklyHealthTrend />
       </div>
 
       <div className="mx-auto mt-6 w-full max-w-200 px-6">
-        <RoundedButtonPro onClick={() => setShowUpgradeCTA(true)}>輸出成完整PDF</RoundedButtonPro>
+        <RoundedButtonPro onClick={() => setShowUpgradeCTA(true)}>
+          輸出成完整PDF
+        </RoundedButtonPro>
       </div>
 
       <FixedBottomButton label="新增" onClick={() => setShowCreateCard(true)} />
