@@ -82,11 +82,6 @@ function GroupActionDrawer({
         </div>
 
         <div className="overflow-hidden rounded-[8px] bg-neutral-300">
-          <ActionButton
-            label="管理/新增成員"
-            icon={<UserRoundCog className="size-6" strokeWidth={2} />}
-            onClick={onManageMembers}
-          />
           <div className="border-t border-neutral-400" />
           <ActionButton
             label="編輯群組"

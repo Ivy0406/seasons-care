@@ -1,4 +1,3 @@
-
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
@@ -56,13 +55,13 @@ function MonthlyContent() {
           options={MONTH_OPTIONS}
           onChange={setSelectedMonth}
         />
-        <UserGroup className="absolute right-0" showArrow={false}>
+        <UserGroup className="absolute right-0 w-fit" showArrow={false}>
           {groupMembers.map((member) => (
             <SingleAvatar
               key={member.userId}
               src={getAvatarSrcByKey(member.avatarKey)}
               name={member.username}
-              className="size-8 ring-2 ring-neutral-900"
+              className="size-7 ring-2 ring-neutral-900"
             />
           ))}
         </UserGroup>
