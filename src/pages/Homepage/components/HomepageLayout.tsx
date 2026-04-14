@@ -310,13 +310,13 @@ function HomepageLayout() {
               <span className="">天</span>
             </div>
 
-            <UserGroup>
+            <UserGroup className="w-fit max-w-25 min-w-0">
               {activeGroupMembers.map((member) => (
                 <SingleAvatar
                   key={member.userId}
                   src={getAvatarSrcByKey(member.avatarKey)}
                   name={member.username}
-                  className="size-8 ring-2 ring-neutral-900"
+                  className="size-7 bg-neutral-300 ring-1 ring-neutral-900"
                 />
               ))}
             </UserGroup>
