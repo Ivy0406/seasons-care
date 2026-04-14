@@ -12,6 +12,7 @@ import FormDiaryRepeatSelector, {
 } from '@/components/common/FormDiaryRepeatSelector';
 import InputClearButton from '@/components/common/InputClearButton';
 import ListFormOptionSelector from '@/components/common/ListFormOptionSelector';
+import ScrollableDatePicker from '@/components/common/ScrollableDatePicker';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import ToggleButton from '@/components/common/ToggleButton';
 import Input from '@/components/ui/input';
@@ -250,18 +251,7 @@ function ListFormBirthDateRow({
 }: ListFormBirthDateRowProps) {
   return (
     <ListFormRow label={label} className={cn('border-b-0', className)}>
-      {onChange ? (
-        <input
-          type="date"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="font-label-md min-h-8 rounded-md border-none bg-neutral-200 px-2 py-1 text-right text-neutral-600 outline-none"
-        />
-      ) : (
-        <div className="font-label-md inline-flex min-h-8 items-center rounded-md border-none bg-neutral-200 px-2 py-1 text-right text-neutral-600">
-          {value}
-        </div>
-      )}
+      <ScrollableDatePicker value={value} onChange={onChange} />
     </ListFormRow>
   );
 }
