@@ -30,6 +30,7 @@ type ModalProps = {
   autoCloseMs?: number;
   confirmText?: string;
   cancelText?: string;
+  isConfirmLoading?: boolean;
   onCancel?: () => void;
   onConfirm?: () => void;
   onClose: () => void;
@@ -88,6 +89,7 @@ function Modal({
   autoCloseMs,
   confirmText = '刪除',
   cancelText = '取消',
+  isConfirmLoading = false,
   onCancel,
   onConfirm,
   onClose,
@@ -132,8 +134,9 @@ function Modal({
           <RoundedButtonPrimary
             className="min-w-0 flex-1 text-base"
             onClick={onConfirm}
+            disabled={isConfirmLoading}
           >
-            {confirmText}
+            {isConfirmLoading ? '刪除中...' : confirmText}
           </RoundedButtonPrimary>
         </div>
       </>

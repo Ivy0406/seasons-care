@@ -1,18 +1,20 @@
 import { useState } from 'react';
 
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
-import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
+import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
 import VoiceCTA from '@/components/common/voiceCTA';
-import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
-import type { MoneyDraft } from '@/features/money/types';
-import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
+import { Button } from '@/components/ui/button';
+import useUpdateMoneyItem from '@/features/money/hooks/useUpdateMoneyItem';
+import type { ExpenseItem, MoneyDraft } from '@/features/money/types';
 
-type CreateDataCardProps = {
+type UpdateDataCardProps = {
+  item: ExpenseItem;
   onClose: () => void;
+  onDeleteClick: () => void;
   onVoiceInput?: () => void;
 };
 
@@ -22,23 +24,34 @@ type ResultModal = {
   message?: string;
 };
 
-function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
-  const [draft, setDraft] = useState<MoneyDraft>(() => {
-    const base = createEmptyMoneyDraft();
-    const now = new Date();
-    return {
-      ...base,
-      dateValue: format(now, 'yyyy/MM/dd'),
-      timeValue: format(now, 'HH:mm'),
-    };
-  });
+function itemToMoneyDraft(item: ExpenseItem): MoneyDraft {
+  const date = parseISO(item.expenseDate.replace('Z', ''));
+  return {
+    title: item.title,
+    amount: String(item.amount),
+    dateValue: format(date, 'yyyy/MM/dd'),
+    timeValue: format(date, 'HH:mm'),
+    category: item.category,
+    needsSplit: item.splitStatus === 'pending',
+    notes: item.notes ?? '',
+    transcript: '',
+    summary: '',
+  };
+}
 
+function UpdateDataCard({
+  item,
+  onClose,
+  onDeleteClick,
+  onVoiceInput,
+}: UpdateDataCardProps) {
+  const [draft, setDraft] = useState<MoneyDraft>(() => itemToMoneyDraft(item));
   const [resultModal, setResultModal] = useState<ResultModal>({
     open: false,
     variant: 'success',
   });
 
-  const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
+  const { isLoading, handleUpdateMoneyItem } = useUpdateMoneyItem();
 
   const isSubmitDisabled =
     isLoading ||
@@ -52,7 +65,7 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
 
   const handleSubmit = async (event: React.SubmitEvent) => {
     event.preventDefault();
-    const result = await handleCreateMoneyItem(draft);
+    const result = await handleUpdateMoneyItem(item.id, draft, item.updatedAt);
     setResultModal({
       open: true,
       variant: result.success ? 'success' : 'error',
@@ -69,14 +82,14 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
     <>
       <form onSubmit={handleSubmit}>
         <DataFormCard
-          title="新帳目"
-          className="bg-secondary-default"
-          toneClassName="bg-secondary-default"
+          title="編輯帳目"
+          className="bg-neutral-800"
+          toneClassName="bg-neutral-800 text-neutral-50"
           contentClassName="p-0"
         >
           <DataFormCard.Content>
             <VoiceCTA
-              className="bg-primary-default"
+              className="bg-primary-default text-neutral-900"
               title="記帳"
               onClose={onClose}
               onInputClick={() => onVoiceInput?.()}
@@ -88,13 +101,23 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
             />
           </DataFormCard.Content>
           <DataFormCard.Footer>
-            <RoundedButtonPrimary
-              type="submit"
-              className="w-full"
-              disabled={isSubmitDisabled}
-            >
-              新增帳目
-            </RoundedButtonPrimary>
+            <div className="flex gap-5">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 flex-1 rounded-full border-neutral-50 bg-transparent text-neutral-50"
+                onClick={onDeleteClick}
+              >
+                刪除帳目
+              </Button>
+              <RoundedButtonSecondary
+                type="submit"
+                className="bg-secondary-default h-10 flex-1 rounded-full border-0 text-neutral-900"
+                disabled={isSubmitDisabled}
+              >
+                {isLoading ? '儲存中...' : '更新帳目'}
+              </RoundedButtonSecondary>
+            </div>
           </DataFormCard.Footer>
         </DataFormCard>
       </form>
@@ -104,8 +127,8 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
         variant={resultModal.variant}
         title={
           resultModal.variant === 'success'
-            ? '帳目建立完成！'
-            : '帳目建立失敗！'
+            ? '帳目更新完成！'
+            : '帳目更新失敗！'
         }
         description={resultModal.message}
         statusLayout="icon-first"
@@ -116,4 +139,4 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
   );
 }
 
-export default CreateDataCard;
+export default UpdateDataCard;

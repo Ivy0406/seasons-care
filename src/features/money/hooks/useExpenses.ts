@@ -1,169 +1,44 @@
-import type { ExpenseItem } from '@/features/money/types';
+import { useQuery } from '@tanstack/react-query';
+import { endOfMonth, format, parseISO } from 'date-fns';
+import { toast } from 'sonner';
 
-const MOCK_GROUP_ID = 'd47240e7-da24-4e1c-b54c-bb1a4cb83a75';
+import { getMoneyItems } from '@/api/endpoints/money';
+import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
+import moneyKeys from '@/features/money/queryKeys';
 
-const mockExpenses: ExpenseItem[] = [
-  {
-    id: 'expense-1',
-    title: '回診費',
-    amount: 1200,
-    expenseDate: '2025-12-12T10:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'pending',
-    notes: '這次回診要開藥單，然後看診前要記得去領錢',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2025-12-12T10:00:00.000Z',
-    updatedAt: '2025-12-12T10:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-2',
-    title: '回診費',
-    amount: 1200,
-    expenseDate: '2026-01-12T10:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'settled',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-01-12T10:00:00.000Z',
-    updatedAt: '2026-01-12T10:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-3',
-    title: '藥費',
-    amount: 450,
-    expenseDate: '2026-02-13T14:30:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'none',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-02-13T14:30:00.000Z',
-    updatedAt: '2026-02-13T14:30:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-4',
-    title: '交通費',
-    amount: 200,
-    expenseDate: '2026-03-13T09:00:00.000Z',
-    category: '交通',
-    splitStatus: 'pending',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-03-13T09:00:00.000Z',
-    updatedAt: '2026-03-13T09:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-5',
-    title: '掛號費',
-    amount: 150,
-    expenseDate: '2026-04-14T08:30:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'none',
-    notes: '這次回診要開藥單，然後看診前要記得去領錢',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-04-14T08:30:00.000Z',
-    updatedAt: '2026-04-14T08:30:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-8',
-    title: '住院費',
-    amount: 10850,
-    expenseDate: '2026-04-05T10:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'pending',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-04-05T10:00:00.000Z',
-    updatedAt: '2026-04-05T10:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-9',
-    title: '餐廳費用',
-    amount: 5000,
-    expenseDate: '2026-04-06T12:30:00.000Z',
-    category: '飲食',
-    splitStatus: 'pending',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-04-06T12:30:00.000Z',
-    updatedAt: '2026-04-06T12:30:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-10',
-    title: '交通費',
-    amount: 5000,
-    expenseDate: '2026-04-07T09:00:00.000Z',
-    category: '交通',
-    splitStatus: 'pending',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-04-07T09:00:00.000Z',
-    updatedAt: '2026-04-07T09:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-11',
-    title: '生活雜支',
-    amount: 200,
-    expenseDate: '2026-04-08T15:00:00.000Z',
-    category: '生活雜支',
-    splitStatus: 'none',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-04-08T15:00:00.000Z',
-    updatedAt: '2026-04-08T15:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-6',
-    title: '檢查費',
-    amount: 800,
-    expenseDate: '2026-01-14T11:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'settled',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-01-14T11:00:00.000Z',
-    updatedAt: '2026-01-14T11:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-  {
-    id: 'expense-7',
-    title: '住院費',
-    amount: 5000,
-    expenseDate: '2026-01-15T16:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'pending',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-01-15T16:00:00.000Z',
-    updatedAt: '2026-01-15T16:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
+const getCurrentCareGroupId = () =>
+  window.localStorage.getItem(CURRENT_GROUP_ID_KEY);
 
-  {
-    id: 'expense-8',
-    title: '住院費',
-    amount: 5000,
-    expenseDate: '2026-01-15T16:00:00.000Z',
-    category: '醫療花費',
-    splitStatus: 'settled',
-    notes: '',
-    careGroupId: MOCK_GROUP_ID,
-    createdAt: '2026-01-15T16:00:00.000Z',
-    updatedAt: '2026-01-15T16:00:00.000Z',
-    createdBy: '397e9e8a-12fc-4de4-bb0c-c7bb97ace76e',
-  },
-];
+function useExpenses(month: string) {
+  const careGroupId = getCurrentCareGroupId();
+  const hasCareGroupId = careGroupId !== null;
+  const startDate = `${month}-01T00:00:00`;
+  const endDate = format(
+    endOfMonth(parseISO(`${month}-01`)),
+    "yyyy-MM-dd'T'23:59:59",
+  );
+  const query = useQuery({
+    queryKey: moneyKeys.list(careGroupId ?? '', month),
+    queryFn: async () => {
+      if (!careGroupId) return [];
+      try {
+        const response = await getMoneyItems(careGroupId, {
+          StartDate: startDate,
+          EndDate: endDate,
+        });
+        return response.data.data;
+      } catch {
+        toast.error('載入帳目失敗');
+        return [];
+      }
+    },
+    enabled: hasCareGroupId,
+  });
 
-const useExpenses = () => {
-  return { expenses: mockExpenses };
-};
+  return {
+    ...query,
+    expenses: query.data ?? [],
+  };
+}
 
 export default useExpenses;
