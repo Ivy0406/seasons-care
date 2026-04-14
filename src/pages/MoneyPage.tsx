@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
+import Loading from '@/components/common/Loading';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
 import {
@@ -19,7 +20,7 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 function MoneyPage() {
   const { activeTab } = useActivedMoneyTab();
-  const { monthlyExpenses, cardListItems } = useActiveExpenses();
+  const { monthlyExpenses, cardListItems, isLoading } = useActiveExpenses();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
@@ -34,10 +35,18 @@ function MoneyPage() {
       <div className="pt-2">
         <MoneyTabsCard />
       </div>
-      {activeTab === 'monthly' && (
-        <MemberExpenseSummary expenses={monthlyExpenses} />
+      {isLoading ? (
+        <div className="flex flex-1 items-center justify-center py-20">
+          <Loading />
+        </div>
+      ) : (
+        <>
+          {activeTab === 'monthly' && (
+            <MemberExpenseSummary expenses={monthlyExpenses} />
+          )}
+          <CardsList items={cardListItems} />
+        </>
       )}
-      <CardsList items={cardListItems} />
       <FixedBottomButton onClick={() => setShowCreateCard(true)} label="新增" />
 
       <AlertDialog

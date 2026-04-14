@@ -11,18 +11,21 @@ function useActiveExpenses() {
   const { selectedDate } = useSelectedDate();
   const { activeTab } = useActivedMoneyTab();
 
-  const { expenses: monthlyExpenses } = useExpenses(selectedMonth);
+  const { expenses: monthlyExpenses, isLoading: isMonthlyLoading } =
+    useExpenses(selectedMonth);
 
   const dailyMonth = format(selectedDate, 'yyyy-MM');
-  const { expenses: dailyMonthExpenses } = useExpenses(dailyMonth);
+  const { expenses: dailyMonthExpenses, isLoading: isDailyLoading } =
+    useExpenses(dailyMonth);
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const dailyExpenses = dailyMonthExpenses.filter((e) =>
     e.expenseDate.replace('Z', '').startsWith(selectedDateStr),
   );
 
   const cardListItems = activeTab === 'daily' ? dailyExpenses : monthlyExpenses;
+  const isLoading = activeTab === 'daily' ? isDailyLoading : isMonthlyLoading;
 
-  return { monthlyExpenses, dailyExpenses, cardListItems };
+  return { monthlyExpenses, dailyExpenses, cardListItems, isLoading };
 }
 
 export default useActiveExpenses;
