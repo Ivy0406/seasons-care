@@ -242,6 +242,7 @@ function GroupEntryDrawer({
     }
 
     const result = await handleCreateGroup({
+      name: careRecipientName,
       recipientName: careRecipientName,
       recipientGender: gender,
       recipientBirthDate: birthDate,
