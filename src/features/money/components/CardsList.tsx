@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { parseISO } from 'date-fns';
+
 import FilterDropdownButton, {
   type FilterOption,
 } from '@/components/common/FilterDropdownButton';
@@ -32,8 +34,10 @@ type DateGroup = { date: string; items: ExpenseItem[] };
 const formatDateLabel = (date: string) => date.replace(/-/g, '.');
 
 const groupByDate = (items: ExpenseItem[]): DateGroup[] => {
-  const sorted = [...items].sort((a, b) =>
-    b.expenseDate.localeCompare(a.expenseDate),
+  const sorted = [...items].sort(
+    (a, b) =>
+      parseISO(b.expenseDate.replace('Z', '')).getTime() -
+      parseISO(a.expenseDate.replace('Z', '')).getTime(),
   );
   return sorted.reduce<DateGroup[]>((acc, item) => {
     const dateKey = item.expenseDate.slice(0, 10);

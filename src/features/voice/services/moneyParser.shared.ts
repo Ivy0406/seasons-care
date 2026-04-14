@@ -122,7 +122,8 @@ function buildMoneyDraftSummary(draft: Omit<MoneyDraft, 'summary'>) {
     summaryParts.push(`金額 ${draft.amount} 元`);
   }
 
-  const categoryLabel = getMoneyCategoryLabel(draft.category);
+  const categoryLabel =
+    draft.category !== null ? getMoneyCategoryLabel(draft.category) : '';
 
   if (categoryLabel !== '') {
     summaryParts.push(`類別 ${categoryLabel}`);
@@ -147,7 +148,7 @@ function createEmptyMoneyDraft(date = new Date()): MoneyDraft {
     amount: '',
     dateValue: formatDateValue(date),
     timeValue: formatTimeValue(date),
-    category: 'none',
+    category: null,
     needsSplit: false,
     notes: '',
     transcript: '',
@@ -159,7 +160,7 @@ function hasMoneyDraftContent(draft: MoneyDraft) {
   return (
     draft.title.trim() !== '' ||
     draft.amount.trim() !== '' ||
-    draft.category !== 'none' ||
+    draft.category !== null ||
     draft.needsSplit ||
     draft.notes.trim() !== ''
   );

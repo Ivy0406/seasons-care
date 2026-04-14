@@ -1,13 +1,13 @@
 type SplitStatus = 'pending' | 'settled' | 'none';
 
-type MoneyCategoryValue = 'none' | 'medical' | 'food' | 'traffic' | 'other';
+type MoneyCategoryValue = 'medical' | 'food' | 'traffic' | 'other';
 
 type MoneyDraft = {
   title: string;
   amount: string;
   dateValue: string;
   timeValue: string;
-  category: MoneyCategoryValue;
+  category: MoneyCategoryValue | null;
   needsSplit: boolean;
   notes: string;
   transcript: string;
@@ -18,7 +18,7 @@ type ExpenseItem = {
   id: string;
   title: string;
   amount: number;
-  category: string;
+  category: MoneyCategoryValue;
   notes?: string;
   expenseDate: string;
   careGroupId: string;
@@ -28,10 +28,8 @@ type ExpenseItem = {
   createdBy: string;
 };
 
-type ExpensesCategory = 'medical' | 'food' | 'traffic' | 'other';
-
 type CategoryConfig = {
-  category: ExpensesCategory;
+  category: MoneyCategoryValue;
   label: string;
   color: string;
 };
@@ -40,7 +38,7 @@ type CategoryWithAmount = CategoryConfig & {
   amount: number;
 };
 
-type CategoryTotals = Record<ExpensesCategory, number>;
+type CategoryTotals = Record<MoneyCategoryValue, number>;
 
 type MoneyTab = 'daily' | 'monthly';
 
@@ -49,7 +47,6 @@ export type {
   MoneyCategoryValue,
   MoneyDraft,
   ExpenseItem,
-  ExpensesCategory,
   CategoryConfig,
   CategoryWithAmount,
   CategoryTotals,
