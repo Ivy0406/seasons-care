@@ -7,7 +7,7 @@ import {
   CardLabelPrimary,
   CardLabelSecondary,
 } from '@/components/common/CardLabel';
-import DataFormCard from '@/components/common/DataFormCard';
+import Modal from '@/components/common/Modal';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UpdateDeleteDrawer from '@/components/common/UpdateDeleteDrawer';
 import {
@@ -17,22 +17,44 @@ import {
   AlertDialogPortal,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import useDeleteMoneyItem from '@/features/money/hooks/useDeleteMoneyItem';
 import type { ExpenseItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
-import ItemDetails from './ItemDetails';
+import ItemDetailsCard from './ItemDetailsCard';
 
 function EntryCard({ item }: { item: ExpenseItem }) {
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
+
+  const { isLoading: isDeleting, handleDeleteMoneyItem } = useDeleteMoneyItem();
+
+  const handleDeleteClick = () => {
+    setDialogOpen(false);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const result = await handleDeleteMoneyItem(item.id);
+    if (result.success) {
+      setConfirmOpen(false);
+    } else {
+      setConfirmOpen(false);
+      setErrorMessage(result.message);
+      setShowError(true);
+    }
+  };
 
   return (
     <>
-      <AlertDialog>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogTrigger className="block w-full text-left">
           <div className="w-full rounded-sm border-2 border-neutral-900 bg-neutral-100 p-4">
             <div className="flex items-center justify-between border-b-2 border-neutral-900 pb-3">
@@ -78,29 +100,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         <AlertDialogPortal>
           <AlertDialogBackdrop />
           <AlertDialogPopup className="border-0 bg-transparent">
-            <DataFormCard
-              title="帳目"
-              className="bg-neutral-800"
-              toneClassName="bg-neutral-800 text-neutral-50"
-            >
-              <DataFormCard.Content>
-                <ItemDetails item={item} />
-              </DataFormCard.Content>
-
-              <DataFormCard.Footer>
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-full border-neutral-50 bg-transparent text-neutral-50"
-                  >
-                    刪除帳目
-                  </Button>
-                  <Button className="bg-secondary-default flex-1 rounded-full text-neutral-900">
-                    編輯帳目
-                  </Button>
-                </div>
-              </DataFormCard.Footer>
-            </DataFormCard>
+            <ItemDetailsCard item={item} onDeleteClick={handleDeleteClick} />
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
@@ -110,6 +110,26 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         onOpenChange={setDrawerOpen}
         editLabel="編輯帳目"
         deleteLabel="刪除帳目"
+        onDelete={handleDeleteClick}
+      />
+
+      <Modal
+        open={confirmOpen}
+        variant="confirm"
+        title="確定要刪除此帳目？"
+        confirmText="刪除"
+        cancelText="取消"
+        isConfirmLoading={isDeleting}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <Modal
+        open={showError}
+        variant="error"
+        title="刪除失敗"
+        description={errorMessage}
+        onClose={() => setShowError(false)}
       />
     </>
   );
