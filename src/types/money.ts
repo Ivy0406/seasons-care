@@ -36,7 +36,9 @@ type GetMoneyItemsResponse = {
   data: MoneyItemData[];
 };
 
-type UpdateMoneyItemPayLoad = CreateMoneyItemPayLoad;
+type UpdateMoneyItemPayLoad = CreateMoneyItemPayLoad & {
+  updatedAt: string;
+};
 
 type GetMoneyItemsParams = {
   StartDate?: string;
