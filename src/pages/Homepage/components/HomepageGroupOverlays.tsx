@@ -41,7 +41,6 @@ type HomepageGroupOverlaysProps = {
   onCreateGroup: () => void;
   onInviteMembers: (inviteCode?: string) => void;
   onEditGroup: () => void;
-  onManageMembers: () => void;
   onLeaveGroup: () => void;
   onRequestDeleteMember: (groupId: string, member: GroupMember) => void;
   onCloseDeleteSuccess: () => void;
@@ -79,7 +78,6 @@ function HomepageGroupOverlays({
   onCreateGroup,
   onInviteMembers,
   onEditGroup,
-  onManageMembers,
   onLeaveGroup,
   onRequestDeleteMember,
   onCloseDeleteSuccess,
@@ -154,7 +152,6 @@ function HomepageGroupOverlays({
         open={isGroupActionDrawerOpen}
         groupName={activeGroup?.name}
         onOpenChange={onGroupActionDrawerChange}
-        onManageMembers={onManageMembers}
         onEditGroup={onEditGroup}
         onLeaveGroup={onLeaveGroup}
       />

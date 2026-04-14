@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Pencil, SquareArrowRightExit, UserRoundCog, X } from 'lucide-react';
+import { Pencil, SquareArrowRightExit, X } from 'lucide-react';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import cn from '@/lib/utils';
@@ -9,7 +9,6 @@ type GroupActionDrawerProps = {
   open: boolean;
   groupName?: string;
   onOpenChange: (open: boolean) => void;
-  onManageMembers?: () => void;
   onEditGroup?: () => void;
   onLeaveGroup?: () => void;
   className?: string;
@@ -55,7 +54,6 @@ function GroupActionDrawer({
   open,
   groupName,
   onOpenChange,
-  onManageMembers,
   onEditGroup,
   onLeaveGroup,
   className,

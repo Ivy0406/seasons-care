@@ -426,7 +426,6 @@ function HomepageLayout() {
         onCreateGroup={handleOpenGroupCreate}
         onInviteMembers={handleOpenGroupInvite}
         onEditGroup={handleOpenGroupEdit}
-        onManageMembers={handleOpenGroupMembers}
         onLeaveGroup={handleLeaveCurrentGroup}
         onRequestDeleteMember={handleRequestDeleteMember}
         onCloseDeleteSuccess={() => setDeletedMemberName(null)}
