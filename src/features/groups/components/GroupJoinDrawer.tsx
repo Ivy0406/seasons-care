@@ -125,7 +125,7 @@ function GroupJoinDrawer({
 
         <div className="mx-auto size-40 rounded-[8px]">
           <img
-            src="https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp"
+            src="https://res.cloudinary.com/dyothufps/image/upload/v1774934772/addgroup_2x_wlr34y.webp"
             alt="家人陪伴情境示意"
             className="h-full w-full object-cover"
           />
