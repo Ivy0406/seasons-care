@@ -39,7 +39,7 @@ type HomepageGroupOverlaysProps = {
   onManageGroup: (groupId: string) => void;
   onJoinGroup: () => void;
   onCreateGroup: () => void;
-  onInviteMembers: () => void;
+  onInviteMembers: (inviteCode?: string) => void;
   onEditGroup: () => void;
   onManageMembers: () => void;
   onLeaveGroup: () => void;
@@ -165,7 +165,7 @@ function HomepageGroupOverlays({
         members={activeGroupMembers}
         onOpenChange={onGroupMemberDrawerChange}
         onRequestDeleteMember={onRequestDeleteMember}
-        onInviteMembers={onInviteMembers}
+        onInviteMembers={() => onInviteMembers()}
       />
 
       <Modal

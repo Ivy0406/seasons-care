@@ -11,6 +11,7 @@ import GroupEntranceLayout from './components/GroupEntranceLayout';
 function GroupEntrancePage() {
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [isGroupInviteDrawerOpen, setIsGroupInviteDrawerOpen] = useState(false);
+  const [createdInviteCode, setCreatedInviteCode] = useState('');
   const navigate = useNavigate();
 
   const handleGroupInviteDrawerChange = (open: boolean) => {
@@ -33,7 +34,8 @@ function GroupEntrancePage() {
         <GroupEntryDrawer
           open={isGroupEntryDrawerOpen}
           onClose={() => setIsGroupEntryDrawerOpen(false)}
-          onInviteMembers={() => {
+          onInviteMembers={(inviteCode) => {
+            setCreatedInviteCode(inviteCode ?? '');
             setIsGroupEntryDrawerOpen(false);
             setIsGroupInviteDrawerOpen(true);
           }}
@@ -44,6 +46,7 @@ function GroupEntrancePage() {
       <GroupInviteDrawer
         open={isGroupInviteDrawerOpen}
         onOpenChange={handleGroupInviteDrawerChange}
+        inviteCode={createdInviteCode}
       />
     </>
   );

@@ -22,7 +22,7 @@ type GroupEntryDrawerProps = {
   open?: boolean;
   onClose?: () => void;
   onComplete?: () => void;
-  onInviteMembers?: () => void;
+  onInviteMembers?: (inviteCode?: string) => void;
   initialStep?: DrawerStep;
   mode?: GroupEntryMode;
   groupId?: string | null;
@@ -166,6 +166,7 @@ function GroupEntryDrawer({
   const { isLoading, handleCreateGroup } = useCreateGroup();
   const { isLoading: isUpdating, handleUpdateGroup } = useUpdateGroup();
   const [step, setStep] = useState<DrawerStep>(initialStep);
+  const [createdInviteCode, setCreatedInviteCode] = useState('');
   const [groupName, setGroupName] = useState(initialGroupName);
   const [careRecipientName, setCareRecipientName] = useState('');
   const [gender, setGender] = useState(initialRecipientGender);
@@ -247,6 +248,7 @@ function GroupEntryDrawer({
     });
 
     if (result) {
+      setCreatedInviteCode(result.inviteCode ?? '');
       setStep('success');
     }
   };
@@ -272,7 +274,7 @@ function GroupEntryDrawer({
         description={successDescription}
         primaryLabel="分享邀請連結"
         secondaryLabel="暫時略過"
-        onPrimaryClick={() => onInviteMembers?.()}
+        onPrimaryClick={() => onInviteMembers?.(createdInviteCode)}
         onSecondaryClick={handleClose}
         onClose={handleClose}
       />

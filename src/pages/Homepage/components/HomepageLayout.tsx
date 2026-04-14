@@ -179,7 +179,7 @@ function HomepageLayout() {
     setIsGroupEntryDrawerOpen(true);
   };
 
-  const handleOpenGroupInvite = () => {
+  const handleOpenGroupInvite = (_inviteCode?: string) => {
     setIsHomepageGroupDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
