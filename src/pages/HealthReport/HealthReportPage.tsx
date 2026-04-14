@@ -4,6 +4,7 @@ import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import { RoundedButtonPro } from '@/components/common/RoundedButtons';
+import UpgradeCTADrawer from '@/components/common/UpgradeCTADrawer';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -33,6 +34,7 @@ const REPORT_DATA = {
 function HealthReportPage() {
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
+  const [showUpgradeCTA, setShowUpgradeCTA] = useState(false);
   const [submitModal, setSubmitModal] = useState<SubmitModalState>({
     open: false,
     variant: 'success',
@@ -50,6 +52,7 @@ function HealthReportPage() {
             summary={REPORT_DATA.summary}
             keyInsight={REPORT_DATA.keyInsight}
             actionSuggestion={REPORT_DATA.actionSuggestion}
+            onViewHistory={() => setShowUpgradeCTA(true)}
           />
         </div>
       </section>
@@ -59,7 +62,7 @@ function HealthReportPage() {
       </div>
 
       <div className="mx-auto mt-6 w-full max-w-200 px-6">
-        <RoundedButtonPro>輸出成完整PDF</RoundedButtonPro>
+        <RoundedButtonPro onClick={() => setShowUpgradeCTA(true)}>輸出成完整PDF</RoundedButtonPro>
       </div>
 
       <FixedBottomButton label="新增" onClick={() => setShowCreateCard(true)} />
@@ -98,6 +101,11 @@ function HealthReportPage() {
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
+
+      <UpgradeCTADrawer
+        open={showUpgradeCTA}
+        onOpenChange={setShowUpgradeCTA}
+      />
 
       <RecordingDrawer
         open={showRecordingDrawer}

@@ -126,9 +126,13 @@ function WeeklyHealthTrend() {
 
   return (
     <section className="pt-3">
-      <h2 className="font-heading-sm mb-3 pt-5 text-neutral-900">
-        近7天健康趨勢
-      </h2>
+      <div className="mb-3 pt-5">
+        <p className="font-heading-sm text-neutral-900">近7天健康趨勢</p>
+        <p className="font-paragraph-md text-neutral-700">
+          以下顯示數值為近期平均數值。
+        </p>
+      </div>
+
       <div className="flex flex-col gap-3">
         <HealthDataChartCard
           title={bloodPressure.title}
