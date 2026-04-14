@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { isSameDay, parseISO } from 'date-fns';
 
@@ -36,12 +36,7 @@ function groupByStatus(
   );
 }
 
-type DiarySummaryProps = {
-  selectedDate: Date;
-  onEntriesChange?: (hasEntries: boolean) => void;
-};
-
-function DiarySummary({ selectedDate, onEntriesChange }: DiarySummaryProps) {
+function DiarySummary({ selectedDate }: { selectedDate: Date }) {
   const { entries, refetchEntries } = useGetCareLogEntries();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
@@ -55,10 +50,6 @@ function DiarySummary({ selectedDate, onEntriesChange }: DiarySummaryProps) {
   const grouped = useMemo(() => {
     return groupByStatus(filteredEntries);
   }, [filteredEntries]);
-
-  useEffect(() => {
-    onEntriesChange?.(filteredEntries.length > 0);
-  }, [filteredEntries.length, onEntriesChange]);
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,

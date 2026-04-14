@@ -46,7 +46,6 @@ const triggerBaseClass =
 
 function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('diary');
-  const [hasDiaryEntries, setHasDiaryEntries] = useState(true);
   const navigate = useNavigate();
 
   return (
@@ -72,18 +71,10 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           value="diary"
           className="bg-primary-default flex flex-col gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
-          <DiarySummary
-            selectedDate={selectedDate}
-            onEntriesChange={setHasDiaryEntries}
-          />
-          <ViewMoreButton
-            label={hasDiaryEntries ? '查看更多' : '至日誌新增'}
-            onClick={() =>
-              navigate(
-                hasDiaryEntries ? '/calendar-page' : '/calendar-page/new',
-              )
-            }
-          />
+          <DiarySummary selectedDate={selectedDate} />
+          <div className="flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          </div>
         </TabsContent>
 
         <TabsContent
