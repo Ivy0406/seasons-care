@@ -11,6 +11,10 @@ import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
 
 type StatusGroup = '進行中' | '未完成' | '已完成';
+type DiarySummaryProps = {
+  selectedDate: Date;
+  onCreateEntry: () => void;
+};
 
 function getStatusText(card: DiaryCardItem): StatusGroup {
   if (card.status === 'completed') return '已完成';
@@ -36,7 +40,7 @@ function groupByStatus(
   );
 }
 
-function DiarySummary({ selectedDate }: { selectedDate: Date }) {
+function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const { entries, refetchEntries } = useGetCareLogEntries();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
@@ -81,7 +85,11 @@ function DiarySummary({ selectedDate }: { selectedDate: Date }) {
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
         {filteredEntries.length === 0 ? (
-          <CareLogEmptyState message="當日尚未有紀錄，快來新增吧！" />
+          <CareLogEmptyState
+            message="當日尚未有紀錄，快來新增吧！"
+            onCreateEntry={onCreateEntry}
+            className="border-0 bg-neutral-100"
+          />
         ) : null}
         {STATUS_ORDER.map((status) => {
           const cards = grouped[status];
