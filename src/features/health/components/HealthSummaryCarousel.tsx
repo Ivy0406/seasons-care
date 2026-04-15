@@ -6,12 +6,14 @@ import 'swiper/css/pagination';
 
 import {
   DataCardBloodPressure,
+  DataCardBloodSugar,
   DataCardOxygen,
+  DataCardSummary,
   DataCardTemperature,
   DataCardWeight,
-  DataCardBloodSugar,
 } from '@/components/common/DataCard';
 
+import useGetTodayInsight from '../hooks/useGetTodayInsight';
 import useHealth from '../useHealth';
 
 // slidesOffsetBefore/After 對應父層 TabsContent 的 px-6（24px）
@@ -32,6 +34,7 @@ const swiperConfig = {
 function HealthSummaryCarousel() {
   const { bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
     useHealth();
+  const { data: todaySummary } = useGetTodayInsight();
 
   return (
     <section className="pt-3">
@@ -41,6 +44,13 @@ function HealthSummaryCarousel() {
         {...swiperConfig}
         className="h-40 w-full [--swiper-pagination-bottom:8px] [--swiper-theme-color:var(--color-neutral-100)]"
       >
+        <SwiperSlide style={{ width: 'calc(100vw - 48px)' }}>
+          <DataCardSummary
+            category="AI分析摘要"
+            className="w-full"
+            content={todaySummary ?? '--'}
+          />
+        </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
           <DataCardBloodPressure
             category="血壓"
