@@ -29,7 +29,7 @@ const swiperConfig = {
   },
 };
 
-function HealthSummary() {
+function HealthDataCarousel() {
   const healthData = useHealth();
 
   const { bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
@@ -91,4 +91,4 @@ function HealthSummary() {
   );
 }
 
-export default HealthSummary;
+export default HealthDataCarousel;
