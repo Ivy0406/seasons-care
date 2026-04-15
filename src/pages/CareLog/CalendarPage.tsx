@@ -80,7 +80,7 @@ function CalendarPage() {
   };
 
   return (
-    <main className="flex min-h-screen w-full flex-col pb-10 text-neutral-900">
+    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pb-10 text-neutral-900">
       <section>
         <PageNavigationBar
           wrapperClassName="border-b-0"

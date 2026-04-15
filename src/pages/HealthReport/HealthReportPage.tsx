@@ -42,7 +42,7 @@ function HealthReportPage() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   return (
-    <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-20">
+    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20">
       <PageNavigationBar
         title="健康"
         className="px-6"

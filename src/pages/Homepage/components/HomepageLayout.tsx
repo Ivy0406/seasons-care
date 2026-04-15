@@ -236,7 +236,7 @@ function HomepageLayout() {
 
   return (
     <>
-      <main className="flex min-h-screen w-full flex-col pt-4 text-neutral-900">
+      <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pt-4 text-neutral-900">
         <HomepageNavigationBar
           hasNotification
           selectedDate={selectedDate}
