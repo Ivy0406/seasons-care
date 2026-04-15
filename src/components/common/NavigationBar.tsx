@@ -281,12 +281,9 @@ function HomepageNavigationBar({
   className,
 }: HomepageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
+    <div className={cn('border-b-2 border-neutral-900', className)}>
       <div
-        className={cn(
-          'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
-          className,
-        )}
+        className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5"
       >
         <NavigationDateBadge
           selectedDate={selectedDate}
@@ -320,12 +317,9 @@ function PageNavigationBar({
   centerBrandLinkToHomepage = true,
 }: PageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
+    <div className={cn('border-b-2 border-neutral-900', className)}>
       <div
-        className={cn(
-          'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
-          className,
-        )}
+        className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5"
       >
         {showTitle ? (
           <NavigationTitle

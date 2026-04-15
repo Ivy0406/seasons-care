@@ -47,7 +47,7 @@ function HealthReportPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20">
       <PageNavigationBar
         title="健康"
-        className="px-6"
+        className="sticky top-0 z-10 border-0 bg-neutral-200 px-6"
         onMenuClick={() => setIsSideMenuOpen(true)}
       />
 

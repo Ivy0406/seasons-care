@@ -363,7 +363,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     <>
       <main
         className={cn(
-          'mx-auto flex min-h-screen w-full max-w-200 flex-col pt-4 text-neutral-900',
+          'mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pt-4 text-neutral-900',
           className,
         )}
       >
@@ -372,7 +372,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
           onMenuClick={() => setIsSideMenuOpen(true)}
           selectedDate={selectedDate}
           onDateClick={() => setIsDateDrawerOpen(true)}
-          className="px-6"
+          className="sticky top-0 z-10 bg-neutral-200 px-6"
         />
 
         <section className="flex flex-col px-6">

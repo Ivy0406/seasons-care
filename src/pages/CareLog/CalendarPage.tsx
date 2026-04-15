@@ -81,13 +81,11 @@ function CalendarPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pb-10 text-neutral-900">
-      <section>
-        <PageNavigationBar
-          className="px-4 ring-0"
-          title="日誌"
-          onMenuClick={() => setIsSideMenuOpen(true)}
-        />
-      </section>
+      <PageNavigationBar
+        className="sticky top-0 z-10 border-0 bg-neutral-200 px-6"
+        title="日誌"
+        onMenuClick={() => setIsSideMenuOpen(true)}
+      />
 
       <section className="bg-primary-default border-y border-neutral-900">
         <div className="mx-auto w-full max-w-200 px-4 py-5">
@@ -109,7 +107,7 @@ function CalendarPage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-200 px-6 py-6">
+      <section className="mx-auto w-full max-w-200 bg-neutral-200 px-6 py-6">
         <CareLogDiarySection
           items={selectedEntries}
           selectedDate={selectedDate}
