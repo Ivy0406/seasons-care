@@ -17,6 +17,7 @@ function App() {
     pathname === '/data-form' ||
     pathname === '/health-report' ||
     pathname === '/money' ||
+    pathname === '/group-entrance' ||
     pathname === '/homepage';
 
   return (

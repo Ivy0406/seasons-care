@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
-import Modal from '@/components/common/Modal';
 import {
   HomepageNavigationBar,
   NavigationGroupTrigger,
@@ -18,12 +17,6 @@ import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
 import Calendar from '@/components/ui/calendar';
 import { CURRENT_USER_KEY } from '@/constants/auth';
-import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
-import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
-import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
-import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
-import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
-import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
 import useDeleteGroupMember from '@/features/groups/hooks/useDeleteGroupMember';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
@@ -34,6 +27,7 @@ import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
 import DailyOverviewTabs from './DailyOverviewTabs';
+import HomepageGroupOverlays from './HomepageGroupOverlays';
 
 function HomepageLayout() {
   const queryClient = useQueryClient();
@@ -195,6 +189,7 @@ function HomepageLayout() {
   };
 
   const handleOpenGroupMembers = () => {
+    setActiveGroupId((prev) => prev ?? selectedGroupId);
     setIsGroupActionDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupInviteDrawerOpen(false);
@@ -316,13 +311,16 @@ function HomepageLayout() {
               <span className="">天</span>
             </div>
 
-            <UserGroup>
+            <UserGroup
+              className="w-fit max-w-25 min-w-0"
+              onClick={handleOpenGroupMembers}
+            >
               {activeGroupMembers.map((member) => (
                 <SingleAvatar
                   key={member.userId}
                   src={getAvatarSrcByKey(member.avatarKey)}
                   name={member.username}
-                  className="size-8 ring-2 ring-neutral-900"
+                  className="size-7 bg-neutral-300 ring-1 ring-neutral-900"
                 />
               ))}
             </UserGroup>
@@ -398,106 +396,44 @@ function HomepageLayout() {
         />
       </BaseDrawer>
 
-      <BaseDrawer
-        open={isHomepageGroupDrawerOpen}
-        onOpenChange={setIsHomepageGroupDrawerOpen}
-      >
-        <GroupManagementDrawer
-          groups={groups}
-          selectedGroupId={selectedGroupId}
-          onSelectGroup={handleSelectGroup}
-          onManageGroup={handleOpenGroupActions}
-          onJoinGroup={handleOpenGroupJoin}
-          onCreateGroup={handleOpenGroupCreate}
-        />
-      </BaseDrawer>
-
-      <BaseDrawer
-        open={isGroupEntryDrawerOpen}
-        onOpenChange={setIsGroupEntryDrawerOpen}
-      >
-        <GroupEntryDrawer
-          open={isGroupEntryDrawerOpen}
-          onClose={() => setIsGroupEntryDrawerOpen(false)}
-          onInviteMembers={handleOpenGroupInvite}
-          initialStep="create"
-          mode={groupEntryMode}
-          groupId={groupEntryMode === 'edit' ? (activeGroup?.id ?? null) : null}
-          initialGroupName={
-            groupEntryMode === 'edit' ? (activeGroup?.name ?? '') : ''
-          }
-          initialRecipientName={
-            groupEntryMode === 'edit' ? (activeGroup?.recipientName ?? '') : ''
-          }
-          initialRecipientGender={
-            groupEntryMode === 'edit'
-              ? (activeGroup?.recipientGender ?? 'male')
-              : 'male'
-          }
-          initialRecipientBirthDate={
-            groupEntryMode === 'edit'
-              ? (activeGroup?.recipientBirthDate ?? '2026-04-01')
-              : '2026-04-01'
-          }
-          initialDescription={
-            groupEntryMode === 'edit' ? (activeGroup?.description ?? '') : ''
-          }
-          initialHealthStatus={
-            groupEntryMode === 'edit' ? (activeGroup?.healthStatus ?? '') : ''
-          }
-        />
-      </BaseDrawer>
-
-      <GroupInviteDrawer
-        open={isGroupInviteDrawerOpen}
-        inviteCode={activeGroup?.inviteCode ?? selectedGroup?.inviteCode}
-        onOpenChange={setIsGroupInviteDrawerOpen}
-      />
-
-      <GroupJoinDrawer
-        open={isGroupJoinDrawerOpen}
-        initialInviteCode={inviteCodeFromUrl}
-        onOpenChange={handleGroupJoinDrawerChange}
-      />
-
-      <GroupActionDrawer
-        open={isGroupActionDrawerOpen}
-        groupName={activeGroup?.name}
-        onOpenChange={handleGroupActionDrawerChange}
-        onManageMembers={handleOpenGroupMembers}
+      <HomepageGroupOverlays
+        groups={groups}
+        selectedGroupId={selectedGroupId}
+        activeGroupId={activeGroupId}
+        activeGroupMembers={activeGroupMembers}
+        activeGroup={activeGroup}
+        inviteCodeFromUrl={inviteCodeFromUrl}
+        groupEntryMode={groupEntryMode}
+        pendingDeleteMember={pendingDeleteMember}
+        isLeavingCurrentGroup={isLeavingCurrentGroup}
+        deletedMemberName={deletedMemberName}
+        deletedMemberDescription={deletedMemberDescription}
+        isHomepageGroupDrawerOpen={isHomepageGroupDrawerOpen}
+        isGroupEntryDrawerOpen={isGroupEntryDrawerOpen}
+        isGroupInviteDrawerOpen={isGroupInviteDrawerOpen}
+        isGroupJoinDrawerOpen={isGroupJoinDrawerOpen}
+        isGroupActionDrawerOpen={isGroupActionDrawerOpen}
+        isGroupMemberDrawerOpen={isGroupMemberDrawerOpen}
+        onHomepageGroupDrawerChange={setIsHomepageGroupDrawerOpen}
+        onGroupEntryDrawerChange={setIsGroupEntryDrawerOpen}
+        onGroupInviteDrawerChange={setIsGroupInviteDrawerOpen}
+        onGroupJoinDrawerChange={handleGroupJoinDrawerChange}
+        onGroupActionDrawerChange={handleGroupActionDrawerChange}
+        onGroupMemberDrawerChange={handleGroupMemberDrawerChange}
+        onSelectGroup={handleSelectGroup}
+        onManageGroup={handleOpenGroupActions}
+        onJoinGroup={handleOpenGroupJoin}
+        onCreateGroup={handleOpenGroupCreate}
+        onInviteMembers={handleOpenGroupInvite}
         onEditGroup={handleOpenGroupEdit}
         onLeaveGroup={handleLeaveCurrentGroup}
-      />
-
-      <GroupMemberManagementDrawer
-        open={isGroupMemberDrawerOpen}
-        groupId={activeGroupId}
-        members={activeGroupMembers}
-        onOpenChange={handleGroupMemberDrawerChange}
         onRequestDeleteMember={handleRequestDeleteMember}
-        onInviteMembers={handleOpenGroupInvite}
+        onCloseDeleteSuccess={() => setDeletedMemberName(null)}
+        onCancelDeleteMember={handleCancelDeleteMember}
+        onConfirmDeleteMember={handleConfirmDeleteMember}
       />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
-
-      <Modal
-        open={pendingDeleteMember !== null}
-        title={isLeavingCurrentGroup ? '是否要退出群組' : '是否要刪除此成員'}
-        confirmText={isLeavingCurrentGroup ? '退出群組' : '刪除'}
-        cancelText="取消"
-        onClose={handleCancelDeleteMember}
-        onCancel={handleCancelDeleteMember}
-        onConfirm={handleConfirmDeleteMember}
-      />
-
-      <Modal
-        open={deletedMemberName !== null}
-        title="刪除成員"
-        description={deletedMemberDescription}
-        variant="success"
-        autoCloseMs={1200}
-        onClose={() => setDeletedMemberName(null)}
-      />
     </>
   );
 }

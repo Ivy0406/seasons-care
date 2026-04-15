@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Pencil, SquareArrowRightExit, UserRoundCog, X } from 'lucide-react';
+import { Pencil, SquareArrowRightExit, X } from 'lucide-react';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import cn from '@/lib/utils';
@@ -9,7 +9,6 @@ type GroupActionDrawerProps = {
   open: boolean;
   groupName?: string;
   onOpenChange: (open: boolean) => void;
-  onManageMembers?: () => void;
   onEditGroup?: () => void;
   onLeaveGroup?: () => void;
   className?: string;
@@ -55,7 +54,6 @@ function GroupActionDrawer({
   open,
   groupName,
   onOpenChange,
-  onManageMembers,
   onEditGroup,
   onLeaveGroup,
   className,
@@ -82,11 +80,6 @@ function GroupActionDrawer({
         </div>
 
         <div className="overflow-hidden rounded-[8px] bg-neutral-300">
-          <ActionButton
-            label="管理/新增成員"
-            icon={<UserRoundCog className="size-6" strokeWidth={2} />}
-            onClick={onManageMembers}
-          />
           <div className="border-t border-neutral-400" />
           <ActionButton
             label="編輯群組"

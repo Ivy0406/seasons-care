@@ -24,6 +24,8 @@ function CreateDataCard({
     hasAnyValue,
     recordDate,
     recordTime,
+    setRecordDate,
+    setRecordTime,
   } = useCreateHealthData({ onSuccess, onError });
 
   return (
@@ -47,6 +49,8 @@ function CreateDataCard({
             register={register}
             recordDate={recordDate}
             recordTime={recordTime}
+            onDateChange={setRecordDate}
+            onTimeChange={setRecordTime}
           />
         </DataFormCard.Content>
         <DataFormCard.Footer>
