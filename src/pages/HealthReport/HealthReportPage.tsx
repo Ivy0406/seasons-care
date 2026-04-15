@@ -11,11 +11,14 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
+import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import AIAnalysisReport from '@/features/health/components/AIAnalysisReport';
 import CreateDataCard from '@/features/health/components/CreateDataCard';
 import HealthSummaryCarousel from '@/features/health/components/HealthSummaryCarousel';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
+import useGetWeeklyInsight from '@/features/health/hooks/useGetWeeklyInsight';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 type SubmitModalState = {
   open: boolean;
@@ -23,16 +26,12 @@ type SubmitModalState = {
   title: string;
 };
 
-const REPORT_DATA = {
-  patientName: '王爸爸',
-  summary:
-    '的健康狀況在過去 7 天內呈現正面趨勢。血壓已完全進入理想區間，體重管理效果顯著。',
-  keyInsight: '血糖水平在飯後有輕微波動（+8%），主要集中在週三及週五。',
-  actionSuggestion:
-    '為維持穩定血糖，建議將澱粉攝取量減少 15%，並持續目前的低鈉飲食以保護已趨穩定的血壓指標。',
-};
-
 function HealthReportPage() {
+  const { data: weeklyInsight } = useGetWeeklyInsight();
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groups } = useGetGroups();
+  const patientName =
+    groups?.find((g) => g.id === currentGroupId)?.recipientName ?? '';
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [showUpgradeCTA, setShowUpgradeCTA] = useState(false);
@@ -49,10 +48,10 @@ function HealthReportPage() {
       <section className="w-full bg-neutral-800 py-5 text-neutral-50">
         <div className="mx-auto w-full max-w-200 px-6">
           <AIAnalysisReport
-            patientName={REPORT_DATA.patientName}
-            summary={REPORT_DATA.summary}
-            keyInsight={REPORT_DATA.keyInsight}
-            actionSuggestion={REPORT_DATA.actionSuggestion}
+            patientName={patientName}
+            summary={weeklyInsight?.overallSummary ?? ''}
+            keyInsight={weeklyInsight?.keyInsight ?? ''}
+            actionSuggestion={weeklyInsight?.actionSuggestion ?? ''}
             onViewHistory={() => setShowUpgradeCTA(true)}
           />
         </div>
