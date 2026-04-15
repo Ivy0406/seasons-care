@@ -29,7 +29,7 @@ function MoneyPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20 text-neutral-900">
       <PageNavigationBar
         title="帳目"
-        className="px-6"
+        className="sticky top-0 z-20 border-0 bg-neutral-200 px-6"
         onMenuClick={() => setIsSideMenuOpen(true)}
       />
       <div className="pt-2">

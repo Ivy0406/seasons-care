@@ -372,7 +372,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
           onMenuClick={() => setIsSideMenuOpen(true)}
           selectedDate={selectedDate}
           onDateClick={() => setIsDateDrawerOpen(true)}
-          className="px-6"
+          className="sticky top-0 z-10 bg-neutral-200 px-6"
         />
 
         <section className="flex flex-col px-6">
