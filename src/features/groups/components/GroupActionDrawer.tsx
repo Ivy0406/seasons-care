@@ -79,14 +79,12 @@ function GroupActionDrawer({
           ) : null}
         </div>
 
-        <div className="overflow-hidden rounded-[8px] bg-neutral-300">
-          <div className="border-t border-neutral-400" />
+        <div className="divide-y divide-neutral-400 overflow-hidden rounded-[8px] bg-neutral-300">
           <ActionButton
             label="編輯群組"
             icon={<Pencil className="size-6" strokeWidth={2} />}
             onClick={onEditGroup}
           />
-          <div className="border-t border-neutral-400" />
           <ActionButton
             label="退出群組"
             tone="danger"

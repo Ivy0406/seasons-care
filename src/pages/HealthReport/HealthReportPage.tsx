@@ -4,6 +4,7 @@ import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import { RoundedButtonNew } from '@/components/common/RoundedButtons';
+import SideMenu from '@/components/common/SideMenu';
 import UpgradeCTADrawer from '@/components/common/UpgradeCTADrawer';
 import {
   AlertDialog,
@@ -40,10 +41,15 @@ function HealthReportPage() {
     variant: 'success',
     title: '',
   });
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   return (
-    <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-20">
-      <PageNavigationBar title="健康" />
+    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20">
+      <PageNavigationBar
+        title="健康"
+        className="px-6"
+        onMenuClick={() => setIsSideMenuOpen(true)}
+      />
 
       <section className="w-full bg-neutral-800 py-5 text-neutral-50">
         <div className="mx-auto w-full max-w-200 px-6">
@@ -125,6 +131,7 @@ function HealthReportPage() {
         autoCloseMs={submitModal.variant === 'success' ? 1500 : undefined}
         onClose={() => setSubmitModal((prev) => ({ ...prev, open: false }))}
       />
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
   );
 }
