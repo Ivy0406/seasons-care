@@ -2,24 +2,31 @@ type WeeklyInsightResponse = {
   success: boolean;
   message: string;
   data: {
-    overallSummary: string;
-    keyInsight: string;
-    actionSuggestion: string;
     dateFrom: string;
     dateTo: string;
-    isFromCache: boolean;
+    heroReport: {
+      body: string;
+    };
+    keyInsightSection: {
+      body: string;
+    };
+    actionSuggestionSection: {
+      body: string;
+    };
   };
   traceId: string;
+};
+
+type TodayInsightCard = {
+  summary: string;
+  progressNote: string;
 };
 
 type TodayInsightResponse = {
   success: boolean;
   message: string;
   data: {
-    summary: string;
-    hasTodayRecords: boolean;
-    recordCount: number;
-    latestRecordAt: string | null;
+    cards: TodayInsightCard[];
   };
   traceId: string;
 };
