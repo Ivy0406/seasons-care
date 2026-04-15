@@ -135,6 +135,8 @@ type HealthDataFormProps = {
   register?: UseFormRegister<Record<HealthDataFormField, string>>;
   recordDate?: string;
   recordTime?: string;
+  onDateChange?: (value: string) => void;
+  onTimeChange?: (value: string) => void;
   onDateClick?: () => void;
   onTimeClick?: () => void;
 };
@@ -144,6 +146,8 @@ function HealthDataForm({
   register,
   recordDate = '',
   recordTime = '',
+  onDateChange,
+  onTimeChange,
   onDateClick,
   onTimeClick,
 }: HealthDataFormProps) {
@@ -153,6 +157,8 @@ function HealthDataForm({
         label="時間"
         dateValue={recordDate}
         timeValue={recordTime}
+        onDateChange={onDateChange}
+        onTimeChange={onTimeChange}
         onDateClick={onDateClick}
         onTimeClick={onTimeClick}
         className="border-neutral-900"

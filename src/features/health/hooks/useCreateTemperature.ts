@@ -1,21 +1,27 @@
-import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createTemperature } from '@/api/endpoints/health';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import type { temperturesPayload } from '@/types/health';
 
+import healthKeys from '../queryKeys';
+
 function useCreateTemperature() {
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const { currentGroupId } = useCurrentGroupId();
 
-  const submit = async (payload: temperturesPayload) => {
-    setIsLoading(true);
-    try {
-      await createTemperature(payload);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (payload: temperturesPayload) => createTemperature(payload),
+    onSuccess: () => {
+      if (currentGroupId) {
+        queryClient.invalidateQueries({
+          queryKey: healthKeys.temperature(currentGroupId),
+        });
+      }
+    },
+  });
 
-  return { submit, isLoading };
+  return { submit: mutateAsync, isLoading: isPending };
 }
 
 export default useCreateTemperature;

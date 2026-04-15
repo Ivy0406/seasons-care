@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 
 import ViewMoreButton from '@/components/common/ViewMoreButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import HealthSummary from '@/features/health/HealthSummary';
+import HealthDataCarousel from '@/features/health/HealthDataCarousel';
 import cn from '@/lib/utils';
 
 import DiarySummary from './DiarySummary';
@@ -100,7 +100,7 @@ function DailyOverviewTabs({
         </TabsContent>
 
         <TabsContent value="health" className="bg-neutral-800 pt-7 pb-17">
-          <HealthSummary />
+          <HealthDataCarousel />
 
           <div className="mt-5 flex justify-center">
             <ViewMoreButton onClick={() => navigate('/health-report')} />

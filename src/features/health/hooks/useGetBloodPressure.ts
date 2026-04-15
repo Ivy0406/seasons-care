@@ -1,0 +1,57 @@
+import { useQuery } from '@tanstack/react-query';
+import { format, isSameDay, parseISO } from 'date-fns';
+
+import { getBloodPressures } from '@/api/endpoints/health';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
+import type {
+  GetBloodPressuresResponse,
+  BloodPressureData,
+} from '@/types/health';
+
+import healthKeys from '../queryKeys';
+
+import type { AxiosResponse } from 'axios';
+
+const defaultData: BloodPressureData = {
+  date: '--',
+  time: '--',
+  systolic: '--',
+  diastolic: '--',
+};
+
+function transformToLatestToday(
+  res: AxiosResponse<GetBloodPressuresResponse>,
+): BloodPressureData {
+  const now = new Date();
+  const todayRecords = res.data.data.filter((r) =>
+    isSameDay(parseISO(r.recordDate), now),
+  );
+  if (todayRecords.length === 0) return defaultData;
+
+  const latest = todayRecords.sort(
+    (a, b) =>
+      parseISO(b.recordDate).getTime() - parseISO(a.recordDate).getTime(),
+  )[0];
+  const dateObj = parseISO(latest.recordDate);
+  return {
+    date: dateObj.toLocaleDateString('zh-TW'),
+    time: format(dateObj, 'HH:mm'),
+    systolic: latest.systolic,
+    diastolic: latest.diastolic,
+  };
+}
+
+function useGetBloodPressure() {
+  const { currentGroupId } = useCurrentGroupId();
+
+  return useQuery({
+    queryKey: currentGroupId
+      ? healthKeys.bloodPressure(currentGroupId)
+      : healthKeys.all,
+    queryFn: () => getBloodPressures(currentGroupId ?? ''),
+    select: transformToLatestToday,
+    enabled: !!currentGroupId,
+  });
+}
+
+export default useGetBloodPressure;
