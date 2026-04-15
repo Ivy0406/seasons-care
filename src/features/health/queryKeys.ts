@@ -9,6 +9,10 @@ const healthKeys = {
   weight: (careGroupId: string) => ['health', careGroupId, 'weight'] as const,
   bloodSugar: (careGroupId: string) =>
     ['health', careGroupId, 'blood-sugar'] as const,
+  weeklyInsight: (careGroupId: string) =>
+    ['health', careGroupId, 'weekly-insight'] as const,
+  todayInsight: (careGroupId: string) =>
+    ['health', careGroupId, 'today-insight'] as const,
 };
 
 export default healthKeys;
