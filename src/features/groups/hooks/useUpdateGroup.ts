@@ -4,20 +4,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
 
-import { createGroup } from '@/api/endpoints/group';
-import useCurrentGroupId from '@/hooks/useCurrentGroupID';
-import type { CreateGroupPayload } from '@/types/group';
+import { updateGroup } from '@/api/endpoints/group';
+import type { UpdateGroupPayload } from '@/types/group';
 
-const useCreateGroup = () => {
+const useUpdateGroup = () => {
   const queryClient = useQueryClient();
-  const { setCurrentGroupId } = useCurrentGroupId();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreateGroup = async (payload: CreateGroupPayload) => {
+  const handleUpdateGroup = async (
+    groupId: string,
+    payload: UpdateGroupPayload,
+  ) => {
     setIsLoading(true);
+
     try {
-      const res = await createGroup(payload);
-      setCurrentGroupId(res.data.data.id);
+      const res = await updateGroup(groupId, payload);
       await queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success(res.data.message);
       return res.data.data;
@@ -28,20 +29,24 @@ const useCreateGroup = () => {
             toast.error('請確認群組資料格式是否正確');
             break;
           case 401:
-            toast.error('請先登入後再建立群組');
+            toast.error('請先登入後再編輯群組');
+            break;
+          case 404:
+            toast.error('找不到要編輯的群組');
             break;
           default:
-            toast.error('建立群組失敗，請稍後再試');
+            toast.error('編輯群組失敗，請稍後再試');
             break;
         }
       }
+
       return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { isLoading, handleCreateGroup };
+  return { isLoading, handleUpdateGroup };
 };
 
-export default useCreateGroup;
+export default useUpdateGroup;
