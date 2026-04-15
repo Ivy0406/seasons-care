@@ -17,14 +17,16 @@ type WeeklyInsightResponse = {
   traceId: string;
 };
 
+type TodayInsightCard = {
+  summary: string;
+  progressNote: string;
+};
+
 type TodayInsightResponse = {
   success: boolean;
   message: string;
   data: {
-    summary: string;
-    hasTodayRecords: boolean;
-    recordCount: number;
-    latestRecordAt: string | null;
+    cards: TodayInsightCard[];
   };
   traceId: string;
 };

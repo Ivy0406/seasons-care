@@ -10,7 +10,8 @@ import healthKeys from '../queryKeys';
 import type { AxiosResponse } from 'axios';
 
 function select(res: AxiosResponse<TodayInsightResponse>) {
-  return res.data.data.summary;
+  const todayInsight = res.data.data.cards[0].summary;
+  return todayInsight;
 }
 
 function useGetTodayInsight() {
