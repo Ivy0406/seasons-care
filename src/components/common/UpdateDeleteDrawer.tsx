@@ -73,7 +73,7 @@ function UpdateDeleteDrawer({
           </button>
         </div>
 
-        <div className="font-paragraph-md overflow-hidden rounded-[8px] bg-neutral-300">
+        <div className="font-paragraph-md overflow-hidden rounded-lg bg-neutral-300">
           <DrawerActionButton
             label={editLabel}
             actionClassName="py-3"

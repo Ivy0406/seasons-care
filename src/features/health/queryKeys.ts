@@ -13,6 +13,8 @@ const healthKeys = {
     ['health', careGroupId, 'weekly-insight'] as const,
   todayInsight: (careGroupId: string) =>
     ['health', careGroupId, 'today-insight'] as const,
+  trendOverview: (careGroupId: string) =>
+    ['health', careGroupId, 'trend-overview'] as const,
 };
 
 export default healthKeys;

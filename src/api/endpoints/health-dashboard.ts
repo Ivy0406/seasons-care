@@ -1,6 +1,7 @@
 import type {
   WeeklyInsightResponse,
   TodayInsightResponse,
+  TrendOverviewResponse,
 } from '@/types/health-dashboard';
 
 import apiClient from '../client';
@@ -17,4 +18,10 @@ const getTodayInsight = (careGroupId: string) => {
   );
 };
 
-export { getWeeklyInsight, getTodayInsight };
+const getTrendOverview = (careGroupId: string) => {
+  return apiClient.get<TrendOverviewResponse>(
+    `/api/care-groups/${careGroupId}/health-dashboard/trend-overview`,
+  );
+};
+
+export { getWeeklyInsight, getTodayInsight, getTrendOverview };

@@ -1,7 +1,7 @@
 import { Sparkles } from 'lucide-react';
 
 import { CardLabelSecondary } from '@/components/common/CardLabel';
-import { RoundedButtonPro } from '@/components/common/RoundedButtons';
+import { RoundedButtonNew } from '@/components/common/RoundedButtons';
 import cn from '@/lib/utils';
 
 type AIAnalysisReportProps = {
@@ -24,12 +24,12 @@ function AIAnalysisReport({
     <div className={cn('flex flex-col gap-3', className)}>
       <div className="flex items-center justify-between">
         <h2 className="font-heading-sm text-neutral-50">AI分析報告</h2>
-        <RoundedButtonPro
+        <RoundedButtonNew
           onClick={onViewHistory}
           className="font-label-md h-8.25 w-fit px-1"
         >
           查看過往紀錄
-        </RoundedButtonPro>
+        </RoundedButtonNew>
       </div>
 
       <div className="flex flex-col gap-2 rounded-xl border-2 border-neutral-900 bg-neutral-50 p-3">

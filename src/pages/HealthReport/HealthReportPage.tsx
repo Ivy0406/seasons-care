@@ -3,7 +3,7 @@ import { useState } from 'react';
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
-import { RoundedButtonPro } from '@/components/common/RoundedButtons';
+import { RoundedButtonNew } from '@/components/common/RoundedButtons';
 import UpgradeCTADrawer from '@/components/common/UpgradeCTADrawer';
 import {
   AlertDialog,
@@ -64,9 +64,9 @@ function HealthReportPage() {
       </div>
 
       <div className="mx-auto mt-6 w-full max-w-200 px-6">
-        <RoundedButtonPro onClick={() => setShowUpgradeCTA(true)}>
+        <RoundedButtonNew onClick={() => setShowUpgradeCTA(true)}>
           輸出成完整PDF
-        </RoundedButtonPro>
+        </RoundedButtonNew>
       </div>
 
       <FixedBottomButton label="新增" onClick={() => setShowCreateCard(true)} />

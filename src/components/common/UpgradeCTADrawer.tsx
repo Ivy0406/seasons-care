@@ -24,9 +24,7 @@ function UpgradeCTADrawer({ open, onOpenChange }: UpgradeCTADrawerProps) {
         >
           <X className="size-8" strokeWidth={1.5} />
         </button>
-        <p className="font-paragraph-lg text-neutral-100">
-          立即升級Pro方案解鎖功能
-        </p>
+        <p className="font-paragraph-lg text-neutral-100">新功能即將登場！</p>
       </div>
       <div className="flex h-fit w-full flex-col items-center gap-3">
         <div className="aspect-square w-40">
@@ -37,7 +35,7 @@ function UpgradeCTADrawer({ open, onOpenChange }: UpgradeCTADrawerProps) {
           />
         </div>
         <div className="font-paragraph-md flex flex-col items-center text-neutral-100">
-          <p>存儲完整歷史日誌與醫療數據，</p>
+          <p>儲存完整歷史日誌與醫療數據，</p>
           <p>為家人提供最周全的守護！</p>
         </div>
       </div>
