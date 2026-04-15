@@ -20,14 +20,14 @@ function MoneySummary({ selectedDate, onCreateEntry }: MoneySummaryProps) {
 
   return (
     <section>
-      <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
-        {hasExpenses ? (
-          <div className="flex flex-col gap-3">
-            {dailyExpenses.map((item) => (
-              <EntryCard key={item.id} item={item} />
-            ))}
-          </div>
-        ) : (
+      {hasExpenses ? (
+        <div className="flex flex-col gap-3">
+          {dailyExpenses.map((item) => (
+            <EntryCard key={item.id} item={item} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
           <button
             type="button"
             onClick={onCreateEntry}
@@ -38,8 +38,8 @@ function MoneySummary({ selectedDate, onCreateEntry }: MoneySummaryProps) {
               <Plus className="size-6" strokeWidth={2} />
             </span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
