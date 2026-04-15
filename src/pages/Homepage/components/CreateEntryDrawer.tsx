@@ -17,6 +17,7 @@ type CreateEntryDrawerProps = {
   onCreateDiary?: () => void;
   onCreateMoney?: () => void;
   onCreateHealth?: () => void;
+  onCreateVoice?: () => void;
   className?: string;
 };
 
@@ -59,49 +60,66 @@ function CreateEntryDrawer({
   onCreateDiary,
   onCreateMoney,
   onCreateHealth,
+  onCreateVoice,
   className,
 }: CreateEntryDrawerProps) {
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
-      className={cn('gat-3 px-6', className)}
+      className={cn('px-6', className)}
     >
       <div className="flex flex-col gap-2 text-neutral-900">
-        <div className="relative flex h-10 items-center justify-center">
-          <button
-            type="button"
-            aria-label="關閉新增選單"
-            className="absolute left-0 inline-flex size-10 items-center justify-center"
-            onClick={() => onOpenChange(false)}
-          >
-            <X className="size-8" strokeWidth={1.5} />
-          </button>
-
-          <p className="font-label-lg">建立</p>
+        <div className="flex items-center">
+          <div className="flex w-10 justify-start">
+            <button
+              type="button"
+              aria-label="關閉新增選單"
+              className="inline-flex size-10 items-center justify-center"
+              onClick={() => onOpenChange(false)}
+            >
+              <X className="size-8" strokeWidth={1.5} />
+            </button>
+          </div>
+          <div className="flex-1 text-center">
+            <p className="font-label-lg">建立</p>
+          </div>
+          <div className="w-10" />
         </div>
 
-        <div className="divide-y divide-neutral-400 overflow-hidden rounded-l-lg bg-neutral-300">
+        <div className="divide-y divide-neutral-400 overflow-hidden rounded-[8px] bg-neutral-300">
           <ActionButton
-            label="任務"
+            label="日誌"
             icon={<NotebookText className="size-6" strokeWidth={2} />}
-            onClick={onCreateDiary}
+            onClick={() => {
+              onOpenChange(false);
+              onCreateDiary?.();
+            }}
           />
           <ActionButton
             label="帳目"
             icon={<PiggyBank className="size-6" strokeWidth={2} />}
-            onClick={onCreateMoney}
+            onClick={() => {
+              onOpenChange(false);
+              onCreateMoney?.();
+            }}
           />
           <ActionButton
             label="健康數據"
             icon={<ChartColumnIncreasing className="size-6" strokeWidth={2} />}
-            onClick={onCreateHealth}
+            onClick={() => {
+              onOpenChange(false);
+              onCreateHealth?.();
+            }}
           />
           <ActionButton
             label="語音一鍵新增"
-            actionClassName="text-primary-dark "
+            actionClassName="text-primary-dark"
             icon={<Mic className="size-6" strokeWidth={2} />}
-            onClick={onCreateHealth}
+            onClick={() => {
+              onOpenChange(false);
+              onCreateVoice?.();
+            }}
           />
         </div>
       </div>

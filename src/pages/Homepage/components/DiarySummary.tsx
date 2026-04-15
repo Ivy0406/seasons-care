@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { isSameDay, parseISO } from 'date-fns';
 import { Plus } from 'lucide-react';
@@ -6,14 +6,15 @@ import { Plus } from 'lucide-react';
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
-import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
-import type { CareLogEntry } from '@/pages/CareLog/types';
-import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 
 type StatusGroup = '進行中' | '未完成' | '已完成';
+type DiarySummaryProps = {
+  selectedDate: Date;
+  onCreateEntry: () => void;
+};
 
 function getStatusText(card: DiaryCardItem): StatusGroup {
   if (card.status === 'completed') return '已完成';
@@ -39,8 +40,7 @@ function groupByStatus(
   );
 }
 
-function DiarySummary({ selectedDate }: { selectedDate: Date }) {
-  const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
+function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const { entries, refetchEntries } = useGetCareLogEntries();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
@@ -80,10 +80,6 @@ function DiarySummary({ selectedDate }: { selectedDate: Date }) {
       return !nextEntries.some((entry) => entry.id === entryId);
     },
   });
-  const openCreateEntry = () => {
-    setCreatingEntry(createDraftCareLogEntry(selectedDate));
-  };
-
   return (
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
@@ -123,7 +119,7 @@ function DiarySummary({ selectedDate }: { selectedDate: Date }) {
         ) : (
           <button
             type="button"
-            onClick={openCreateEntry}
+            onClick={onCreateEntry}
             className="flex w-full flex-col items-center justify-center gap-5 rounded-md bg-neutral-100 px-4 py-10 text-center text-neutral-700"
           >
             <p className="font-paragraph-md">當日尚未有紀錄，快來新增吧！</p>
@@ -134,14 +130,6 @@ function DiarySummary({ selectedDate }: { selectedDate: Date }) {
         )}
       </div>
       <DiaryCardActionLayer actions={diaryCardActions} />
-
-      <CreateCareLogDialog
-        entry={creatingEntry}
-        onClose={() => setCreatingEntry(null)}
-        onCreated={async () => {
-          await refetchEntries();
-        }}
-      />
     </section>
   );
 }
