@@ -31,6 +31,7 @@ import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
+import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 
 function HomepageLayout() {
@@ -43,6 +44,7 @@ function HomepageLayout() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
+  const [isCreateEntryDrawerOpen, setIsCreateEntryDrawerOpen] = useState(false);
   const [selectedDate] = useState(() => new Date());
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
@@ -275,7 +277,15 @@ function HomepageLayout() {
         </section>
       </main>
 
-      <FixedBottomButton label="新增" onClick={() => undefined} />
+      <FixedBottomButton
+        label="新增"
+        onClick={() => setIsCreateEntryDrawerOpen(true)}
+      />
+
+      <CreateEntryDrawer
+        open={isCreateEntryDrawerOpen}
+        onOpenChange={setIsCreateEntryDrawerOpen}
+      />
 
       <BaseDrawer
         open={isHomepageGroupDrawerOpen}
