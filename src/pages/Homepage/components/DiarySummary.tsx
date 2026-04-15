@@ -88,6 +88,7 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
           <CareLogEmptyState
             message="當日尚未有紀錄，快來新增吧！"
             onCreateEntry={onCreateEntry}
+            className="border-0 bg-neutral-100"
           />
         ) : null}
         {STATUS_ORDER.map((status) => {

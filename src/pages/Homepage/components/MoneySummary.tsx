@@ -34,7 +34,7 @@ function MoneySummary({ selectedDate, onCreateEntry }: MoneySummaryProps) {
             className="flex w-full flex-col items-center justify-center gap-5 rounded-md bg-neutral-100 px-4 py-10 text-center text-neutral-700"
           >
             <p className="font-paragraph-md">當日尚未有帳目，快來新增吧！</p>
-            <span className="flex items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
               <Plus className="size-6" strokeWidth={2} />
             </span>
           </button>
