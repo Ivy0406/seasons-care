@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
+import FixedBottomButton from '@/components/common/FixedBottomButton';
+import Modal from '@/components/common/Modal';
 import {
   HomepageNavigationBar,
   NavigationGroupTrigger,
@@ -15,21 +17,38 @@ import {
 import SideMenu from '@/components/common/SideMenu';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogPopup,
+  AlertDialogPortal,
+} from '@/components/ui/alert-dialog';
 import Calendar from '@/components/ui/calendar';
 import { CURRENT_USER_KEY } from '@/constants/auth';
 import useDeleteGroupMember from '@/features/groups/hooks/useDeleteGroupMember';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
+import CreateHealthDataCard from '@/features/health/components/CreateDataCard';
+import CreateMoneyDataCard from '@/features/money/components/CreateDataCard';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
+import cn from '@/lib/utils';
+import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
+import type { CareLogEntry } from '@/pages/CareLog/types';
+import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
+import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
 
-function HomepageLayout() {
+type HomepageLayoutProps = {
+  className?: string;
+};
+
+function HomepageLayout({ className }: HomepageLayoutProps) {
   const queryClient = useQueryClient();
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
@@ -44,6 +63,22 @@ function HomepageLayout() {
   const [isDateDrawerOpen, setIsDateDrawerOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
+  const [isCreateEntryDrawerOpen, setIsCreateEntryDrawerOpen] = useState(false);
+  const [creatingDiaryEntry, setCreatingDiaryEntry] =
+    useState<CareLogEntry | null>(null);
+  const [showCreateMoneyCard, setShowCreateMoneyCard] = useState(false);
+  const [showCreateHealthCard, setShowCreateHealthCard] = useState(false);
+  const [showQuickRecordingDrawer, setShowQuickRecordingDrawer] =
+    useState(false);
+  const [healthSubmitModal, setHealthSubmitModal] = useState<{
+    open: boolean;
+    variant: 'success' | 'error';
+    title: string;
+  }>({
+    open: false,
+    variant: 'success',
+    title: '',
+  });
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
     'create',
@@ -179,7 +214,11 @@ function HomepageLayout() {
     setIsGroupEntryDrawerOpen(true);
   };
 
-  const handleOpenGroupInvite = () => {
+  const handleOpenGroupInvite = (inviteCode?: string) => {
+    if (inviteCode && activeGroupId === null) {
+      setActiveGroupId(selectedGroupId);
+    }
+
     setIsHomepageGroupDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
@@ -273,6 +312,42 @@ function HomepageLayout() {
       setIsGroupMemberDrawerOpen(true);
     }
   };
+
+  const handleOpenDiaryCreate = () => {
+    setCreatingDiaryEntry(createDraftCareLogEntry(selectedDate));
+  };
+
+  const handleOpenMoneyCreate = () => {
+    setShowCreateMoneyCard(true);
+  };
+
+  const handleOpenHealthCreate = () => {
+    setShowCreateHealthCard(true);
+  };
+
+  const handleOpenVoiceCreate = () => {
+    setShowQuickRecordingDrawer(true);
+  };
+
+  const handleVoiceFinish = async ({ transcript }: { transcript: string }) => {
+    if (transcript.trim() === '') {
+      return { shouldClose: false };
+    }
+
+    const result = await setVoiceTranscript(transcript);
+
+    if (!result.hasDetectedContent) {
+      clearVoiceInput();
+      toast.error(
+        '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+      );
+      return { shouldClose: false };
+    }
+
+    navigate('/data-form');
+    return { shouldClose: true };
+  };
+
   let deletedMemberDescription: string | undefined;
   const isLeavingCurrentGroup =
     pendingDeleteMember?.member.userId === currentUser?.id &&
@@ -286,13 +361,18 @@ function HomepageLayout() {
 
   return (
     <>
-      <main className="flex min-h-screen w-full flex-col pt-4 text-neutral-900">
+      <main
+        className={cn(
+          'mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pt-4 text-neutral-900',
+          className,
+        )}
+      >
         <HomepageNavigationBar
           hasNotification
           onMenuClick={() => setIsSideMenuOpen(true)}
           selectedDate={selectedDate}
           onDateClick={() => setIsDateDrawerOpen(true)}
-          className="px-6"
+          className="sticky top-0 z-10 bg-neutral-200 px-6"
         />
 
         <section className="flex flex-col px-6">
@@ -351,41 +431,99 @@ function HomepageLayout() {
             {currentUser?.userName ?? ''}，你好 <br />
             今天想要記錄什麼照護資訊呢？
           </p>
-          <RecordingDrawer
-            trigger={
-              <CircleButtonPrimary
-                size="lg"
-                className="border-0 bg-neutral-800"
-                aria-label="開始語音輸入"
-              >
-                <Mic strokeWidth={1} className="stroke-[1.5]!" />
-              </CircleButtonPrimary>
-            }
-            onFinish={async ({ transcript }) => {
-              if (transcript.trim() === '') {
-                return { shouldClose: false };
-              }
-
-              const result = await setVoiceTranscript(transcript);
-
-              if (!result.hasDetectedContent) {
-                clearVoiceInput();
-                toast.error(
-                  '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
-                );
-                return { shouldClose: false };
-              }
-
-              navigate('/data-form');
-              return { shouldClose: true };
-            }}
-          />
+          <CircleButtonPrimary
+            size="lg"
+            className="border-0 bg-neutral-800"
+            aria-label="開始語音輸入"
+            onClick={handleOpenVoiceCreate}
+          >
+            <Mic strokeWidth={1} className="stroke-[1.5]!" />
+          </CircleButtonPrimary>
         </section>
 
         <section className="flex flex-1 flex-col pt-11">
-          <DailyOverviewTabs selectedDate={selectedDate} />
+          <DailyOverviewTabs
+            selectedDate={selectedDate}
+            onCreateDiaryEntry={handleOpenDiaryCreate}
+            onCreateMoneyEntry={handleOpenMoneyCreate}
+          />
         </section>
       </main>
+
+      <FixedBottomButton
+        label="新增"
+        onClick={() => setIsCreateEntryDrawerOpen(true)}
+      />
+
+      <CreateEntryDrawer
+        open={isCreateEntryDrawerOpen}
+        onOpenChange={setIsCreateEntryDrawerOpen}
+        onCreateDiary={handleOpenDiaryCreate}
+        onCreateMoney={handleOpenMoneyCreate}
+        onCreateHealth={handleOpenHealthCreate}
+        onCreateVoice={handleOpenVoiceCreate}
+      />
+
+      <CreateCareLogDialog
+        entry={creatingDiaryEntry}
+        onClose={() => setCreatingDiaryEntry(null)}
+      />
+
+      <AlertDialog
+        open={showCreateMoneyCard}
+        onOpenChange={(open) => {
+          if (!open) setShowCreateMoneyCard(false);
+        }}
+      >
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
+            <CreateMoneyDataCard
+              initialDate={selectedDate}
+              onClose={() => setShowCreateMoneyCard(false)}
+              onVoiceInput={() => {
+                setShowCreateMoneyCard(false);
+                setShowQuickRecordingDrawer(true);
+              }}
+            />
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
+
+      <AlertDialog
+        open={showCreateHealthCard}
+        onOpenChange={(open) => {
+          if (!open) setShowCreateHealthCard(false);
+        }}
+      >
+        <AlertDialogPortal>
+          <AlertDialogBackdrop />
+          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
+            <CreateHealthDataCard
+              onClose={() => setShowCreateHealthCard(false)}
+              onVoiceInput={() => {
+                setShowCreateHealthCard(false);
+                setShowQuickRecordingDrawer(true);
+              }}
+              onSuccess={() => {
+                setShowCreateHealthCard(false);
+                setHealthSubmitModal({
+                  open: true,
+                  variant: 'success',
+                  title: '健康數值新增成功',
+                });
+              }}
+              onError={() =>
+                setHealthSubmitModal({
+                  open: true,
+                  variant: 'error',
+                  title: '新增失敗，請稍後再試',
+                })
+              }
+            />
+          </AlertDialogPopup>
+        </AlertDialogPortal>
+      </AlertDialog>
 
       <BaseDrawer open={isDateDrawerOpen} onOpenChange={setIsDateDrawerOpen}>
         <Calendar
@@ -434,6 +572,23 @@ function HomepageLayout() {
       />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
+
+      <RecordingDrawer
+        open={showQuickRecordingDrawer}
+        onOpenChange={setShowQuickRecordingDrawer}
+        onFinish={handleVoiceFinish}
+      />
+
+      <Modal
+        open={healthSubmitModal.open}
+        variant={healthSubmitModal.variant}
+        title={healthSubmitModal.title}
+        statusLayout="icon-first"
+        autoCloseMs={healthSubmitModal.variant === 'success' ? 1500 : undefined}
+        onClose={() =>
+          setHealthSubmitModal((prev) => ({ ...prev, open: false }))
+        }
+      />
     </>
   );
 }

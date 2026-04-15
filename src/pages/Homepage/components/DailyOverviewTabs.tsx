@@ -13,6 +13,8 @@ import MoneySummary from './MoneySummary';
 type Tab = 'diary' | 'money' | 'health';
 type DailyOverviewTabsProps = {
   selectedDate: Date;
+  onCreateDiaryEntry: () => void;
+  onCreateMoneyEntry: () => void;
 };
 
 const TABS_LIST: {
@@ -44,7 +46,11 @@ const TABS_LIST: {
 const triggerBaseClass =
   'font-heading-sm h-10 flex-1 rounded-t-lg border-2 border-b-0 border-neutral-900 text-neutral-900 shadow-none transition-none rounded-b-none';
 
-function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
+function DailyOverviewTabs({
+  selectedDate,
+  onCreateDiaryEntry,
+  onCreateMoneyEntry,
+}: DailyOverviewTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('diary');
   const navigate = useNavigate();
 
@@ -71,7 +77,10 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           value="diary"
           className="bg-primary-default flex flex-col gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
-          <DiarySummary selectedDate={selectedDate} />
+          <DiarySummary
+            selectedDate={selectedDate}
+            onCreateEntry={onCreateDiaryEntry}
+          />
           <div className="flex justify-center">
             <ViewMoreButton onClick={() => navigate('/calendar-page')} />
           </div>
@@ -81,7 +90,10 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           value="money"
           className="bg-secondary-default flex flex-col items-stretch gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
-          <MoneySummary />
+          <MoneySummary
+            selectedDate={selectedDate}
+            onCreateEntry={onCreateMoneyEntry}
+          />
           <div className="flex justify-center">
             <ViewMoreButton onClick={() => navigate('/money')} />
           </div>
