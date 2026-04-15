@@ -10,7 +10,9 @@ import healthKeys from '../queryKeys';
 import type { AxiosResponse } from 'axios';
 
 function select(res: AxiosResponse<WeeklyInsightResponse>) {
-  const { overallSummary, keyInsight, actionSuggestion } = res.data.data;
+  const overallSummary = res.data.data.heroReport.body;
+  const keyInsight = res.data.data.keyInsightSection.body;
+  const actionSuggestion = res.data.data.actionSuggestionSection.body;
   return { overallSummary, keyInsight, actionSuggestion };
 }
 
