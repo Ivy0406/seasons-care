@@ -8,18 +8,8 @@ import Calendar from '@/components/common/Calendar';
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
-import {
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogPopup,
-  AlertDialogPortal,
-} from '@/components/ui/alert-dialog';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
-import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
-import CareLogModal, {
-  type CareLogModalVariant,
-} from '@/pages/CareLog/components/CareLogModal';
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
@@ -50,7 +40,6 @@ function getSelectedDateFromState(state: unknown) {
 
 function CalendarPage() {
   const location = useLocation();
-  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
   const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
@@ -65,7 +54,6 @@ function CalendarPage() {
     initialSelectedDate ?? defaultSelectedDate,
   );
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
-  const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
 
   useEffect(() => {
     const routedSelectedDate = getSelectedDateFromState(location.state);
@@ -180,60 +168,17 @@ function CalendarPage() {
         label="新增"
       />
 
-      <AlertDialog
-        open={creatingEntry !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setCreatingEntry(null);
-          }
+      <CreateCareLogDialog
+        entry={creatingEntry}
+        onClose={() => setCreatingEntry(null)}
+        onCreated={async (createdEntry) => {
+          const createdDate = parseISO(createdEntry.startsAt);
+
+          await refetchEntries();
+          setSelectedDate(createdDate);
+          setVisibleMonth(createdDate);
         }}
-      >
-        <AlertDialogPortal>
-          <AlertDialogBackdrop />
-          <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-[560px] border-0 bg-transparent p-0 shadow-none">
-            {creatingEntry ? (
-              <CareLogFormCard
-                entry={creatingEntry}
-                title="新日誌"
-                submitLabel="新增日誌"
-                isSubmitting={isLoading}
-                cardClassName="bg-primary-default"
-                toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
-                footerMode="submitOnly"
-                onClose={() => setCreatingEntry(null)}
-                onSubmit={async (entry) => {
-                  try {
-                    const createdEntry = await handleCreateCareLogEntry(entry);
-
-                    if (createdEntry === null) {
-                      setModalKey('createError');
-                      return;
-                    }
-
-                    const createdDate = parseISO(createdEntry.startsAt);
-
-                    await refetchEntries();
-                    setSelectedDate(createdDate);
-                    setVisibleMonth(createdDate);
-                    setCreatingEntry(null);
-                    setModalKey('createSuccess');
-                  } catch {
-                    setModalKey('createError');
-                  }
-                }}
-              />
-            ) : null}
-          </AlertDialogPopup>
-        </AlertDialogPortal>
-      </AlertDialog>
-
-      {modalKey ? (
-        <CareLogModal
-          open
-          variant={modalKey}
-          onClose={() => setModalKey(null)}
-        />
-      ) : null}
+      />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
