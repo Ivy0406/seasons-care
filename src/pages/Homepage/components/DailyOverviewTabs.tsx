@@ -81,7 +81,9 @@ function DailyOverviewTabs({
             selectedDate={selectedDate}
             onCreateEntry={onCreateDiaryEntry}
           />
-          <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          <div className="flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          </div>
         </TabsContent>
 
         <TabsContent

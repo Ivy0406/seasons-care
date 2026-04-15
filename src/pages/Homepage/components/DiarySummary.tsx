@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 
 import { isSameDay, parseISO } from 'date-fns';
-import { Plus } from 'lucide-react';
 
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
+import CareLogEmptyState from '@/pages/CareLog/components/CareLogEmptyState';
 import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
@@ -54,7 +54,7 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const grouped = useMemo(() => {
     return groupByStatus(filteredEntries);
   }, [filteredEntries]);
-  const hasEntries = filteredEntries.length > 0;
+
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
     isUpdatingEntry,
@@ -80,54 +80,48 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
       return !nextEntries.some((entry) => entry.id === entryId);
     },
   });
+
   return (
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
-        {hasEntries ? (
-          STATUS_ORDER.map((status) => {
-            const cards = grouped[status];
-            if (cards.length === 0) return null;
-            return (
-              <div key={status} className="mb-3">
-                <p className="font-label-md mb-3 text-neutral-700">{status}</p>
-                {cards.map((item) => (
-                  <DiaryCard
-                    key={item.id}
-                    item={item}
-                    className="mb-3"
-                    isStatusUpdating={isUpdatingEntry}
-                    onClick={() => diaryCardActions.openDetail(item.id)}
-                    onMoreClick={() => diaryCardActions.openActions(item.id)}
-                    onStatusChange={async (checked) => {
-                      const persistedEntry = await handleUpdateCareLogEntry({
-                        ...item,
-                        status: checked ? 'completed' : 'pending',
-                      });
+        {filteredEntries.length === 0 ? (
+          <CareLogEmptyState
+            message="當日尚未有紀錄，快來新增吧！"
+            onCreateEntry={onCreateEntry}
+          />
+        ) : null}
+        {STATUS_ORDER.map((status) => {
+          const cards = grouped[status];
+          if (cards.length === 0) return null;
+          return (
+            <div key={status} className="mb-3">
+              <p className="font-label-md mb-3 text-neutral-700">{status}</p>
+              {cards.map((item) => (
+                <DiaryCard
+                  key={item.id}
+                  item={item}
+                  className="mb-3"
+                  isStatusUpdating={isUpdatingEntry}
+                  onClick={() => diaryCardActions.openDetail(item.id)}
+                  onMoreClick={() => diaryCardActions.openActions(item.id)}
+                  onStatusChange={async (checked) => {
+                    const persistedEntry = await handleUpdateCareLogEntry({
+                      ...item,
+                      status: checked ? 'completed' : 'pending',
+                    });
 
-                      if (persistedEntry === null) {
-                        return false;
-                      }
+                    if (persistedEntry === null) {
+                      return false;
+                    }
 
-                      await refetchEntries();
-                      return true;
-                    }}
-                  />
-                ))}
-              </div>
-            );
-          })
-        ) : (
-          <button
-            type="button"
-            onClick={onCreateEntry}
-            className="flex w-full flex-col items-center justify-center gap-5 rounded-md bg-neutral-100 px-4 py-10 text-center text-neutral-700"
-          >
-            <p className="font-paragraph-md">當日尚未有紀錄，快來新增吧！</p>
-            <span className="flex items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
-              <Plus className="size-6" strokeWidth={2} />
-            </span>
-          </button>
-        )}
+                    await refetchEntries();
+                    return true;
+                  }}
+                />
+              ))}
+            </div>
+          );
+        })}
       </div>
       <DiaryCardActionLayer actions={diaryCardActions} />
     </section>

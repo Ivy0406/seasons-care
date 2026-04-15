@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { parseISO } from 'date-fns';
-import { Plus } from 'lucide-react';
 
 import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
+import CareLogEmptyState from '@/pages/CareLog/components/CareLogEmptyState';
 import type { CareLogEntry, CareLogFilterValue } from '@/pages/CareLog/types';
 
 type CareLogDiarySectionProps = {
@@ -77,23 +77,13 @@ function CareLogDiarySection({
   if (!hasFilteredItems) {
     if (!hasItems) {
       emptyState = (
-        <button
-          type="button"
-          onClick={() => onCreateEntry(selectedDate)}
-          className="flex w-full flex-col items-center justify-center gap-5 rounded-md border border-neutral-300 bg-neutral-50 px-4 py-10 text-center text-neutral-700"
-        >
-          <p className="font-paragraph-md">當日尚未有紀錄，快來新增吧！</p>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
-            <Plus className="size-6" strokeWidth={2} />
-          </span>
-        </button>
+        <CareLogEmptyState
+          message="當日尚未有紀錄，快來新增吧！"
+          onCreateEntry={() => onCreateEntry(selectedDate)}
+        />
       );
     } else {
-      emptyState = (
-        <div className="rounded-md border border-neutral-300 bg-neutral-50 px-4 py-6 text-neutral-700">
-          <p className="font-paragraph-md">目前沒有符合篩選條件的日誌。</p>
-        </div>
-      );
+      emptyState = <CareLogEmptyState message="目前沒有符合篩選條件的日誌。" />;
     }
   }
   return (

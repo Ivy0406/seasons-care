@@ -12,6 +12,7 @@ import {
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
 import useCreateGroup from '@/features/groups/hooks/useCreateGroup';
+import useUpdateGroup from '@/features/groups/hooks/useUpdateGroup';
 import cn from '@/lib/utils';
 
 type DrawerStep = 'entry' | 'create' | 'success';
@@ -21,17 +22,22 @@ type GroupEntryDrawerProps = {
   open?: boolean;
   onClose?: () => void;
   onComplete?: () => void;
-  onInviteMembers?: () => void;
+  onInviteMembers?: (inviteCode?: string) => void;
   initialStep?: DrawerStep;
   mode?: GroupEntryMode;
+  groupId?: string | null;
   initialGroupName?: string;
+  initialRecipientName?: string;
+  initialRecipientGender?: string;
+  initialRecipientBirthDate?: string;
+  initialDescription?: string;
+  initialHealthStatus?: string;
 };
 
 type DrawerIllustrationProps = {
   src: string;
   alt: string;
   className?: string;
-  wrapperClassName?: string;
 };
 
 type DrawerActionStepProps = {
@@ -43,30 +49,27 @@ type DrawerActionStepProps = {
   onSecondaryClick: () => void;
   className?: string;
   imageClassName?: string;
-  imageWrapperClassName?: string;
   descriptionClassName?: string;
 };
 
-function DrawerIllustration({
-  src,
-  alt,
-  className,
-  wrapperClassName,
-}: DrawerIllustrationProps) {
+type DrawerSuccessStepProps = {
+  title: string;
+  closeAriaLabel: string;
+  description: string;
+  primaryLabel: string;
+  onPrimaryClick: () => void;
+  onClose: () => void;
+  secondaryLabel?: string;
+  onSecondaryClick?: () => void;
+};
+
+function DrawerIllustration({ src, alt, className }: DrawerIllustrationProps) {
   return (
-    <div
-      className={cn(
-        'mx-2 aspect-331/160 overflow-hidden rounded-[8px]',
-        wrapperClassName,
-      )}
-    >
+    <div className="mx-auto h-40 w-40 overflow-hidden">
       <img
         src={src}
         alt={alt}
-        className={cn(
-          'h-full w-full rounded-[8px] border-2 border-neutral-900 object-cover',
-          className,
-        )}
+        className={cn('h-full w-full object-cover', className)}
       />
     </div>
   );
@@ -81,7 +84,6 @@ function DrawerActionStep({
   onSecondaryClick,
   className,
   imageClassName,
-  imageWrapperClassName,
   descriptionClassName,
 }: DrawerActionStepProps) {
   return (
@@ -90,7 +92,6 @@ function DrawerActionStep({
         src={image.src}
         alt={image.alt}
         className={cn(image.className, imageClassName)}
-        wrapperClassName={cn(image.wrapperClassName, imageWrapperClassName)}
       />
       <p className={cn('font-paragraph-md mx-auto mt-3', descriptionClassName)}>
         {description}
@@ -107,6 +108,46 @@ function DrawerActionStep({
   );
 }
 
+function DrawerSuccessStep({
+  title,
+  closeAriaLabel,
+  description,
+  primaryLabel,
+  onPrimaryClick,
+  onClose,
+  secondaryLabel,
+  onSecondaryClick,
+}: DrawerSuccessStepProps) {
+  return (
+    <div className="flex flex-col text-neutral-900">
+      <div className="relative mb-5 flex items-center justify-center py-2">
+        <button
+          type="button"
+          aria-label={closeAriaLabel}
+          onClick={onClose}
+          className="absolute left-0 inline-flex size-10 items-center justify-center"
+        >
+          <X className="size-8" strokeWidth={2} />
+        </button>
+        <h2 className="font-heading-sm">{title}</h2>
+      </div>
+
+      <DrawerActionStep
+        image={{
+          src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774934772/addgroup_2x_wlr34y.webp',
+          alt: '家人陪伴情境示意',
+          className: 'border-0',
+        }}
+        description={description}
+        primaryLabel={primaryLabel}
+        secondaryLabel={secondaryLabel ?? '完成'}
+        onPrimaryClick={onPrimaryClick}
+        onSecondaryClick={onSecondaryClick ?? onClose}
+      />
+    </div>
+  );
+}
+
 function GroupEntryDrawer({
   open = false,
   onClose,
@@ -114,15 +155,29 @@ function GroupEntryDrawer({
   onInviteMembers,
   initialStep = 'entry',
   mode = 'create',
+  groupId = null,
   initialGroupName = '',
+  initialRecipientName = '',
+  initialRecipientGender = 'male',
+  initialRecipientBirthDate = '2026-04-01',
+  initialDescription = '',
+  initialHealthStatus = '',
 }: GroupEntryDrawerProps) {
   const { isLoading, handleCreateGroup } = useCreateGroup();
+  const { isLoading: isUpdating, handleUpdateGroup } = useUpdateGroup();
   const [step, setStep] = useState<DrawerStep>(initialStep);
-  const [careRecipientName, setCareRecipientName] = useState(initialGroupName);
-  const [gender, setGender] = useState('male');
-  const [birthDate, setBirthDate] = useState('2026-04-01');
+  const [createdInviteCode, setCreatedInviteCode] = useState('');
+  const [groupName, setGroupName] = useState(initialGroupName);
+  const [careRecipientName, setCareRecipientName] = useState('');
+  const [gender, setGender] = useState(initialRecipientGender);
+  const [birthDate, setBirthDate] = useState(initialRecipientBirthDate);
+  const [description] = useState(initialDescription);
+  const [healthStatus] = useState(initialHealthStatus);
   const isEditMode = mode === 'edit';
-  const canSubmit = careRecipientName.trim().length > 0;
+  const isSubmitting = isLoading || isUpdating;
+  const canSubmit = isEditMode
+    ? groupName.trim().length > 0
+    : careRecipientName.trim().length > 0;
   const successTitle = isEditMode ? '編輯完成！' : '創建完成！';
   const formTitle = isEditMode ? '編輯群組' : '建立照護群組';
   const formDescription = isEditMode
@@ -132,6 +187,11 @@ function GroupEntryDrawer({
   const successDescription = isEditMode
     ? '群組資訊已更新完成。'
     : '立即邀請成員，實現共同照護！';
+  let submitText = submitLabel;
+
+  if (isSubmitting) {
+    submitText = isEditMode ? '更新中...' : '建立中...';
+  }
 
   useEffect(() => {
     if (!open) {
@@ -140,8 +200,17 @@ function GroupEntryDrawer({
   }, [initialStep, open]);
 
   useEffect(() => {
-    setCareRecipientName(initialGroupName);
-  }, [initialGroupName, open]);
+    setGroupName(initialGroupName);
+    setCareRecipientName(initialRecipientName);
+    setGender(initialRecipientGender);
+    setBirthDate(initialRecipientBirthDate);
+  }, [
+    initialGroupName,
+    initialRecipientName,
+    initialRecipientBirthDate,
+    initialRecipientGender,
+    open,
+  ]);
 
   const handleClose = () => {
     if (step === 'success') {
@@ -155,17 +224,32 @@ function GroupEntryDrawer({
     if (!canSubmit) return;
 
     if (isEditMode) {
-      setStep('success');
+      if (!groupId) return;
+
+      const result = await handleUpdateGroup(groupId, {
+        name: groupName,
+        recipientName: careRecipientName,
+        recipientGender: gender,
+        recipientBirthDate: birthDate,
+        description,
+        healthStatus,
+      });
+
+      if (result) {
+        setStep('success');
+      }
       return;
     }
 
     const result = await handleCreateGroup({
+      name: careRecipientName,
       recipientName: careRecipientName,
       recipientGender: gender,
       recipientBirthDate: birthDate,
     });
 
     if (result) {
+      setCreatedInviteCode(result.inviteCode ?? '');
       setStep('success');
     }
   };
@@ -173,69 +257,28 @@ function GroupEntryDrawer({
   if (step === 'success') {
     if (isEditMode) {
       return (
-        <div className="flex flex-col text-neutral-900">
-          <div className="relative mb-5 flex items-center justify-center py-2">
-            <button
-              type="button"
-              aria-label="關閉編輯完成視窗"
-              onClick={handleClose}
-              className="absolute left-0 inline-flex size-10 items-center justify-center"
-            >
-              <X className="size-8" strokeWidth={2} />
-            </button>
-            <h2 className="font-heading-sm">{successTitle}</h2>
-          </div>
-
-          <div className="mx-auto size-40 rounded-[8px]">
-            <img
-              src="https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp"
-              alt="家人陪伴情境示意"
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <p className="font-paragraph-md mx-auto mt-3 text-center text-neutral-700">
-            {successDescription}
-          </p>
-
-          <div className="mt-7">
-            <RoundedButtonPrimary onClick={handleClose}>
-              完成
-            </RoundedButtonPrimary>
-          </div>
-        </div>
+        <DrawerSuccessStep
+          title={successTitle}
+          closeAriaLabel="關閉編輯完成視窗"
+          description={successDescription}
+          primaryLabel="完成"
+          onPrimaryClick={handleClose}
+          onClose={handleClose}
+        />
       );
     }
 
     return (
-      <div className="flex flex-col text-neutral-900">
-        <div className="relative mb-5 flex items-center justify-center py-2">
-          <button
-            type="button"
-            aria-label="關閉建立完成視窗"
-            onClick={handleClose}
-            className="absolute left-0 inline-flex size-10 items-center justify-center"
-          >
-            <X className="size-8" strokeWidth={2} />
-          </button>
-          <h2 className="font-heading-sm">{successTitle}</h2>
-        </div>
-
-        <div>
-          <DrawerActionStep
-            image={{
-              src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
-              alt: '家人陪伴情境示意',
-              className: 'border-0',
-            }}
-            description={successDescription}
-            primaryLabel="分享邀請連結"
-            secondaryLabel="暫時略過"
-            onPrimaryClick={() => onInviteMembers?.()}
-            onSecondaryClick={handleClose}
-          />
-        </div>
-      </div>
+      <DrawerSuccessStep
+        title={successTitle}
+        closeAriaLabel="關閉建立完成視窗"
+        description={successDescription}
+        primaryLabel="分享邀請連結"
+        secondaryLabel="暫時略過"
+        onPrimaryClick={() => onInviteMembers?.(createdInviteCode)}
+        onSecondaryClick={handleClose}
+        onClose={handleClose}
+      />
     );
   }
 
@@ -260,13 +303,23 @@ function GroupEntryDrawer({
 
         <div className="flex flex-col">
           <div className="mb-20 flex flex-col gap-2">
-            <ListFormNameRow
-              label="被照護者名稱"
-              inputProps={{
-                value: careRecipientName,
-                onChange: (event) => setCareRecipientName(event.target.value),
-              }}
-            />
+            {isEditMode ? (
+              <ListFormNameRow
+                label="群組名稱"
+                inputProps={{
+                  value: groupName,
+                  onChange: (event) => setGroupName(event.target.value),
+                }}
+              />
+            ) : (
+              <ListFormNameRow
+                label="被照護者名稱"
+                inputProps={{
+                  value: careRecipientName,
+                  onChange: (event) => setCareRecipientName(event.target.value),
+                }}
+              />
+            )}
             <ListFormGenderRow
               label="被照護者性別"
               value={gender}
@@ -287,9 +340,9 @@ function GroupEntryDrawer({
 
           <RoundedButtonPrimary
             onClick={handleSubmit}
-            disabled={!canSubmit || isLoading}
+            disabled={!canSubmit || isSubmitting}
           >
-            {isLoading ? '建立中...' : submitLabel}
+            {submitText}
           </RoundedButtonPrimary>
         </div>
       </div>
@@ -299,13 +352,13 @@ function GroupEntryDrawer({
   return (
     <DrawerActionStep
       image={{
-        src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
-        alt: '老人摸手',
+        src: 'https://res.cloudinary.com/dyothufps/image/upload/v1774934773/nongroup_2x_qrajbi.webp',
+        alt: '尚未加入群組示意圖',
       }}
-      imageClassName="border-0"
       description="您目前還沒有加入任何群組"
       primaryLabel="建立群組"
       secondaryLabel="加入群組"
+      imageClassName="aspect-square h-40"
       onPrimaryClick={() => setStep('create')}
       onSecondaryClick={() => {}}
     />

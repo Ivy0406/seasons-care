@@ -83,7 +83,6 @@ function CalendarPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pb-10 text-neutral-900">
       <section>
         <PageNavigationBar
-          wrapperClassName="border-b-0"
           className="px-4 ring-0"
           title="日誌"
           onMenuClick={() => setIsSideMenuOpen(true)}

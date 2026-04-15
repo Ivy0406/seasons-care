@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Mic } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
@@ -23,19 +23,17 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
-import { CURRENT_USER_KEY, CURRENT_GROUP_ID_KEY } from '@/constants/auth';
-import GroupActionDrawer from '@/features/groups/components/GroupActionDrawer';
-import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
-import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
-import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
-import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
-import GroupMemberManagementDrawer from '@/features/groups/components/GroupMemberManagementDrawer';
+import Calendar from '@/components/ui/calendar';
+import { CURRENT_USER_KEY } from '@/constants/auth';
+import useDeleteGroupMember from '@/features/groups/hooks/useDeleteGroupMember';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import CreateHealthDataCard from '@/features/health/components/CreateDataCard';
 import CreateMoneyDataCard from '@/features/money/components/CreateDataCard';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
+import cn from '@/lib/utils';
 import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
@@ -44,19 +42,28 @@ import type { GroupMember } from '@/types/group';
 
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
+import HomepageGroupOverlays from './HomepageGroupOverlays';
 
-function HomepageLayout() {
+type HomepageLayoutProps = {
+  className?: string;
+};
+
+function HomepageLayout({ className }: HomepageLayoutProps) {
   const queryClient = useQueryClient();
   const { data: groups = [] } = useGetGroups();
+  const { handleDeleteGroupMember } = useDeleteGroupMember();
+  const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentUser: UserInfo | null = JSON.parse(
     localStorage.getItem(CURRENT_USER_KEY) ?? 'null',
   );
   const navigate = useNavigate();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [isDateDrawerOpen, setIsDateDrawerOpen] = useState(false);
   const [isHomepageGroupDrawerOpen, setIsHomepageGroupDrawerOpen] =
     useState(false);
   const [isCreateEntryDrawerOpen, setIsCreateEntryDrawerOpen] = useState(false);
-  const [selectedDate] = useState(() => new Date());
   const [creatingDiaryEntry, setCreatingDiaryEntry] =
     useState<CareLogEntry | null>(null);
   const [showCreateMoneyCard, setShowCreateMoneyCard] = useState(false);
@@ -80,9 +87,7 @@ function HomepageLayout() {
   const [isGroupJoinDrawerOpen, setIsGroupJoinDrawerOpen] = useState(false);
   const [isGroupActionDrawerOpen, setIsGroupActionDrawerOpen] = useState(false);
   const [isGroupMemberDrawerOpen, setIsGroupMemberDrawerOpen] = useState(false);
-  const [selectedGroupId, setSelectedGroupId] = useState(
-    localStorage.getItem(CURRENT_GROUP_ID_KEY) ?? '',
-  );
+  const [selectedGroupId, setSelectedGroupId] = useState(currentGroupId);
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const { data: activeGroupMembers = [] } = useGetGroupMembers(
     activeGroupId ?? selectedGroupId,
@@ -98,6 +103,7 @@ function HomepageLayout() {
 
   const selectedGroup =
     groups.find((group) => group.id === selectedGroupId) ?? groups[0];
+  const inviteCodeFromUrl = searchParams.get('inviteCode')?.trim() ?? '';
   const careDays = selectedGroup?.createdAt
     ? Math.floor(
         (Date.now() - new Date(selectedGroup.createdAt).getTime()) /
@@ -109,9 +115,28 @@ function HomepageLayout() {
       ? selectedGroup
       : (groups.find((group) => group.id === activeGroupId) ?? selectedGroup);
 
+  useEffect(() => {
+    if (currentGroupId && currentGroupId !== selectedGroupId) {
+      setSelectedGroupId(currentGroupId);
+    }
+  }, [currentGroupId, selectedGroupId]);
+
+  useEffect(() => {
+    if (inviteCodeFromUrl === '') {
+      return;
+    }
+
+    setIsHomepageGroupDrawerOpen(false);
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupInviteDrawerOpen(false);
+    setIsGroupActionDrawerOpen(false);
+    setIsGroupMemberDrawerOpen(false);
+    setIsGroupJoinDrawerOpen(true);
+  }, [inviteCodeFromUrl]);
+
   const handleSelectGroup = (groupId: string) => {
     setSelectedGroupId(groupId);
-    localStorage.setItem(CURRENT_GROUP_ID_KEY, groupId);
+    setCurrentGroupId(groupId);
     queryClient.invalidateQueries({ queryKey: ['health', groupId] });
   };
   const currentUserAvatarSrc = getAvatarSrcByKey(currentUser?.avatarKey ?? '');
@@ -140,6 +165,24 @@ function HomepageLayout() {
     setIsGroupJoinDrawerOpen(false);
     setIsGroupMemberDrawerOpen(false);
     setIsGroupActionDrawerOpen(true);
+  };
+
+  const clearInviteCodeFromUrl = () => {
+    if (inviteCodeFromUrl === '') {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('inviteCode');
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const handleGroupJoinDrawerChange = (open: boolean) => {
+    setIsGroupJoinDrawerOpen(open);
+
+    if (!open) {
+      clearInviteCodeFromUrl();
+    }
   };
 
   const handleOpenGroupJoin = () => {
@@ -171,7 +214,11 @@ function HomepageLayout() {
     setIsGroupEntryDrawerOpen(true);
   };
 
-  const handleOpenGroupInvite = () => {
+  const handleOpenGroupInvite = (inviteCode?: string) => {
+    if (inviteCode && activeGroupId === null) {
+      setActiveGroupId(selectedGroupId);
+    }
+
     setIsHomepageGroupDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupJoinDrawerOpen(false);
@@ -181,6 +228,7 @@ function HomepageLayout() {
   };
 
   const handleOpenGroupMembers = () => {
+    setActiveGroupId((prev) => prev ?? selectedGroupId);
     setIsGroupActionDrawerOpen(false);
     setIsGroupEntryDrawerOpen(false);
     setIsGroupInviteDrawerOpen(false);
@@ -188,33 +236,99 @@ function HomepageLayout() {
     setIsGroupMemberDrawerOpen(true);
   };
 
+  const handleSelectDate = (date: Date | undefined) => {
+    if (!date) return;
+    setSelectedDate(date);
+    setIsDateDrawerOpen(false);
+  };
+
+  const handleLeaveCurrentGroup = () => {
+    if (!currentUser || !activeGroup) return;
+
+    setPendingDeleteMember({
+      groupId: activeGroup.id,
+      member: {
+        userId: currentUser.id,
+        username: currentUser.userName,
+        avatarKey: currentUser.avatarKey,
+        role: 0,
+        joinedAt: '',
+      },
+    });
+    setIsGroupActionDrawerOpen(false);
+  };
+
   const handleRequestDeleteMember = (groupId: string, member: GroupMember) => {
     setIsGroupMemberDrawerOpen(false);
     setPendingDeleteMember({ groupId, member });
   };
 
-  const handleConfirmDeleteMember = () => {
+  const handleConfirmDeleteMember = async () => {
     if (pendingDeleteMember === null) return;
-    setDeletedMemberName(pendingDeleteMember.member.username);
+
+    const didDelete = await handleDeleteGroupMember(
+      pendingDeleteMember.groupId,
+      pendingDeleteMember.member.userId,
+    );
+
+    if (!didDelete) {
+      return;
+    }
+
+    const isCurrentUserLeavingCurrentGroup =
+      pendingDeleteMember.member.userId === currentUser?.id &&
+      pendingDeleteMember.groupId === selectedGroupId;
+
     setPendingDeleteMember(null);
+    setDeletedMemberName(
+      isCurrentUserLeavingCurrentGroup
+        ? `${selectedGroup?.name ?? '群組'} 退出成功`
+        : pendingDeleteMember.member.username,
+    );
+
+    if (isCurrentUserLeavingCurrentGroup) {
+      await queryClient.refetchQueries({ queryKey: ['groups'] });
+
+      const updatedGroups =
+        queryClient.getQueryData<typeof groups>(['groups']) ?? [];
+      const nextGroupId = updatedGroups[0]?.id ?? '';
+
+      setCurrentGroupId(nextGroupId);
+      setSelectedGroupId(nextGroupId);
+      setActiveGroupId(null);
+      setIsGroupActionDrawerOpen(false);
+      setIsGroupMemberDrawerOpen(false);
+    }
   };
 
   const handleCancelDeleteMember = () => {
+    const isCurrentUserLeavingCurrentGroup =
+      pendingDeleteMember?.member.userId === currentUser?.id &&
+      pendingDeleteMember?.groupId === selectedGroupId;
+
     setPendingDeleteMember(null);
-    setIsGroupMemberDrawerOpen(true);
+
+    if (!isCurrentUserLeavingCurrentGroup) {
+      setIsGroupMemberDrawerOpen(true);
+    }
   };
+
   const handleOpenDiaryCreate = () => {
     setCreatingDiaryEntry(createDraftCareLogEntry(selectedDate));
   };
+
   const handleOpenMoneyCreate = () => {
     setShowCreateMoneyCard(true);
   };
+
   const handleOpenHealthCreate = () => {
     setShowCreateHealthCard(true);
   };
+
   const handleOpenVoiceCreate = () => {
     setShowQuickRecordingDrawer(true);
   };
+
   const handleVoiceFinish = async ({ transcript }: { transcript: string }) => {
     if (transcript.trim() === '') {
       return { shouldClose: false };
@@ -234,19 +348,36 @@ function HomepageLayout() {
     return { shouldClose: true };
   };
 
+  let deletedMemberDescription: string | undefined;
+  const isLeavingCurrentGroup =
+    pendingDeleteMember?.member.userId === currentUser?.id &&
+    pendingDeleteMember?.groupId === selectedGroupId;
+
+  if (deletedMemberName) {
+    deletedMemberDescription = deletedMemberName.includes('退出成功')
+      ? deletedMemberName
+      : `${deletedMemberName} 已從群組中移除`;
+  }
+
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pt-4 text-neutral-900">
+      <main
+        className={cn(
+          'mx-auto flex min-h-screen w-full max-w-200 flex-col pt-4 text-neutral-900',
+          className,
+        )}
+      >
         <HomepageNavigationBar
           hasNotification
-          selectedDate={selectedDate}
           onMenuClick={() => setIsSideMenuOpen(true)}
+          selectedDate={selectedDate}
+          onDateClick={() => setIsDateDrawerOpen(true)}
           className="px-6"
         />
 
         <section className="flex flex-col px-6">
           <NavigationGroupTrigger
-            groupName={selectedGroup?.recipientName ?? ''}
+            groupName={selectedGroup?.name ?? ''}
             onClick={() => setIsHomepageGroupDrawerOpen(true)}
           />
 
@@ -260,13 +391,16 @@ function HomepageLayout() {
               <span className="">天</span>
             </div>
 
-            <UserGroup>
+            <UserGroup
+              className="w-fit max-w-25 min-w-0"
+              onClick={handleOpenGroupMembers}
+            >
               {activeGroupMembers.map((member) => (
                 <SingleAvatar
                   key={member.userId}
                   src={getAvatarSrcByKey(member.avatarKey)}
                   name={member.username}
-                  className="size-8 ring-2 ring-neutral-900"
+                  className="size-7 bg-neutral-300 ring-1 ring-neutral-900"
                 />
               ))}
             </UserGroup>
@@ -391,59 +525,50 @@ function HomepageLayout() {
         </AlertDialogPortal>
       </AlertDialog>
 
-      <BaseDrawer
-        open={isHomepageGroupDrawerOpen}
-        onOpenChange={setIsHomepageGroupDrawerOpen}
-      >
-        <GroupManagementDrawer
-          groups={groups}
-          selectedGroupId={selectedGroupId}
-          onSelectGroup={handleSelectGroup}
-          onManageGroup={handleOpenGroupActions}
-          onJoinGroup={handleOpenGroupJoin}
-          onCreateGroup={handleOpenGroupCreate}
+      <BaseDrawer open={isDateDrawerOpen} onOpenChange={setIsDateDrawerOpen}>
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={handleSelectDate}
+          defaultMonth={selectedDate}
         />
       </BaseDrawer>
 
-      <BaseDrawer
-        open={isGroupEntryDrawerOpen}
-        onOpenChange={setIsGroupEntryDrawerOpen}
-      >
-        <GroupEntryDrawer
-          open={isGroupEntryDrawerOpen}
-          onClose={() => setIsGroupEntryDrawerOpen(false)}
-          onInviteMembers={handleOpenGroupInvite}
-          initialStep="create"
-          mode={groupEntryMode}
-          initialGroupName={groupEntryMode === 'edit' ? activeGroup?.name : ''}
-        />
-      </BaseDrawer>
-
-      <GroupInviteDrawer
-        open={isGroupInviteDrawerOpen}
-        onOpenChange={setIsGroupInviteDrawerOpen}
-      />
-
-      <GroupJoinDrawer
-        open={isGroupJoinDrawerOpen}
-        onOpenChange={setIsGroupJoinDrawerOpen}
-      />
-
-      <GroupActionDrawer
-        open={isGroupActionDrawerOpen}
-        groupName={activeGroup?.name}
-        onOpenChange={handleGroupActionDrawerChange}
-        onManageMembers={handleOpenGroupMembers}
-        onEditGroup={handleOpenGroupEdit}
-      />
-
-      <GroupMemberManagementDrawer
-        open={isGroupMemberDrawerOpen}
-        groupId={activeGroupId}
-        members={activeGroupMembers}
-        onOpenChange={handleGroupMemberDrawerChange}
-        onRequestDeleteMember={handleRequestDeleteMember}
+      <HomepageGroupOverlays
+        groups={groups}
+        selectedGroupId={selectedGroupId}
+        activeGroupId={activeGroupId}
+        activeGroupMembers={activeGroupMembers}
+        activeGroup={activeGroup}
+        inviteCodeFromUrl={inviteCodeFromUrl}
+        groupEntryMode={groupEntryMode}
+        pendingDeleteMember={pendingDeleteMember}
+        isLeavingCurrentGroup={isLeavingCurrentGroup}
+        deletedMemberName={deletedMemberName}
+        deletedMemberDescription={deletedMemberDescription}
+        isHomepageGroupDrawerOpen={isHomepageGroupDrawerOpen}
+        isGroupEntryDrawerOpen={isGroupEntryDrawerOpen}
+        isGroupInviteDrawerOpen={isGroupInviteDrawerOpen}
+        isGroupJoinDrawerOpen={isGroupJoinDrawerOpen}
+        isGroupActionDrawerOpen={isGroupActionDrawerOpen}
+        isGroupMemberDrawerOpen={isGroupMemberDrawerOpen}
+        onHomepageGroupDrawerChange={setIsHomepageGroupDrawerOpen}
+        onGroupEntryDrawerChange={setIsGroupEntryDrawerOpen}
+        onGroupInviteDrawerChange={setIsGroupInviteDrawerOpen}
+        onGroupJoinDrawerChange={handleGroupJoinDrawerChange}
+        onGroupActionDrawerChange={handleGroupActionDrawerChange}
+        onGroupMemberDrawerChange={handleGroupMemberDrawerChange}
+        onSelectGroup={handleSelectGroup}
+        onManageGroup={handleOpenGroupActions}
+        onJoinGroup={handleOpenGroupJoin}
+        onCreateGroup={handleOpenGroupCreate}
         onInviteMembers={handleOpenGroupInvite}
+        onEditGroup={handleOpenGroupEdit}
+        onLeaveGroup={handleLeaveCurrentGroup}
+        onRequestDeleteMember={handleRequestDeleteMember}
+        onCloseDeleteSuccess={() => setDeletedMemberName(null)}
+        onCancelDeleteMember={handleCancelDeleteMember}
+        onConfirmDeleteMember={handleConfirmDeleteMember}
       />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
@@ -452,27 +577,6 @@ function HomepageLayout() {
         open={showQuickRecordingDrawer}
         onOpenChange={setShowQuickRecordingDrawer}
         onFinish={handleVoiceFinish}
-      />
-
-      <Modal
-        open={pendingDeleteMember !== null}
-        title="是否要刪除此成員"
-        confirmText="刪除"
-        cancelText="取消"
-        onClose={handleCancelDeleteMember}
-        onCancel={handleCancelDeleteMember}
-        onConfirm={handleConfirmDeleteMember}
-      />
-
-      <Modal
-        open={deletedMemberName !== null}
-        title="刪除成員"
-        description={
-          deletedMemberName ? `${deletedMemberName} 已從群組中移除` : undefined
-        }
-        variant="success"
-        autoCloseMs={1200}
-        onClose={() => setDeletedMemberName(null)}
       />
 
       <Modal
