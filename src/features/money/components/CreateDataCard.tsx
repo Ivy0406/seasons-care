@@ -14,6 +14,7 @@ import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 type CreateDataCardProps = {
   onClose: () => void;
   onVoiceInput?: () => void;
+  initialDate?: Date;
 };
 
 type ResultModal = {
@@ -22,10 +23,14 @@ type ResultModal = {
   message?: string;
 };
 
-function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
+function CreateDataCard({
+  onClose,
+  onVoiceInput,
+  initialDate,
+}: CreateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => {
     const base = createEmptyMoneyDraft();
-    const now = new Date();
+    const now = initialDate ?? new Date();
     return {
       ...base,
       dateValue: format(now, 'yyyy/MM/dd'),
