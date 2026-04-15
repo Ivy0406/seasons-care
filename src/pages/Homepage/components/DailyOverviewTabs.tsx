@@ -72,7 +72,9 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           className="bg-primary-default flex flex-col gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
           <DiarySummary selectedDate={selectedDate} />
-          <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          <div className="flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          </div>
         </TabsContent>
 
         <TabsContent
