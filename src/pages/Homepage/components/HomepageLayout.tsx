@@ -363,7 +363,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     <>
       <main
         className={cn(
-          'mx-auto flex min-h-screen w-full max-w-200 flex-col pt-4 text-neutral-900',
+          'mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pt-4 text-neutral-900',
           className,
         )}
       >

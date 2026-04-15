@@ -107,7 +107,7 @@ function CalendarPage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-200 px-6 py-6">
+      <section className="mx-auto w-full max-w-200 bg-neutral-200 px-6 py-6">
         <CareLogDiarySection
           items={selectedEntries}
           selectedDate={selectedDate}
