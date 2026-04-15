@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createBloodPressure } from '@/api/endpoints/health';
-import useCurrentGroupId from '@/hooks/useCurrentGroupId';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import type { BloodPressuresPayload } from '@/types/health';
 
 import healthKeys from '../queryKeys';
@@ -11,7 +11,8 @@ function useCreateBloodPressure() {
   const { currentGroupId } = useCurrentGroupId();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: BloodPressuresPayload) => createBloodPressure(payload),
+    mutationFn: (payload: BloodPressuresPayload) =>
+      createBloodPressure(payload),
     onSuccess: () => {
       if (currentGroupId) {
         queryClient.invalidateQueries({
