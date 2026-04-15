@@ -250,12 +250,6 @@ function ListFormBirthDateRow({
   onChange,
   className,
 }: ListFormBirthDateRowProps) {
-  const currentYear = new Date().getFullYear();
-  const yearOptions = useMemo(
-    () => Array.from({ length: 121 }, (_, index) => currentYear - index),
-    [currentYear],
-  );
-
   return (
     <ListFormRow label={label} className={cn('border-b-0', className)}>
       <ScrollableDatePicker value={value} onChange={onChange} />
