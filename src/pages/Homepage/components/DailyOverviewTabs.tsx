@@ -79,7 +79,7 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           value="money"
           className="bg-secondary-default flex flex-col items-stretch gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
-          <MoneySummary />
+          <MoneySummary selectedDate={selectedDate} />
           <div className="flex justify-center">
             <ViewMoreButton onClick={() => navigate('/money')} />
           </div>
