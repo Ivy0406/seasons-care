@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { CircleButtonPrimary } from '@/components/common/CircleIButton';
+import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
 import {
   HomepageNavigationBar,
@@ -273,6 +274,8 @@ function HomepageLayout() {
           <DailyOverviewTabs selectedDate={selectedDate} />
         </section>
       </main>
+
+      <FixedBottomButton label="新增" onClick={() => undefined} />
 
       <BaseDrawer
         open={isHomepageGroupDrawerOpen}
