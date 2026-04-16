@@ -45,10 +45,25 @@ type GetMoneyItemsParams = {
   EndDate?: string;
 };
 
+type SplitMode = 'daily' | 'monthly' | 'custom';
+
+type SplitMoneyPayload = {
+  splitMode: SplitMode;
+  expenseIds: string[];
+  targetUserIds: string[];
+};
+
+type SplitResponse = {
+  success: boolean;
+  message: string;
+};
+
 export type {
   CreateMoneyItemPayLoad,
   GetMoneyItemsParams,
   GetMoneyItemsResponse,
   MoneyItemResponse,
   UpdateMoneyItemPayLoad,
+  SplitMoneyPayload,
+  SplitResponse,
 };
