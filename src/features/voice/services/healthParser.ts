@@ -5,6 +5,7 @@ import {
   createEmptyHealthDraft,
   getHealthDraftDisplayValue,
   getHealthDraftMetricValue,
+  hasHealthDraftContent,
   mergeHealthDraft,
 } from '@/features/voice/services/healthParser.shared';
 import { getVoiceParserMode } from '@/features/voice/services/voiceParserMode';
@@ -31,6 +32,7 @@ export {
   createEmptyHealthDraft,
   getHealthDraftDisplayValue,
   getHealthDraftMetricValue,
+  hasHealthDraftContent,
   mergeHealthDraft,
   parseHealthTranscript,
 };

@@ -17,7 +17,9 @@ const toCreateCareLogPayload = (
     description: entry.description,
     startsAt: new Date(entry.startsAt).toISOString(),
     repeatPattern: entry.repeatPattern ?? 'none',
-    participants: [currentUserId],
+    participants: Array.from(
+      new Set([currentUserId, ...entry.participants.map((p) => p.id)]),
+    ),
     status: entry.status,
     isImportant: entry.isImportant ?? false,
   };

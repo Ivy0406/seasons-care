@@ -6,6 +6,7 @@ import type {
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { format, getDaysInMonth, parse } from 'date-fns';
+import { Check, ChevronRight } from 'lucide-react';
 
 import FormDiaryRepeatSelector, {
   type FormDiaryRepeatValue,
@@ -53,8 +54,18 @@ type ListFormBirthDateRowProps = {
   className?: string;
 };
 
+type ParticipantMember = {
+  id: string;
+  name: string;
+  avatar: string;
+};
+
 type ListFormParticipantsRowProps = {
   label: string;
+  members: ParticipantMember[];
+  selectedIds: string[];
+  onSelectedChange: (ids: string[]) => void;
+  fallbackParticipants?: ParticipantMember[];
   className?: string;
 };
 
@@ -259,31 +270,136 @@ function ListFormBirthDateRow({
 
 function ListFormParticipantsRow({
   label,
+  members,
+  selectedIds,
+  onSelectedChange,
+  fallbackParticipants = [],
   className,
 }: ListFormParticipantsRowProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedMembers = selectedIds
+    .map(
+      (id) =>
+        members.find((m) => m.id === id) ??
+        fallbackParticipants.find((m) => m.id === id) ??
+        null,
+    )
+    .filter((m): m is ParticipantMember => m !== null);
+
+  const toggleMember = (id: string) => {
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((mid) => mid !== id)
+      : [...selectedIds, id];
+    onSelectedChange(next);
+  };
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsOpen(false);
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
   return (
     <ListFormRow label={label} className={className}>
-      <div className="flex items-center justify-end gap-2">
-        <SingleAvatar
-          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png"
-          name="Amy"
-          className="size-7 ring-1"
-        />
-        <SingleAvatar
-          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipUJt5ufuYdkpMS8MbIkWE_zDCxYe3inh3TTB7DVH37W_z8zPS_IU1-2J074kzv0wpHwLbe-pGVyxleTDTORHHUUWZmwkJJKxC4xIrwONn1eslfC_2_gzKACafQwFZjG1NelxBcpzZoTde/s400/nigaoe_masaoka_shiki.png"
-          name="Ben"
-          className="size-7 ring-1"
-        />
-        <SingleAvatar
-          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjl69uVfqLnrYRJTq45_yeYNwVdGPDOg6qFgbZz9pp7P83ki1MYzMreZG6YLR12gF89m6dpSppmJesyF4gNG_X6EWyLliOqcejs7ZFYZm-gy7WKvty5G0gaYp8egXBL3HfjrNZJUL2f9SXU/s400/nigaoe_tekla_badarzewska.png"
-          name="Chloe"
-          className="size-7 ring-1"
-        />
-        <SingleAvatar
-          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoTl4DxRR5CVuFrHVzaA1D7FpTp_W0jmAQzf89GfkAYaAJL-CipobWEhm-QwSrw9BW01kTyx2tVHChs-3KjZqKCIkjfl7mivcChR4bhFe4Ek22AV7zsCv_0aV19_G-wCfZOS_NYsKTBO0/s400/13_Mussorgsky.png"
-          name="David"
-          className="size-7 ring-1"
-        />
+      <div className="relative min-w-0">
+        <div ref={rootRef} className="relative min-w-0">
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="font-paragraph-md inline-flex items-center justify-end gap-1.5 bg-transparent px-0 py-0 text-right text-neutral-900 outline-none"
+          >
+            {selectedMembers.length > 0 ? (
+              <>
+                <div className="flex items-center gap-1">
+                  {selectedMembers.map((m) => (
+                    <SingleAvatar
+                      key={m.id}
+                      src={m.avatar}
+                      name={m.name}
+                      className="size-7 ring-1"
+                    />
+                  ))}
+                </div>
+                {selectedMembers.length === 1 && (
+                  <span>{selectedMembers[0]?.name}</span>
+                )}
+              </>
+            ) : (
+              <span className="text-neutral-400">選擇參與者</span>
+            )}
+            <ChevronRight className="size-4 shrink-0" strokeWidth={2.4} />
+          </button>
+
+          {isOpen ? (
+            <div
+              role="menu"
+              className="absolute top-full right-0 z-20 mt-2 min-w-52 overflow-hidden rounded-[8px] border-2 border-neutral-900 bg-neutral-100 shadow-[0_4px_0_0_rgba(33,37,41,0.08)]"
+            >
+              {members.length === 0 ? (
+                <p className="font-paragraph-md px-4 py-3 text-neutral-400">
+                  沒有群組成員
+                </p>
+              ) : (
+                members.map((member, index) => {
+                  const isSelected = selectedIds.includes(member.id);
+                  return (
+                    <div key={member.id} className="w-full">
+                      <button
+                        type="button"
+                        role="menuitemcheckbox"
+                        aria-checked={isSelected}
+                        onClick={() => toggleMember(member.id)}
+                        className={cn(
+                          'font-paragraph-md flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none',
+                          isSelected
+                            ? 'bg-neutral-200 font-bold text-neutral-900'
+                            : 'hover:bg-neutral-200/70',
+                        )}
+                      >
+                        <SingleAvatar
+                          src={member.avatar}
+                          name={member.name}
+                          className="size-10 shrink-0 ring-1"
+                        />
+                        <span className="flex-1 text-neutral-900">
+                          {member.name}
+                        </span>
+                        <div className="flex size-5 items-center justify-center">
+                          {isSelected && (
+                            <Check
+                              className="size-3.5 stroke-neutral-600"
+                              strokeWidth={3}
+                            />
+                          )}
+                        </div>
+                      </button>
+                      {index < members.length - 1 && (
+                        <div className="h-px bg-neutral-400" />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : null}
+        </div>
       </div>
     </ListFormRow>
   );
@@ -693,4 +809,4 @@ export {
   ListFormDateTimeRow,
 };
 
-export type { RepeatPatternValue };
+export type { RepeatPatternValue, ParticipantMember };

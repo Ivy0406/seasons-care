@@ -75,6 +75,17 @@ function createEmptyHealthDraft(date = new Date()): HealthDraft {
   };
 }
 
+function hasHealthDraftContent(draft: HealthDraft) {
+  return (
+    draft.systolic.trim() !== '' ||
+    draft.diastolic.trim() !== '' ||
+    draft.temperature.trim() !== '' ||
+    draft.bloodOxygen.trim() !== '' ||
+    draft.weight.trim() !== '' ||
+    draft.bloodSugar.trim() !== ''
+  );
+}
+
 function mergeHealthDraft(
   currentDraft: HealthDraft,
   updates: Partial<HealthDraft>,
@@ -113,5 +124,6 @@ export {
   getHealthDraftDisplayValue,
   getHealthDraftMetricValue,
   getHealthDraftSummarySource,
+  hasHealthDraftContent,
   mergeHealthDraft,
 };

@@ -1,7 +1,16 @@
 /* eslint-disable import/prefer-default-export */
 
 import type { DiaryDraft } from '@/pages/CareLog/types';
+import type { GroupMember } from '@/types/group';
 
-type ParseDiaryTranscript = (transcript: string) => Promise<DiaryDraft[]>;
+type ParseDiaryTranscriptOptions = {
+  groupMembers?: GroupMember[];
+  forceParse?: boolean;
+};
 
-export type { ParseDiaryTranscript };
+type ParseDiaryTranscript = (
+  transcript: string,
+  options?: ParseDiaryTranscriptOptions,
+) => Promise<DiaryDraft[]>;
+
+export type { ParseDiaryTranscript, ParseDiaryTranscriptOptions };

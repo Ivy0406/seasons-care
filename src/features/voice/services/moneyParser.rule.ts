@@ -30,7 +30,8 @@ function extractMoneyCategory(transcript: string): MoneyCategoryValue | null {
 
 function extractMoneyAmount(transcript: string) {
   const matchedAmount =
-    transcript.match(/(\d{1,6})(?:\s*元|塊|塊錢)/)?.[1] ??
+    transcript.match(/(\d{1,6})(?:\s*元|塊|塊錢|\$)/)?.[1] ??
+    transcript.match(/\$\s*(\d{1,6})/)?.[1] ??
     transcript.match(/金額(?:是|為)?\s*(\d{1,6})/)?.[1] ??
     '';
 

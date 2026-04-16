@@ -481,10 +481,6 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             <CreateMoneyDataCard
               initialDate={selectedDate}
               onClose={() => setShowCreateMoneyCard(false)}
-              onVoiceInput={() => {
-                setShowCreateMoneyCard(false);
-                setShowQuickRecordingDrawer(true);
-              }}
             />
           </AlertDialogPopup>
         </AlertDialogPortal>
@@ -501,10 +497,6 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
           <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateHealthDataCard
               onClose={() => setShowCreateHealthCard(false)}
-              onVoiceInput={() => {
-                setShowCreateHealthCard(false);
-                setShowQuickRecordingDrawer(true);
-              }}
               onSuccess={() => {
                 setShowCreateHealthCard(false);
                 setHealthSubmitModal({
