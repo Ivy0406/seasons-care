@@ -115,8 +115,13 @@ function RecordingDrawer({
   const isFinishDisabled = isProcessing || displayText === '';
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      resetTranscript();
+      startListening();
+    } else if (open === false) {
       setIsProcessing(false);
+      stopListening();
+      resetTranscript();
     }
   }, [open]);
 
@@ -186,7 +191,7 @@ function RecordingDrawer({
           <AudioLines
             className={
               isListening && !isProcessing
-                ? 'text-primary-default size-10 scale-130 animate-pulse transition-all duration-200 ease-out'
+                ? 'text-primary-dark size-10 scale-130 animate-pulse transition-all duration-100 ease-out'
                 : 'size-10 text-neutral-500'
             }
           />
