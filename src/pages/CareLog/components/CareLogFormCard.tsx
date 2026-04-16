@@ -17,8 +17,7 @@ import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
-import VoiceCTA from '@/components/common/voiceCTA';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
+import VoiceFormSection from '@/components/common/VoiceFormSection';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import { handleCareLogVoiceFinish } from '@/pages/CareLog/utils/careLogVoice';
 import type { GroupMember } from '@/types/group';
@@ -56,7 +55,6 @@ function CareLogFormCard({
   );
   const [isImportant, setIsImportant] = useState(entry.isImportant ?? false);
   const [note, setNote] = useState(entry.description);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [participantIds, setParticipantIds] = useState<string[]>(
     entry.participants.map((p) => p.id),
   );
@@ -114,21 +112,33 @@ function CareLogFormCard({
   };
 
   return (
-    <>
-      <DataFormCard
-        title={title}
-        className={cardClassName}
-        toneClassName={toneClassName}
-        contentClassName="px-0 py-0"
-      >
-        <DataFormCard.Content>
-          <div className="flex flex-col text-neutral-900">
-            <VoiceCTA
-              title="日誌"
-              onClose={onClose}
-              onInputClick={() => setShowRecordingDrawer(true)}
-            />
-
+    <DataFormCard
+      title={title}
+      className={cardClassName}
+      toneClassName={toneClassName}
+      contentClassName="px-0 py-0"
+    >
+      <DataFormCard.Content>
+        <div className="flex flex-col text-neutral-900">
+          <VoiceFormSection
+            title="日誌"
+            onClose={onClose}
+            onVoiceFinish={({ transcript }) =>
+              handleCareLogVoiceFinish({
+                transcript,
+                groupMembers,
+                setters: {
+                  setTitleValue,
+                  setDateValue,
+                  setTimeValue,
+                  setRepeatPattern,
+                  setNote,
+                  setParticipantIds,
+                  setIsImportant,
+                },
+              })
+            }
+          >
             <div className="px-4 py-2">
               <ListFormInputRow
                 label="日誌名稱"
@@ -181,59 +191,38 @@ function CareLogFormCard({
                 className="border-b-0"
               />
             </div>
-          </div>
-        </DataFormCard.Content>
+          </VoiceFormSection>
+        </div>
+      </DataFormCard.Content>
 
-        <DataFormCard.Footer>
-          {footerMode === 'submitOnly' ? (
+      <DataFormCard.Footer>
+        {footerMode === 'submitOnly' ? (
+          <RoundedButtonPrimary
+            onClick={handleSubmit}
+            className="font-label-md active:bg-primary-dark w-full border-neutral-900 bg-neutral-900 text-neutral-50 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+            disabled={isSubmitDisabled}
+          >
+            {submitLabel}
+          </RoundedButtonPrimary>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            <RoundedButtonSecondary
+              onClick={onClose}
+              className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
+            >
+              捨棄變更
+            </RoundedButtonSecondary>
             <RoundedButtonPrimary
               onClick={handleSubmit}
-              className="font-label-md active:bg-primary-dark w-full border-neutral-900 bg-neutral-900 text-neutral-50 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
+              className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
               disabled={isSubmitDisabled}
             >
               {submitLabel}
             </RoundedButtonPrimary>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <RoundedButtonSecondary
-                onClick={onClose}
-                className="min-w-0 border-neutral-50 bg-transparent py-2 text-neutral-50"
-              >
-                捨棄變更
-              </RoundedButtonSecondary>
-              <RoundedButtonPrimary
-                onClick={handleSubmit}
-                className="bg-primary-default font-label-md active:bg-primary-dark min-w-0 border-neutral-900 text-neutral-900 disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-neutral-600 disabled:active:bg-neutral-300"
-                disabled={isSubmitDisabled}
-              >
-                {submitLabel}
-              </RoundedButtonPrimary>
-            </div>
-          )}
-        </DataFormCard.Footer>
-      </DataFormCard>
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={({ transcript }) =>
-          handleCareLogVoiceFinish({
-            transcript,
-            groupMembers,
-            setters: {
-              setTitleValue,
-              setDateValue,
-              setTimeValue,
-              setRepeatPattern,
-              setNote,
-              setParticipantIds,
-              setIsImportant,
-              setShowRecordingDrawer,
-            },
-          })
-        }
-      />
-    </>
+          </div>
+        )}
+      </DataFormCard.Footer>
+    </DataFormCard>
   );
 }
 

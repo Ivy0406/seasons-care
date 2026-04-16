@@ -6,11 +6,10 @@ import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
-import VoiceCTA from '@/components/common/voiceCTA';
+import VoiceFormSection from '@/components/common/VoiceFormSection';
 import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
 import type { MoneyDraft } from '@/features/money/types';
 import handleMoneyVoiceFinish from '@/features/money/utils/moneyVoice';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 
 type CreateDataCardProps = {
@@ -39,7 +38,6 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
     open: false,
     variant: 'success',
   });
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
 
@@ -106,17 +104,23 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
           contentClassName="p-0"
         >
           <DataFormCard.Content>
-            <VoiceCTA
-              className="bg-primary-default"
+            <VoiceFormSection
               title="記帳"
               onClose={onClose}
-              onInputClick={() => setShowRecordingDrawer(true)}
-            />
-            <MoneyDataSmallForm
-              className="w-full border-0 bg-neutral-50 px-3 pt-3"
-              value={draft}
-              onChange={handleChange}
-            />
+              ctaClassName="bg-primary-default"
+              onVoiceFinish={({ transcript }) =>
+                handleMoneyVoiceFinish({
+                  transcript,
+                  applyVoiceDraft,
+                })
+              }
+            >
+              <MoneyDataSmallForm
+                className="w-full border-0 bg-neutral-50 px-3 pt-3"
+                value={draft}
+                onChange={handleChange}
+              />
+            </VoiceFormSection>
           </DataFormCard.Content>
           <DataFormCard.Footer>
             <RoundedButtonPrimary
@@ -142,17 +146,6 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
         statusLayout="icon-first"
         autoCloseMs={resultModal.variant === 'success' ? 1500 : undefined}
         onClose={handleModalClose}
-      />
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={({ transcript }) =>
-          handleMoneyVoiceFinish({
-            transcript,
-            applyVoiceDraft,
-          })
-        }
       />
     </>
   );

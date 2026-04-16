@@ -17,7 +17,6 @@ type CareLogVoiceFieldSetters = {
   setNote: Dispatch<SetStateAction<string>>;
   setParticipantIds: Dispatch<SetStateAction<string[]>>;
   setIsImportant: Dispatch<SetStateAction<boolean>>;
-  setShowRecordingDrawer: Dispatch<SetStateAction<boolean>>;
 };
 
 function hasRelativeDiaryDateMention(transcript: string) {
@@ -77,7 +76,6 @@ async function handleCareLogVoiceFinish({
   }
 
   setters.setIsImportant(parsedDraft.isImportant);
-  setters.setShowRecordingDrawer(false);
 
   return { shouldClose: true };
 }
