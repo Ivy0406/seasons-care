@@ -42,6 +42,27 @@ type CategoryTotals = Record<MoneyCategoryValue, number>;
 
 type MoneyTab = 'daily' | 'monthly';
 
+type SplitItem = {
+  id: string;
+  title: string;
+  amount: number;
+};
+
+type SplitPendingItem = SplitItem & {
+  createdBy: string;
+};
+
+type SplitMember = {
+  userId: string;
+  username: string;
+  avatarKey: string;
+};
+
+type MemberSplit = SplitMember & {
+  status: 'receivable' | 'payable';
+  amount: number;
+};
+
 export type {
   SplitStatus,
   MoneyCategoryValue,
@@ -51,4 +72,8 @@ export type {
   CategoryWithAmount,
   CategoryTotals,
   MoneyTab,
+  SplitItem,
+  SplitPendingItem,
+  SplitMember,
+  MemberSplit,
 };

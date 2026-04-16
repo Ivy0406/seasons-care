@@ -2,41 +2,17 @@ import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { formatISO, parse } from 'date-fns';
 
-import { updateMoneyItem } from '@/api/endpoints/money';
+import { splitMoneyItems } from '@/api/endpoints/money';
 import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
 import moneyKeys from '@/features/money/queryKeys';
-import type { MoneyDraft } from '@/features/money/types';
-import type { UpdateMoneyItemPayLoad } from '@/types/money';
 
-type UpdateMoneyItemResult =
+type SubmitSplitResult =
   | { success: true }
   | { success: false; message: string };
 
 const getCurrentCareGroupId = () =>
   window.localStorage.getItem(CURRENT_GROUP_ID_KEY);
-
-function formatForPayload(
-  draft: MoneyDraft,
-  currentUpdatedAt: string,
-): UpdateMoneyItemPayLoad {
-  const parsedDate = parse(
-    `${draft.dateValue} ${draft.timeValue}`,
-    'yyyy/MM/dd HH:mm',
-    new Date(),
-  );
-
-  return {
-    title: draft.title,
-    amount: Number(draft.amount) || 0,
-    category: draft.category ?? 'other',
-    notes: draft.notes,
-    expenseDate: formatISO(parsedDate),
-    splitStatus: draft.needsSplit ? 'pending' : 'none',
-    updatedAt: currentUpdatedAt,
-  };
-}
 
 function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
@@ -48,15 +24,14 @@ function getErrorMessage(error: unknown): string {
   return '發生預期外的問題，請稍後再嘗試';
 }
 
-function useUpdateMoneyItem() {
+function useSubmitSplit() {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleUpdateMoneyItem = async (
-    expenseId: string,
-    draft: MoneyDraft,
-    currentUpdatedAt: string,
-  ): Promise<UpdateMoneyItemResult> => {
+  const handleSubmitSplit = async (
+    expenseIds: string[],
+    targetUserIds: string[],
+  ): Promise<SubmitSplitResult> => {
     const careGroupId = getCurrentCareGroupId();
 
     if (!careGroupId) {
@@ -66,11 +41,11 @@ function useUpdateMoneyItem() {
     setIsLoading(true);
 
     try {
-      await updateMoneyItem(
-        careGroupId,
-        expenseId,
-        formatForPayload(draft, currentUpdatedAt),
-      );
+      await splitMoneyItems(careGroupId, {
+        splitMode: 'custom',
+        expenseIds,
+        targetUserIds,
+      });
       await queryClient.invalidateQueries({
         queryKey: moneyKeys.group(careGroupId),
       });
@@ -82,7 +57,7 @@ function useUpdateMoneyItem() {
     }
   };
 
-  return { isLoading, handleUpdateMoneyItem };
+  return { isLoading, handleSubmitSplit };
 }
 
-export default useUpdateMoneyItem;
+export default useSubmitSplit;

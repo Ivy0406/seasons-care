@@ -36,8 +36,7 @@ const formatDateLabel = (date: string) => date.replace(/-/g, '.');
 const groupByDate = (items: ExpenseItem[]): DateGroup[] => {
   const sorted = [...items].sort(
     (a, b) =>
-      parseISO(b.expenseDate.replace('Z', '')).getTime() -
-      parseISO(a.expenseDate.replace('Z', '')).getTime(),
+      parseISO(b.expenseDate).getTime() - parseISO(a.expenseDate).getTime(),
   );
   return sorted.reduce<DateGroup[]>((acc, item) => {
     const dateKey = item.expenseDate.slice(0, 10);
