@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { format, parse, parseISO } from 'date-fns';
+import { X } from 'lucide-react';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import DataFormCard from '@/components/common/DataFormCard';
@@ -33,6 +34,7 @@ type CareLogFormCardProps = {
   toneClassName?: string;
   footerMode?: 'default' | 'submitOnly';
   groupMembers?: GroupMember[];
+  showVoiceInput?: boolean;
 };
 
 function CareLogFormCard({
@@ -46,6 +48,7 @@ function CareLogFormCard({
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
   footerMode = 'default',
   groupMembers = [],
+  showVoiceInput = true,
 }: CareLogFormCardProps) {
   const [titleValue, setTitleValue] = useState(entry.title);
   const [dateValue, setDateValue] = useState('');
@@ -111,6 +114,61 @@ function CareLogFormCard({
     });
   };
 
+  const formFields = (
+    <div className="px-4 py-2">
+      <ListFormInputRow
+        label="日誌名稱"
+        inputProps={{
+          id: `${entry.id}-title`,
+          value: titleValue,
+          onChange: (event) => setTitleValue(event.target.value),
+        }}
+        className="border-neutral-900"
+      />
+      <ListFormDateTimeRow
+        label="時間"
+        dateValue={dateValue}
+        timeValue={timeValue}
+        onDateChange={setDateValue}
+        onTimeChange={setTimeValue}
+        className="border-neutral-900"
+      />
+      <ListFormRepeatRow
+        value={repeatPattern}
+        onChange={setRepeatPattern}
+        className="border-neutral-900"
+      />
+      <ListFormParticipantsRow
+        label="參與者"
+        members={memberOptions}
+        selectedIds={participantIds}
+        onSelectedChange={setParticipantIds}
+        fallbackParticipants={entry.participants.map((p) => ({
+          id: p.id,
+          name: p.name,
+          avatar: p.src,
+        }))}
+        className="border-neutral-900"
+      />
+      <ListFormImportantRow
+        label="是否標記為重要"
+        checked={isImportant}
+        onCheckedChange={setIsImportant}
+        className="border-neutral-900"
+      />
+      <ListFormNoteRow
+        label="備註"
+        textareaProps={{
+          id: `${entry.id}-description`,
+          value: note,
+          onChange: (event) => setNote(event.target.value),
+        }}
+        onClear={() => setNote('')}
+        className="border-b-0"
+      />
+    </div>
+  );
+
   return (
     <DataFormCard
       title={title}
@@ -120,78 +178,43 @@ function CareLogFormCard({
     >
       <DataFormCard.Content>
         <div className="flex flex-col text-neutral-900">
-          <VoiceFormSection
-            title="日誌"
-            onClose={onClose}
-            onVoiceFinish={({ transcript }) =>
-              handleCareLogVoiceFinish({
-                transcript,
-                groupMembers,
-                setters: {
-                  setTitleValue,
-                  setDateValue,
-                  setTimeValue,
-                  setRepeatPattern,
-                  setNote,
-                  setParticipantIds,
-                  setIsImportant,
-                },
-              })
-            }
-          >
-            <div className="px-4 py-2">
-              <ListFormInputRow
-                label="日誌名稱"
-                inputProps={{
-                  id: `${entry.id}-title`,
-                  value: titleValue,
-                  onChange: (event) => setTitleValue(event.target.value),
-                }}
-                className="border-neutral-900"
-              />
-              <ListFormDateTimeRow
-                label="時間"
-                dateValue={dateValue}
-                timeValue={timeValue}
-                onDateChange={setDateValue}
-                onTimeChange={setTimeValue}
-                className="border-neutral-900"
-              />
-              <ListFormRepeatRow
-                value={repeatPattern}
-                onChange={setRepeatPattern}
-                className="border-neutral-900"
-              />
-              <ListFormParticipantsRow
-                label="參與者"
-                members={memberOptions}
-                selectedIds={participantIds}
-                onSelectedChange={setParticipantIds}
-                fallbackParticipants={entry.participants.map((p) => ({
-                  id: p.id,
-                  name: p.name,
-                  avatar: p.src,
-                }))}
-                className="border-neutral-900"
-              />
-              <ListFormImportantRow
-                label="是否標記為重要"
-                checked={isImportant}
-                onCheckedChange={setIsImportant}
-                className="border-neutral-900"
-              />
-              <ListFormNoteRow
-                label="備註"
-                textareaProps={{
-                  id: `${entry.id}-description`,
-                  value: note,
-                  onChange: (event) => setNote(event.target.value),
-                }}
-                onClear={() => setNote('')}
-                className="border-b-0"
-              />
-            </div>
-          </VoiceFormSection>
+          {showVoiceInput ? (
+            <VoiceFormSection
+              title="日誌"
+              onClose={onClose}
+              onVoiceFinish={({ transcript }) =>
+                handleCareLogVoiceFinish({
+                  transcript,
+                  groupMembers,
+                  setters: {
+                    setTitleValue,
+                    setDateValue,
+                    setTimeValue,
+                    setRepeatPattern,
+                    setNote,
+                    setParticipantIds,
+                    setIsImportant,
+                  },
+                })
+              }
+            >
+              {formFields}
+            </VoiceFormSection>
+          ) : (
+            <>
+              <div className="flex justify-end px-4 pt-4">
+                <button
+                  type="button"
+                  aria-label={`關閉${title}`}
+                  className="inline-flex size-6 items-center justify-center rounded-full text-neutral-900"
+                  onClick={onClose}
+                >
+                  <X className="size-4" strokeWidth={3} />
+                </button>
+              </div>
+              {formFields}
+            </>
+          )}
         </div>
       </DataFormCard.Content>
 

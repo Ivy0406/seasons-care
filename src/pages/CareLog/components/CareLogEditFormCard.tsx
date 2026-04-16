@@ -28,6 +28,7 @@ function CareLogEditFormCard({
       onClose={onClose}
       onSubmit={onSubmit}
       groupMembers={groupMembers}
+      showVoiceInput={false}
     />
   );
 }
