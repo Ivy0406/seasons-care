@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { format, parse } from 'date-fns';
+import { formatISO, parse } from 'date-fns';
 
 import { createMoneyItem } from '@/api/endpoints/money';
 import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
@@ -23,13 +23,12 @@ function formatForPayload(draft: MoneyDraft): CreateMoneyItemPayLoad {
     'yyyy/MM/dd HH:mm',
     new Date(),
   );
-
   return {
     title: draft.title,
     amount: Number(draft.amount) || 0,
     category: draft.category ?? 'other',
     notes: draft.notes,
-    expenseDate: format(parsedDate, "yyyy-MM-dd'T'HH:mm"),
+    expenseDate: formatISO(parsedDate),
     splitStatus: draft.needsSplit ? 'pending' : 'none',
   };
 }
