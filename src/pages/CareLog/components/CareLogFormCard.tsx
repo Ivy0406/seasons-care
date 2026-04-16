@@ -20,6 +20,7 @@ import {
 import VoiceCTA from '@/components/common/voiceCTA';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import type { CareLogEntry } from '@/pages/CareLog/types';
+import { handleCareLogVoiceFinish } from '@/pages/CareLog/utils/careLogVoice';
 import type { GroupMember } from '@/types/group';
 
 type CareLogFormCardProps = {
@@ -225,7 +226,22 @@ function CareLogFormCard({
       <RecordingDrawer
         open={showRecordingDrawer}
         onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
+        onFinish={({ transcript }) =>
+          handleCareLogVoiceFinish({
+            transcript,
+            groupMembers,
+            setters: {
+              setTitleValue,
+              setDateValue,
+              setTimeValue,
+              setRepeatPattern,
+              setNote,
+              setParticipantIds,
+              setIsImportant,
+              setShowRecordingDrawer,
+            },
+          })
+        }
       />
     </>
   );
