@@ -19,8 +19,8 @@ const getCurrentCareGroupId = () =>
 
 function formatForPayload(draft: MoneyDraft): CreateMoneyItemPayLoad {
   const parsedDate = parse(
-    `${draft.dateValue} ${draft.timeValue}`,
-    'yyyy/MM/dd HH:mm',
+    `${draft.dateValue.replace(/\//g, '-')} ${draft.timeValue}`,
+    'yyyy-MM-dd HH:mm',
     new Date(),
   );
 

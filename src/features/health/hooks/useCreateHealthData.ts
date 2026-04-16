@@ -68,8 +68,10 @@ function useCreateHealthData({
   const hasAnyValue =
     Object.values(watchedValues).some((v) => v !== '') && bloodPressureValid;
 
-  const onSubmit = async (values: HealthDataFormValues) => {
-    const isoDate = toISODate(recordDate, recordTime);
+  function buildHealthSubmissions(
+    values: HealthDataFormValues,
+    isoDate: string,
+  ): Promise<unknown>[] {
     const promises: Promise<unknown>[] = [];
 
     if (values.spO2) {
@@ -109,6 +111,12 @@ function useCreateHealthData({
       );
     }
 
+    return promises;
+  }
+
+  const onSubmit = async (values: HealthDataFormValues) => {
+    const promises = buildHealthSubmissions(values, toISODate(recordDate, recordTime));
+
     if (promises.length === 0) return;
 
     setIsSubmitting(true);
@@ -123,6 +131,26 @@ function useCreateHealthData({
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const submitFromDraft = async (draft: HealthDraft) => {
+    const promises = buildHealthSubmissions(
+      {
+        spO2: draft.bloodOxygen,
+        systolic: draft.systolic,
+        diastolic: draft.diastolic,
+        temperature: draft.temperature,
+        weight: draft.weight,
+        glucoseLevel: draft.bloodSugar,
+      },
+      toISODate(draft.dateValue, draft.timeValue),
+    );
+
+    if (promises.length === 0) return { success: true };
+
+    const results = await Promise.allSettled(promises);
+
+    return { success: results.every((r) => r.status === 'fulfilled') };
   };
 
   const applyVoiceDraft = (draft: HealthDraft, transcript: string) => {
@@ -160,6 +188,7 @@ function useCreateHealthData({
     setRecordDate,
     setRecordTime,
     applyVoiceDraft,
+    submitFromDraft,
   };
 }
 
