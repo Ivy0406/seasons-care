@@ -20,6 +20,7 @@ export type DiaryDraft = {
   timeValue: string;
   repeatPattern: FormDiaryRepeatValue;
   note: string;
+  participantIds: string[];
   isImportant: boolean;
   transcript: string;
   summary: string;

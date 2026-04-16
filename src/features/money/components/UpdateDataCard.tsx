@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { format, parseISO } from 'date-fns';
+import { X } from 'lucide-react';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
-import VoiceCTA from '@/components/common/voiceCTA';
 import { Button } from '@/components/ui/button';
 import useUpdateMoneyItem from '@/features/money/hooks/useUpdateMoneyItem';
 import type { ExpenseItem, MoneyDraft } from '@/features/money/types';
@@ -15,7 +15,6 @@ type UpdateDataCardProps = {
   item: ExpenseItem;
   onClose: () => void;
   onDeleteClick: () => void;
-  onVoiceInput?: () => void;
 };
 
 type ResultModal = {
@@ -39,12 +38,7 @@ function itemToMoneyDraft(item: ExpenseItem): MoneyDraft {
   };
 }
 
-function UpdateDataCard({
-  item,
-  onClose,
-  onDeleteClick,
-  onVoiceInput,
-}: UpdateDataCardProps) {
+function UpdateDataCard({ item, onClose, onDeleteClick }: UpdateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => itemToMoneyDraft(item));
   const [resultModal, setResultModal] = useState<ResultModal>({
     open: false,
@@ -88,12 +82,16 @@ function UpdateDataCard({
           contentClassName="p-0"
         >
           <DataFormCard.Content>
-            <VoiceCTA
-              className="bg-primary-default text-neutral-900"
-              title="記帳"
-              onClose={onClose}
-              onInputClick={() => onVoiceInput?.()}
-            />
+            <div className="flex justify-end px-4 pt-4">
+              <button
+                type="button"
+                aria-label="關閉編輯帳目"
+                className="inline-flex size-6 items-center justify-center rounded-full text-neutral-900"
+                onClick={onClose}
+              >
+                <X className="size-4" strokeWidth={3} />
+              </button>
+            </div>
             <MoneyDataSmallForm
               className="w-full border-0 bg-neutral-50 px-3 pt-3"
               value={draft}

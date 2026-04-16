@@ -6,6 +6,8 @@ import {
   AlertDialogPopup,
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
@@ -26,6 +28,8 @@ function CreateCareLogDialog({
 }: CreateCareLogDialogProps) {
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
 
   return (
     <>
@@ -49,6 +53,7 @@ function CreateCareLogDialog({
                 cardClassName="bg-primary-default"
                 toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
                 footerMode="submitOnly"
+                groupMembers={groupMembers}
                 onClose={onClose}
                 onSubmit={async (nextEntry) => {
                   try {
