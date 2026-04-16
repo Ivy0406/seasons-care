@@ -6,24 +6,28 @@ import {
   hasDiaryDraftContent,
   mergeDiaryDraft,
 } from '@/features/voice/services/diaryParser.shared';
+import type { ParseDiaryTranscriptOptions } from '@/features/voice/services/diaryParser.types';
 import { getVoiceParserMode } from '@/features/voice/services/voiceParserMode';
 
-async function parseDiaryTranscript(transcript: string) {
+async function parseDiaryTranscript(
+  transcript: string,
+  options?: ParseDiaryTranscriptOptions,
+) {
   const parserMode = getVoiceParserMode();
 
   if (parserMode === 'client') {
-    return parseDiaryTranscriptWithClient(transcript);
+    return parseDiaryTranscriptWithClient(transcript, options);
   }
 
   if (parserMode === 'server') {
     try {
-      return await parseDiaryTranscriptWithServer(transcript);
+      return await parseDiaryTranscriptWithServer(transcript, options);
     } catch {
-      return parseDiaryTranscriptWithRule(transcript);
+      return parseDiaryTranscriptWithRule(transcript, options);
     }
   }
 
-  return parseDiaryTranscriptWithRule(transcript);
+  return parseDiaryTranscriptWithRule(transcript, options);
 }
 
 export {

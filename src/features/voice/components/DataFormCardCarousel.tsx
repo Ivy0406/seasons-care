@@ -81,6 +81,7 @@ function DataFormCardCarousel() {
     healthDraft,
     diaryDrafts,
     moneyDraft,
+    groupMembers,
     setVoiceTranscript,
     updateHealthDraft,
     updateDiaryDraft,
@@ -169,6 +170,11 @@ function DataFormCardCarousel() {
               title={`新日誌 ${index + 1}`}
               value={draft}
               onChange={(updates) => handleDiaryDraftChange(draft.id, updates)}
+              groupMembers={groupMembers}
+              participantIds={draft.participantIds}
+              onParticipantsChange={(participantIds) =>
+                handleDiaryDraftChange(draft.id, { participantIds })
+              }
             />
           ),
         }))
