@@ -84,7 +84,10 @@ function CreateDataCard({
               className="bg-primary-default"
               title="記帳"
               onClose={onClose}
-              onInputClick={() => onVoiceInput?.()}
+              onInputClick={() => {
+                onClose();
+                onVoiceInput?.();
+              }}
             />
             <MoneyDataSmallForm
               className="w-full border-0 bg-neutral-50 px-3 pt-3"
