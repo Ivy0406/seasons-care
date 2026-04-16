@@ -66,8 +66,7 @@ function useVoiceDraftSubmit({
       } else {
         onSuccess();
       }
-    } catch (error) {
-      console.error('[useVoiceDraftSubmit] 儲存失敗:', error);
+    } catch {
       toast.error('儲存時發生錯誤，請稍後再試');
     } finally {
       setIsSubmitting(false);

@@ -115,7 +115,10 @@ function useCreateHealthData({
   }
 
   const onSubmit = async (values: HealthDataFormValues) => {
-    const promises = buildHealthSubmissions(values, toISODate(recordDate, recordTime));
+    const promises = buildHealthSubmissions(
+      values,
+      toISODate(recordDate, recordTime),
+    );
 
     if (promises.length === 0) return;
 

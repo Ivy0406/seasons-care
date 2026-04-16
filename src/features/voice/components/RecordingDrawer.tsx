@@ -123,7 +123,7 @@ function RecordingDrawer({
       stopListening();
       resetTranscript();
     }
-  }, [open]);
+  }, [open, resetTranscript, startListening, stopListening]);
 
   const resetButtonClassName = isProcessing
     ? 'font-label-sm flex items-center justify-center gap-2 text-neutral-500 transition-opacity'

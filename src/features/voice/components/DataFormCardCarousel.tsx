@@ -13,6 +13,7 @@ import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import type { HealthDraft } from '@/features/health/types';
 import type { MoneyDraft } from '@/features/money/types';
+import useVoiceDraftSubmit from '@/features/voice/hooks/useVoiceDraftSubmit';
 import {
   createEmptyDiaryDraft,
   hasDiaryDraftContent,
@@ -28,7 +29,6 @@ import {
   mergeMoneyDraft,
 } from '@/features/voice/services/moneyParser';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
-import useVoiceDraftSubmit from '@/features/voice/hooks/useVoiceDraftSubmit';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
 import DiaryDataFormCard from './DiaryDataFormCard';
@@ -255,13 +255,13 @@ function DataFormCardCarousel() {
         <RoundedButtonSecondary
           className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800 disabled:opacity-50"
           disabled={isSubmitting}
-          onClick={() => {
+          onClick={async () => {
             if (!isLastSlide) {
               swiper?.slideNext();
               return;
             }
 
-            void handleSaveAll();
+            await handleSaveAll();
           }}
         >
           {isLastSlide ? '儲存全部' : '確認'}

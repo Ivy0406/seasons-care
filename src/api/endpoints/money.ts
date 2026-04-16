@@ -38,5 +38,4 @@ const updateMoneyItem = (
 const deleteMoneyItem = (careGroupId: string, expenseId: string) =>
   apiClient.delete(buildMoneyItemPath(careGroupId, expenseId));
 
-
 export { getMoneyItems, createMoneyItem, updateMoneyItem, deleteMoneyItem };
