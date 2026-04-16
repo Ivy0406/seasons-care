@@ -44,13 +44,13 @@ const modalContent = {
   },
   createSuccess: {
     status: 'success',
-    title: '日誌建立完成!',
+    title: '建立完成!',
     description: '',
     bodyClassName: 'gap-2',
   },
   createError: {
     status: 'error',
-    title: '日誌建立失敗!',
+    title: '建立失敗!',
     description: '發生預期外的問題，請稍後再嘗試。',
     bodyClassName: 'gap-2',
   },

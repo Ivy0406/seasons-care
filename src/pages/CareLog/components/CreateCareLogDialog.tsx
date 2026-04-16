@@ -12,13 +12,13 @@ import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useCreateCalendarEntry from '@/pages/CareLog/hooks/useCreateCalendarEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type CreateCareLogDialogProps = {
   entry: CareLogEntry | null;
   onClose: () => void;
-  onCreated?: (entry: CareLogEntry) => Promise<void> | void;
+  onCreated?: (entry: Pick<CareLogEntry, 'startsAt'>) => Promise<void> | void;
 };
 
 function CreateCareLogDialog({
@@ -27,7 +27,7 @@ function CreateCareLogDialog({
   onCreated,
 }: CreateCareLogDialogProps) {
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
-  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { isLoading, handleCreateCalendarEntry } = useCreateCalendarEntry();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
 
@@ -58,7 +58,7 @@ function CreateCareLogDialog({
                 onSubmit={async (nextEntry) => {
                   try {
                     const createdEntry =
-                      await handleCreateCareLogEntry(nextEntry);
+                      await handleCreateCalendarEntry(nextEntry);
 
                     if (createdEntry === null) {
                       setModalKey('createError');

@@ -10,7 +10,7 @@ import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useCreateCalendarEntry from '@/pages/CareLog/hooks/useCreateCalendarEntry';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 
@@ -37,7 +37,7 @@ function getSelectedDateFromState(state: unknown) {
 function CareLogCreatePage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { isLoading, handleCreateCalendarEntry } = useCreateCalendarEntry();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const initialSelectedDate = getSelectedDateFromState(location.state);
@@ -45,7 +45,10 @@ function CareLogCreatePage() {
     createDraftCareLogEntry(initialSelectedDate),
   );
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
-  const [createdEntry, setCreatedEntry] = useState<CareLogEntry | null>(null);
+  const [createdEntry, setCreatedEntry] = useState<Pick<
+    CareLogEntry,
+    'startsAt'
+  > | null>(null);
 
   const handleClose = () => {
     navigate('/calendar-page', {
@@ -62,7 +65,7 @@ function CareLogCreatePage() {
 
   const handleCreate = async (entry: CareLogEntry) => {
     try {
-      const createdCareLogEntry = await handleCreateCareLogEntry(entry);
+      const createdCareLogEntry = await handleCreateCalendarEntry(entry);
 
       if (createdCareLogEntry === null) {
         setModalKey('createError');
