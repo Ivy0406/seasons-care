@@ -481,10 +481,6 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             <CreateMoneyDataCard
               initialDate={selectedDate}
               onClose={() => setShowCreateMoneyCard(false)}
-              onVoiceInput={() => {
-                setShowCreateMoneyCard(false);
-                setShowQuickRecordingDrawer(true);
-              }}
             />
           </AlertDialogPopup>
         </AlertDialogPortal>

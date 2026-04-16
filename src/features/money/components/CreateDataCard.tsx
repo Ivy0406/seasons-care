@@ -9,11 +9,12 @@ import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
 import VoiceCTA from '@/components/common/voiceCTA';
 import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
 import type { MoneyDraft } from '@/features/money/types';
+import handleMoneyVoiceFinish from '@/features/money/utils/moneyVoice';
+import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 
 type CreateDataCardProps = {
   onClose: () => void;
-  onVoiceInput?: () => void;
   initialDate?: Date;
 };
 
@@ -23,11 +24,7 @@ type ResultModal = {
   message?: string;
 };
 
-function CreateDataCard({
-  onClose,
-  onVoiceInput,
-  initialDate,
-}: CreateDataCardProps) {
+function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => {
     const base = createEmptyMoneyDraft();
     const now = initialDate ?? new Date();
@@ -42,6 +39,7 @@ function CreateDataCard({
     open: false,
     variant: 'success',
   });
+  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
 
   const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
 
@@ -53,6 +51,34 @@ function CreateDataCard({
 
   const handleChange = (updates: Partial<MoneyDraft>) => {
     setDraft((prev) => ({ ...prev, ...updates }));
+  };
+
+  const applyVoiceDraft = (nextDraft: MoneyDraft, transcript: string) => {
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      title:
+        nextDraft.title.trim() !== '' ? nextDraft.title : currentDraft.title,
+      amount:
+        nextDraft.amount.trim() !== '' ? nextDraft.amount : currentDraft.amount,
+      dateValue:
+        /(今天|明天|後天|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[/月]\d{1,2})/u.test(
+          transcript,
+        )
+          ? nextDraft.dateValue.replaceAll('-', '/')
+          : currentDraft.dateValue,
+      timeValue:
+        /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/u.test(
+          transcript,
+        )
+          ? nextDraft.timeValue
+          : currentDraft.timeValue,
+      category: nextDraft.category ?? currentDraft.category,
+      needsSplit: nextDraft.needsSplit,
+      notes:
+        nextDraft.notes.trim() !== '' ? nextDraft.notes : currentDraft.notes,
+      transcript: nextDraft.transcript,
+      summary: nextDraft.summary,
+    }));
   };
 
   const handleSubmit = async (event: React.SubmitEvent) => {
@@ -84,10 +110,7 @@ function CreateDataCard({
               className="bg-primary-default"
               title="記帳"
               onClose={onClose}
-              onInputClick={() => {
-                onClose();
-                onVoiceInput?.();
-              }}
+              onInputClick={() => setShowRecordingDrawer(true)}
             />
             <MoneyDataSmallForm
               className="w-full border-0 bg-neutral-50 px-3 pt-3"
@@ -119,6 +142,17 @@ function CreateDataCard({
         statusLayout="icon-first"
         autoCloseMs={resultModal.variant === 'success' ? 1500 : undefined}
         onClose={handleModalClose}
+      />
+
+      <RecordingDrawer
+        open={showRecordingDrawer}
+        onOpenChange={setShowRecordingDrawer}
+        onFinish={({ transcript }) =>
+          handleMoneyVoiceFinish({
+            transcript,
+            applyVoiceDraft,
+          })
+        }
       />
     </>
   );
