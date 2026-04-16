@@ -109,7 +109,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         <AlertDialogPortal>
           <AlertDialogBackdrop />
           <AlertDialogPopup className="border-0 bg-transparent">
-              <ItemDetailsCard
+            <ItemDetailsCard
               item={item}
               onDeleteClick={handleDeleteClick}
               onEditClick={handleEditClick}
