@@ -2,7 +2,12 @@ import type {
   CreateMoneyItemPayLoad,
   GetMoneyItemsParams,
   GetMoneyItemsResponse,
+  MemberTotalsParams,
+  MemberTotalsResponse,
   MoneyItemResponse,
+  SplitMoneyPayload,
+  SplitPreviewResponse,
+  SplitResponse,
   UpdateMoneyItemPayLoad,
 } from '@/types/money';
 
@@ -38,4 +43,30 @@ const updateMoneyItem = (
 const deleteMoneyItem = (careGroupId: string, expenseId: string) =>
   apiClient.delete(buildMoneyItemPath(careGroupId, expenseId));
 
-export { getMoneyItems, createMoneyItem, updateMoneyItem, deleteMoneyItem };
+const splitPreview = (careGroupId: string, payload: SplitMoneyPayload) =>
+  apiClient.post<SplitPreviewResponse>(
+    `${buildMoneyItemsPath(careGroupId)}/split-preview`,
+    payload,
+  );
+
+const splitMoneyItems = (careGroupId: string, payload: SplitMoneyPayload) =>
+  apiClient.post<SplitResponse>(
+    `${buildMoneyItemsPath(careGroupId)}/split`,
+    payload,
+  );
+
+const getMemberTotals = (careGroupId: string, params?: MemberTotalsParams) =>
+  apiClient.get<MemberTotalsResponse>(
+    `${buildMoneyItemsPath(careGroupId)}/member-totals`,
+    { params },
+  );
+
+export {
+  getMoneyItems,
+  createMoneyItem,
+  updateMoneyItem,
+  deleteMoneyItem,
+  splitPreview,
+  splitMoneyItems,
+  getMemberTotals,
+};

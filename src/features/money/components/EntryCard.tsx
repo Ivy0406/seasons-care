@@ -32,6 +32,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [updateSuccessOpen, setUpdateSuccessOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showError, setShowError] = useState(false);
@@ -124,6 +125,10 @@ function EntryCard({ item }: { item: ExpenseItem }) {
             <UpdateDataCard
               item={item}
               onClose={() => setUpdateOpen(false)}
+              onSuccess={() => {
+                setUpdateOpen(false);
+                setUpdateSuccessOpen(true);
+              }}
               onDeleteClick={handleDeleteClick}
             />
           </AlertDialogPopup>
@@ -156,6 +161,15 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         title="刪除失敗"
         description={errorMessage}
         onClose={() => setShowError(false)}
+      />
+
+      <Modal
+        open={updateSuccessOpen}
+        variant="success"
+        title="帳目更新完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setUpdateSuccessOpen(false)}
       />
     </>
   );
