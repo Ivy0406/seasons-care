@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
 import Calendar from '@/components/common/Calendar';
@@ -24,7 +24,7 @@ function DailyContent() {
   const { expenses } = useExpenses(visibleMonthStr);
 
   const markedDates = useMemo(
-    () => expenses.map((e) => new Date(e.expenseDate.replace('Z', ''))),
+    () => expenses.map((e) => parseISO(e.expenseDate)),
     [expenses],
   );
 

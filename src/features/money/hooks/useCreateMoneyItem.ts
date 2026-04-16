@@ -29,7 +29,7 @@ function formatForPayload(draft: MoneyDraft): CreateMoneyItemPayLoad {
     amount: Number(draft.amount) || 0,
     category: draft.category ?? 'other',
     notes: draft.notes,
-    expenseDate: format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss"),
+    expenseDate: format(parsedDate, "yyyy-MM-dd'T'HH:mm"),
     splitStatus: draft.needsSplit ? 'pending' : 'none',
   };
 }

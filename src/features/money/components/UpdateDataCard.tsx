@@ -25,7 +25,7 @@ type ResultModal = {
 };
 
 function itemToMoneyDraft(item: ExpenseItem): MoneyDraft {
-  const date = parseISO(item.expenseDate.replace('Z', ''));
+  const date = parseISO(item.expenseDate);
   return {
     title: item.title,
     amount: String(item.amount),
@@ -88,17 +88,19 @@ function UpdateDataCard({
           contentClassName="p-0"
         >
           <DataFormCard.Content>
-            <VoiceCTA
-              className="bg-primary-default text-neutral-900"
-              title="記帳"
-              onClose={onClose}
-              onInputClick={() => onVoiceInput?.()}
-            />
-            <MoneyDataSmallForm
-              className="w-full border-0 bg-neutral-50 px-3 pt-3"
-              value={draft}
-              onChange={handleChange}
-            />
+            <div className="flex flex-col text-neutral-900">
+              <VoiceCTA
+                className="bg-primary-default text-neutral-900"
+                title="記帳"
+                onClose={onClose}
+                onInputClick={() => onVoiceInput?.()}
+              />
+              <MoneyDataSmallForm
+                className="w-full border-0 bg-neutral-50 px-3 pt-3"
+                value={draft}
+                onChange={handleChange}
+              />
+            </div>
           </DataFormCard.Content>
           <DataFormCard.Footer>
             <div className="flex gap-5">
