@@ -113,7 +113,7 @@ function MonthlyContent() {
       </ul>
 
       <RoundedButtonPrimary
-        disabled={monthlyTotal === 0}
+        disabled={expenses.every((e) => e.splitStatus !== 'pending')}
         onClick={() => setSplitDialogOpen(true)}
       >
         一鍵分帳

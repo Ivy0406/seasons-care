@@ -120,7 +120,7 @@ function DailyContent() {
 
       <RoundedButtonPrimary
         className="mt-4"
-        disabled={dailyTotal === 0}
+        disabled={dailyExpenses.every((e) => e.splitStatus !== 'pending')}
         onClick={() => setSplitDialogOpen(true)}
       >
         當日分帳
