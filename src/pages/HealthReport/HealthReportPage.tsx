@@ -18,7 +18,6 @@ import CreateDataCard from '@/features/health/components/CreateDataCard';
 import HealthSummaryCarousel from '@/features/health/components/HealthSummaryCarousel';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
 import useGetWeeklyInsight from '@/features/health/hooks/useGetWeeklyInsight';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 type SubmitModalState = {
@@ -34,7 +33,6 @@ function HealthReportPage() {
   const patientName =
     groups?.find((g) => g.id === currentGroupId)?.recipientName ?? '';
   const [showCreateCard, setShowCreateCard] = useState(false);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [showUpgradeCTA, setShowUpgradeCTA] = useState(false);
   const [submitModal, setSubmitModal] = useState<SubmitModalState>({
     open: false,
@@ -88,10 +86,6 @@ function HealthReportPage() {
           <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateDataCard
               onClose={() => setShowCreateCard(false)}
-              onVoiceInput={() => {
-                setShowCreateCard(false);
-                setShowRecordingDrawer(true);
-              }}
               onSuccess={() => {
                 setShowCreateCard(false);
                 setSubmitModal({
@@ -115,12 +109,6 @@ function HealthReportPage() {
       <UpgradeCTADrawer
         open={showUpgradeCTA}
         onOpenChange={setShowUpgradeCTA}
-      />
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
       />
 
       <Modal
