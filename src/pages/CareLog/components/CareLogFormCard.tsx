@@ -29,7 +29,6 @@ type CareLogFormCardProps = {
   submitLabel: string;
   onClose: () => void;
   onSubmit: (entry: CareLogEntry) => void | Promise<void>;
-  onVoiceInput?: () => void;
   isSubmitting?: boolean;
   cardClassName?: string;
   toneClassName?: string;
@@ -43,7 +42,6 @@ function CareLogFormCard({
   submitLabel,
   onClose,
   onSubmit,
-  onVoiceInput,
   isSubmitting = false,
   cardClassName = 'bg-neutral-800',
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
@@ -128,15 +126,7 @@ function CareLogFormCard({
             <VoiceCTA
               title="日誌"
               onClose={onClose}
-              onInputClick={() => {
-                if (onVoiceInput) {
-                  onClose();
-                  onVoiceInput();
-                  return;
-                }
-
-                setShowRecordingDrawer(true);
-              }}
+              onInputClick={() => setShowRecordingDrawer(true)}
             />
 
             <div className="px-4 py-2">
