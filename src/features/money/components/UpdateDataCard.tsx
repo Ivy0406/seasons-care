@@ -14,17 +14,12 @@ import type { ExpenseItem, MoneyDraft } from '@/features/money/types';
 type UpdateDataCardProps = {
   item: ExpenseItem;
   onClose: () => void;
+  onSuccess: () => void;
   onDeleteClick: () => void;
 };
 
-type ResultModal = {
-  open: boolean;
-  variant: 'success' | 'error';
-  message?: string;
-};
-
 function itemToMoneyDraft(item: ExpenseItem): MoneyDraft {
-  const date = parseISO(item.expenseDate.replace('Z', ''));
+  const date = parseISO(item.expenseDate);
   return {
     title: item.title,
     amount: String(item.amount),
@@ -38,12 +33,17 @@ function itemToMoneyDraft(item: ExpenseItem): MoneyDraft {
   };
 }
 
-function UpdateDataCard({ item, onClose, onDeleteClick }: UpdateDataCardProps) {
+function UpdateDataCard({
+  item,
+  onClose,
+  onSuccess,
+  onDeleteClick,
+}: UpdateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => itemToMoneyDraft(item));
-  const [resultModal, setResultModal] = useState<ResultModal>({
-    open: false,
-    variant: 'success',
-  });
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    message?: string;
+  }>({ open: false });
 
   const { isLoading, handleUpdateMoneyItem } = useUpdateMoneyItem();
 
@@ -60,16 +60,11 @@ function UpdateDataCard({ item, onClose, onDeleteClick }: UpdateDataCardProps) {
   const handleSubmit = async (event: React.SubmitEvent) => {
     event.preventDefault();
     const result = await handleUpdateMoneyItem(item.id, draft, item.updatedAt);
-    setResultModal({
-      open: true,
-      variant: result.success ? 'success' : 'error',
-      message: result.success ? undefined : result.message,
-    });
-  };
-
-  const handleModalClose = () => {
-    setResultModal((prev) => ({ ...prev, open: false }));
-    if (resultModal.variant === 'success') onClose();
+    if (result.success) {
+      onSuccess();
+    } else {
+      setErrorModal({ open: true, message: result.message });
+    }
   };
 
   return (
@@ -121,17 +116,12 @@ function UpdateDataCard({ item, onClose, onDeleteClick }: UpdateDataCardProps) {
       </form>
 
       <Modal
-        open={resultModal.open}
-        variant={resultModal.variant}
-        title={
-          resultModal.variant === 'success'
-            ? '帳目更新完成！'
-            : '帳目更新失敗！'
-        }
-        description={resultModal.message}
+        open={errorModal.open}
+        variant="error"
+        title="帳目更新失敗！"
+        description={errorModal.message}
         statusLayout="icon-first"
-        autoCloseMs={resultModal.variant === 'success' ? 1500 : undefined}
-        onClose={handleModalClose}
+        onClose={() => setErrorModal({ open: false })}
       />
     </>
   );

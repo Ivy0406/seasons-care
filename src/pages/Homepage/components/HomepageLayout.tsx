@@ -79,6 +79,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     variant: 'success',
     title: '',
   });
+  const [moneyCreateSuccessOpen, setMoneyCreateSuccessOpen] = useState(false);
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
     'create',
@@ -481,6 +482,10 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             <CreateMoneyDataCard
               initialDate={selectedDate}
               onClose={() => setShowCreateMoneyCard(false)}
+              onSuccess={() => {
+                setShowCreateMoneyCard(false);
+                setMoneyCreateSuccessOpen(true);
+              }}
             />
           </AlertDialogPopup>
         </AlertDialogPortal>
@@ -580,6 +585,15 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
         onClose={() =>
           setHealthSubmitModal((prev) => ({ ...prev, open: false }))
         }
+      />
+
+      <Modal
+        open={moneyCreateSuccessOpen}
+        variant="success"
+        title="帳目建立完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setMoneyCreateSuccessOpen(false)}
       />
     </>
   );

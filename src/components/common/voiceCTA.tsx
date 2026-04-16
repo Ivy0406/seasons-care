@@ -43,7 +43,7 @@ export default function VoiceCTA({
           </div>
           <button
             type="button"
-            className="font-label-md inline-flex h-10 min-w-24 items-center justify-center rounded-full bg-neutral-800 px-4 text-neutral-50"
+            className="font-label-md inline-flex h-10 w-20 items-center justify-center rounded-full bg-neutral-800 px-4 text-neutral-50"
             onClick={onInputClick}
           >
             輸入
