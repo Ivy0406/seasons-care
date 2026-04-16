@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 
+import type { HealthDraft } from '@/features/health/types';
+
 import useCreateBloodOxygen from './useCreateBloodOxygen';
 import useCreateBloodPressure from './useCreateBloodPressure';
 import useCreateBloodSugar from './useCreateBloodSugar';
@@ -40,16 +42,17 @@ function useCreateHealthData({
   const [recordTime, setRecordTime] = useState(defaultTime);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch } = useForm<HealthDataFormValues>({
-    defaultValues: {
-      systolic: '',
-      diastolic: '',
-      temperature: '',
-      spO2: '',
-      weight: '',
-      glucoseLevel: '',
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<HealthDataFormValues>({
+      defaultValues: {
+        systolic: '',
+        diastolic: '',
+        temperature: '',
+        spO2: '',
+        weight: '',
+        glucoseLevel: '',
+      },
+    });
 
   const bloodOxygen = useCreateBloodOxygen();
   const bloodPressure = useCreateBloodPressure();
@@ -122,6 +125,31 @@ function useCreateHealthData({
     }
   };
 
+  const applyVoiceDraft = (draft: HealthDraft, transcript: string) => {
+    if (
+      /(今天|明天|後天|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[/月]\d{1,2})/u.test(
+        transcript,
+      )
+    ) {
+      setRecordDate(draft.dateValue.replaceAll('-', '/'));
+    }
+
+    if (
+      /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/u.test(
+        transcript,
+      )
+    ) {
+      setRecordTime(draft.timeValue);
+    }
+
+    setValue('systolic', draft.systolic);
+    setValue('diastolic', draft.diastolic);
+    setValue('temperature', draft.temperature);
+    setValue('spO2', draft.bloodOxygen);
+    setValue('weight', draft.weight);
+    setValue('glucoseLevel', draft.bloodSugar);
+  };
+
   return {
     register,
     handleSubmit: handleSubmit(onSubmit),
@@ -131,6 +159,7 @@ function useCreateHealthData({
     recordTime,
     setRecordDate,
     setRecordTime,
+    applyVoiceDraft,
   };
 }
 
