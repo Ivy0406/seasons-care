@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { X } from 'lucide-react';
 
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import {
   AlertDialog,
@@ -12,7 +13,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useActiveExpenses from '@/features/money/hooks/useActiveExpenses';
-import useSplitPreview from '@/features/money/hooks/useSplitPreview';
+import useFetchSplitPreview from '@/features/money/hooks/useFetchSplitPreview';
+import useSubmitSplit from '@/features/money/hooks/useSubmitSplit';
+import type { MemberSplit, SplitItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 import SplitItemsPreview from './SplitItemsPreview';
@@ -24,18 +27,25 @@ type SplitDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   scope: 'daily' | 'monthly';
-  onConfirm: (selectedItemIds: string[], selectedMemberIds: string[]) => void;
+  onSuccess: () => void;
+};
+
+type PreviewData = {
+  selectedItems: SplitItem[];
+  memberSplits: MemberSplit[];
 };
 
 function SplitDialog({
   open,
   onOpenChange,
   scope,
-  onConfirm,
+  onSuccess,
 }: SplitDialogProps) {
   const { currentGroupId } = useCurrentGroupId();
   const { dailyExpenses, monthlyExpenses } = useActiveExpenses();
   const { data: members = [] } = useGetGroupMembers(currentGroupId);
+  const { isLoading: isPreviewing, fetchPreview } = useFetchSplitPreview();
+  const { isLoading: isSubmitting, handleSubmitSplit } = useSubmitSplit();
 
   const expenses = scope === 'daily' ? dailyExpenses : monthlyExpenses;
   const pendingItems = expenses
@@ -50,24 +60,44 @@ function SplitDialog({
   const [step, setStep] = useState<'select' | 'preview'>('select');
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    message?: string;
+  }>({ open: false });
 
   useEffect(() => {
     if (!open) return;
     setSelectedItemIds(pendingItems.map(({ id }) => id));
     setSelectedMemberIds(members.map(({ userId }) => userId));
     setStep('select');
+    setPreviewData(null);
+    setPreviewError(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const { selectedItems, memberSplits } = useSplitPreview(
-    selectedItemIds,
-    selectedMemberIds,
-    pendingItems,
-    members,
-  );
+  const handleGoToPreview = async () => {
+    setPreviewError(null);
+    const result = await fetchPreview(selectedItemIds, selectedMemberIds);
+    if (result.success) {
+      setPreviewData({
+        selectedItems: result.selectedItems,
+        memberSplits: result.memberSplits,
+      });
+      setStep('preview');
+    } else {
+      setPreviewError(result.message);
+    }
+  };
 
-  const handleConfirm = () => {
-    onConfirm(selectedItemIds, selectedMemberIds);
+  const handleConfirm = async () => {
+    const result = await handleSubmitSplit(selectedItemIds, selectedMemberIds);
+    if (result.success) {
+      onSuccess();
+    } else {
+      setErrorModal({ open: true, message: result.message });
+    }
   };
 
   return (
@@ -114,25 +144,40 @@ function SplitDialog({
                 </div>
               </>
             ) : (
-              <>
-                <SplitItemsPreview items={selectedItems} />
-                <SplitResultPreview memberSplits={memberSplits} />
-              </>
+              previewData && (
+                <>
+                  <SplitItemsPreview items={previewData.selectedItems} />
+                  <SplitResultPreview memberSplits={previewData.memberSplits} />
+                </>
+              )
             )}
           </div>
 
           {step === 'select' ? (
-            <RoundedButtonPrimary
-              className="h-[45.6px] w-full rounded-full bg-neutral-900 text-neutral-50"
-              onClick={() => setStep('preview')}
-            >
-              確認分帳結果
-            </RoundedButtonPrimary>
+            <div className="flex flex-col gap-2">
+              {previewError && (
+                <p className="font-paragraph-sm text-center text-red-500">
+                  {previewError}
+                </p>
+              )}
+              <RoundedButtonPrimary
+                className="h-[45.6px] w-full rounded-full bg-neutral-900 text-neutral-50"
+                onClick={handleGoToPreview}
+                disabled={
+                  isPreviewing ||
+                  selectedItemIds.length === 0 ||
+                  selectedMemberIds.length === 0
+                }
+              >
+                {isPreviewing ? '計算中...' : '確認分帳結果'}
+              </RoundedButtonPrimary>
+            </div>
           ) : (
             <div className="flex h-10 items-center justify-between gap-2">
               <RoundedButtonPrimary
                 onClick={() => setStep('select')}
                 className="h-9 flex-1 bg-transparent px-0 text-neutral-900 ring-2 ring-neutral-900"
+                disabled={isSubmitting}
               >
                 取消
               </RoundedButtonPrimary>
@@ -140,11 +185,21 @@ function SplitDialog({
               <RoundedButtonPrimary
                 className="h-full flex-1 bg-neutral-900 px-0 text-neutral-50"
                 onClick={handleConfirm}
+                disabled={isSubmitting}
               >
-                確定分帳
+                {isSubmitting ? '處理中...' : '確定分帳'}
               </RoundedButtonPrimary>
             </div>
           )}
+
+          <Modal
+            open={errorModal.open}
+            variant="error"
+            title="分帳失敗！"
+            description={errorModal.message}
+            statusLayout="icon-first"
+            onClose={() => setErrorModal({ open: false })}
+          />
         </AlertDialogPopup>
       </AlertDialogPortal>
     </AlertDialog>
