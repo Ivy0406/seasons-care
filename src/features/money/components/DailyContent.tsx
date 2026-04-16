@@ -14,9 +14,12 @@ import useSelectedDate from '@/features/money/hooks/useSelectedDate';
 import type { CategoryWithAmount } from '@/features/money/types';
 import cn from '@/lib/utils';
 
+import SplitDialog from './SplitDialog';
+
 function DailyContent() {
   const { selectedDate, setSelectedDate } = useSelectedDate();
   const [visibleMonth, setVisibleMonth] = useState<Date>(selectedDate);
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false);
   const visibleMonthStr = format(visibleMonth, 'yyyy-MM');
   const { expenses } = useExpenses(visibleMonthStr);
 
@@ -113,7 +116,20 @@ function DailyContent() {
         )}
       </div>
 
-      <RoundedButtonPrimary className="mt-4">當日分帳</RoundedButtonPrimary>
+      <RoundedButtonPrimary
+        className="mt-4"
+        disabled={dailyTotal === 0}
+        onClick={() => setSplitDialogOpen(true)}
+      >
+        當日分帳
+      </RoundedButtonPrimary>
+
+      <SplitDialog
+        open={splitDialogOpen}
+        onOpenChange={setSplitDialogOpen}
+        scope="daily"
+        onConfirm={() => setSplitDialogOpen(false)}
+      />
     </div>
   );
 }

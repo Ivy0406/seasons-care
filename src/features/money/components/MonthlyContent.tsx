@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
@@ -19,6 +21,8 @@ import cn from '@/lib/utils';
 import useExpenses from '../hooks/useExpenses';
 import useSelectedMonth, { MONTH_OPTIONS } from '../hooks/useSelectedMonth';
 
+import SplitDialog from './SplitDialog';
+
 function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
   const totals = { ...INITIAL_CATEGORY_TOTALS };
   expenses.forEach((expense) => {
@@ -28,6 +32,7 @@ function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
 }
 
 function MonthlyContent() {
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false);
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
   const { expenses } = useExpenses(selectedMonth);
   const { currentGroupId } = useCurrentGroupId();
@@ -105,7 +110,19 @@ function MonthlyContent() {
         ))}
       </ul>
 
-      <RoundedButtonPrimary onClick={() => {}}>一鍵分帳</RoundedButtonPrimary>
+      <RoundedButtonPrimary
+        disabled={monthlyTotal === 0}
+        onClick={() => setSplitDialogOpen(true)}
+      >
+        一鍵分帳
+      </RoundedButtonPrimary>
+
+      <SplitDialog
+        open={splitDialogOpen}
+        onOpenChange={setSplitDialogOpen}
+        scope="monthly"
+        onConfirm={() => setSplitDialogOpen(false)}
+      />
     </div>
   );
 }
