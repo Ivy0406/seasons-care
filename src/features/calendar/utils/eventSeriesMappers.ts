@@ -1,4 +1,4 @@
-import { addDays, addMonths, addWeeks, getDay, parseISO } from 'date-fns';
+import { addYears, getDay, parseISO } from 'date-fns';
 
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import type { CreateEventSeriesPayload } from '@/types/eventSeries';
@@ -12,16 +12,8 @@ const DEFAULT_EVENT_SERIES_STATUS = 'active';
 function getDefaultEventSeriesEndAt(entry: CareLogEntry) {
   const startDate = parseISO(entry.startsAt);
 
-  if (entry.repeatPattern === 'daily') {
-    return addDays(startDate, DEFAULT_EVENT_SERIES_REPEAT_INTERVAL).toISOString();
-  }
-
-  if (entry.repeatPattern === 'weeklyDay') {
-    return addWeeks(startDate, DEFAULT_EVENT_SERIES_REPEAT_INTERVAL).toISOString();
-  }
-
-  if (entry.repeatPattern === 'monthly') {
-    return addMonths(startDate, DEFAULT_EVENT_SERIES_REPEAT_INTERVAL).toISOString();
+  if (entry.repeatPattern && entry.repeatPattern !== 'none') {
+    return addYears(startDate, 1).toISOString();
   }
 
   return startDate.toISOString();

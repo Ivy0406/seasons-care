@@ -25,6 +25,8 @@ export type DiaryCardItem = {
   participants: CalendarDiaryCardParticipant[];
   status: DiaryCardStatus;
   isImportant?: boolean;
+  sourceType?: 'care-log' | 'event-series';
+  sourceId?: string;
 };
 
 type DiaryCardProps = {
@@ -45,7 +47,7 @@ function DiaryCardContent({
 }: {
   item: DiaryCardItem;
   isChecked: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void;
   onMoreClick?: () => void;
   isStatusUpdating?: boolean;
 }) {
@@ -75,17 +77,19 @@ function DiaryCardContent({
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          aria-label="更多選項"
-          className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
-          onClick={(event) => {
-            event.stopPropagation();
-            onMoreClick?.();
-          }}
-        >
-          <EllipsisVertical className="size-4" strokeWidth={1.5} />
-        </button>
+        {onMoreClick ? (
+          <button
+            type="button"
+            aria-label="更多選項"
+            className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
+            onClick={(event) => {
+              event.stopPropagation();
+              onMoreClick();
+            }}
+          >
+            <EllipsisVertical className="size-4" strokeWidth={1.5} />
+          </button>
+        ) : null}
       </div>
 
       <div className="flex items-center justify-between gap-3 pl-4.5">
@@ -104,7 +108,7 @@ function DiaryCardContent({
           checked={isChecked}
           onCheckedChange={onCheckedChange}
           onClick={(event) => event.stopPropagation()}
-          disabled={isStatusUpdating}
+          disabled={isStatusUpdating || onCheckedChange === undefined}
           aria-label={`標記${item.title}完成`}
           checkedClassName="bg-neutral-900 text-neutral-50  "
           uncheckedClassName="border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
@@ -131,9 +135,11 @@ function DiaryCard({
   }, [item.status]);
 
   const handleCheckedChange = async (checked: boolean) => {
+    if (!onStatusChange) return;
+
     setIsChecked(checked);
 
-    const didUpdate = await onStatusChange?.(checked);
+    const didUpdate = await onStatusChange(checked);
 
     if (didUpdate === false) {
       setIsChecked(item.status === 'completed');

@@ -106,11 +106,27 @@ function CareLogDiarySection({
             <DiaryCard
               key={item.id}
               item={item}
-              onClick={() => diaryCardActions.openDetail(item.id)}
-              onMoreClick={() => diaryCardActions.openActions(item.id)}
-              isStatusUpdating={isUpdatingEntry}
-              onStatusChange={(checked) =>
-                onToggleStatus(item.id, checked ? 'completed' : 'pending')
+              onClick={
+                item.sourceType === 'event-series'
+                  ? undefined
+                  : () => diaryCardActions.openDetail(item.id)
+              }
+              onMoreClick={
+                item.sourceType === 'event-series'
+                  ? undefined
+                  : () => diaryCardActions.openActions(item.id)
+              }
+              isStatusUpdating={
+                item.sourceType === 'event-series' ? true : isUpdatingEntry
+              }
+              onStatusChange={
+                item.sourceType === 'event-series'
+                  ? undefined
+                  : (checked) =>
+                      onToggleStatus(
+                        item.id,
+                        checked ? 'completed' : 'pending',
+                      )
               }
             />
           ))

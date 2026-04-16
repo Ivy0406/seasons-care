@@ -3,11 +3,16 @@ import { useEffect, useState } from 'react';
 import { format, isSameDay, isValid, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { useLocation } from 'react-router';
+import { toast } from 'sonner';
 
 import Calendar from '@/components/common/Calendar';
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
+import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import CareLogDiarySection from '@/pages/CareLog/components/CareLogDiarySection';
 import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
@@ -45,6 +50,9 @@ function CalendarPage() {
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
+  const { eventSeries, refetch: refetchEventSeries } = useGetEventSeries();
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const initialSelectedDate = getSelectedDateFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -66,11 +74,17 @@ function CalendarPage() {
     setVisibleMonth(routedSelectedDate);
   }, [location.state]);
 
-  const markedDates = fetchedEntries.map((entry) => parseISO(entry.startsAt));
+  const recurringEntries = toEventSeriesEntries(
+    eventSeries,
+    visibleMonth,
+    groupMembers,
+  );
+  const allEntries = [...fetchedEntries, ...recurringEntries];
+  const markedDates = allEntries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
     selectedDate === undefined
       ? []
-      : fetchedEntries.filter((entry) =>
+      : allEntries.filter((entry) =>
           isSameDay(parseISO(entry.startsAt), selectedDate),
         );
   const openCreateEntry = (date?: Date) => {
@@ -120,6 +134,7 @@ function CalendarPage() {
             );
 
             if (!targetEntry) {
+              toast.error('重複事件目前不支援在這裡變更完成狀態');
               return false;
             }
 
@@ -137,6 +152,11 @@ function CalendarPage() {
             return true;
           }}
           onUpdateEntry={async (updatedEntry) => {
+            if (updatedEntry.sourceType === 'event-series') {
+              toast.error('重複事件目前不支援在這裡編輯');
+              return false;
+            }
+
             const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);
 
             if (persistedEntry === null) {
@@ -148,6 +168,11 @@ function CalendarPage() {
             return true;
           }}
           onDeleteEntry={async (entryId) => {
+            if (entryId.includes('__')) {
+              toast.error('重複事件目前不支援在這裡刪除');
+              return false;
+            }
+
             const didDelete = await handleDeleteCareLogEntry(entryId);
 
             if (!didDelete) {
@@ -172,6 +197,7 @@ function CalendarPage() {
           const createdDate = parseISO(createdEntry.startsAt);
 
           await refetchEntries();
+          await refetchEventSeries();
           setSelectedDate(createdDate);
           setVisibleMonth(createdDate);
         }}
