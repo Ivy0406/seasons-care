@@ -124,6 +124,7 @@ type DiaryExtractionResult = Pick<
   'title' | 'dateValue' | 'timeValue' | 'repeatPattern' | 'note' | 'summary'
 > & {
   isImportant: 'true' | 'false';
+  participants?: string[];
 };
 
 const DIARY_EXTRACTION_SCHEMA = {
@@ -156,6 +157,14 @@ const DIARY_EXTRACTION_SCHEMA = {
       description:
         'Diary note/description in zh-TW. Return an empty string if not mentioned.',
     },
+    participants: {
+      type: 'array',
+      description:
+        'Mentioned participant display names in zh-TW. Return an empty array when no one else is explicitly mentioned.',
+      items: {
+        type: 'string',
+      },
+    },
     isImportant: {
       type: 'string',
       enum: ['true', 'false'],
@@ -174,6 +183,7 @@ const DIARY_EXTRACTION_SCHEMA = {
     'timeValue',
     'repeatPattern',
     'note',
+    'participants',
     'isImportant',
     'summary',
   ],
@@ -191,7 +201,8 @@ const DIARY_EXTRACTION_PROMPT = `
 6. isImportant 只回傳 true 或 false 字串。
 7. title 要優先填寫，請用 4 到 16 字的短標題概括主要事件，不要留空後只填 note。
 8. note 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 note，也不要讓 note 和 title 重複。
-9. summary 用繁體中文，簡短描述已抽取到的日誌內容。
+9. participants 暫時由使用者自行加入，無需判斷回傳。
+10. summary 用繁體中文，簡短描述已抽取到的日誌內容。
 `;
 
 function isDiaryExtractionResult(
@@ -212,6 +223,9 @@ function isDiaryExtractionResult(
       result.repeatPattern === 'weeklyDay' ||
       result.repeatPattern === 'monthly') &&
     typeof result.note === 'string' &&
+    (result.participants === undefined ||
+      (Array.isArray(result.participants) &&
+        result.participants.every((item) => typeof item === 'string'))) &&
     (result.isImportant === 'true' || result.isImportant === 'false') &&
     typeof result.summary === 'string'
   );

@@ -1,22 +1,17 @@
 import DataFormCard from '@/components/common/DataFormCard';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import { HealthDataForm } from '@/components/common/SmallDataForm';
-import VoiceCTA from '@/components/common/voiceCTA';
+import VoiceFormSection from '@/components/common/VoiceFormSection';
 import useCreateHealthData from '@/features/health/hooks/useCreateHealthData';
+import handleHealthVoiceFinish from '@/features/health/utils/healthVoice';
 
 type CreateDataCardProps = {
   onClose: () => void;
-  onVoiceInput?: () => void;
   onSuccess?: () => void;
   onError?: () => void;
 };
 
-function CreateDataCard({
-  onClose,
-  onVoiceInput,
-  onSuccess,
-  onError,
-}: CreateDataCardProps) {
+function CreateDataCard({ onClose, onSuccess, onError }: CreateDataCardProps) {
   const {
     register,
     handleSubmit,
@@ -26,6 +21,7 @@ function CreateDataCard({
     recordTime,
     setRecordDate,
     setRecordTime,
+    applyVoiceDraft,
   } = useCreateHealthData({ onSuccess, onError });
 
   return (
@@ -36,22 +32,26 @@ function CreateDataCard({
         contentClassName="p-0"
       >
         <DataFormCard.Content>
-          <VoiceCTA
-            className="bg-primary-default"
+          <VoiceFormSection
             title=""
             onClose={onClose}
-            onInputClick={() => {
-              onVoiceInput?.();
-            }}
-          />
-          <HealthDataForm
-            className="w-full border-0 bg-neutral-50 px-3 pt-3"
-            register={register}
-            recordDate={recordDate}
-            recordTime={recordTime}
-            onDateChange={setRecordDate}
-            onTimeChange={setRecordTime}
-          />
+            ctaClassName="bg-primary-default"
+            onVoiceFinish={({ transcript }) =>
+              handleHealthVoiceFinish({
+                transcript,
+                applyVoiceDraft,
+              })
+            }
+          >
+            <HealthDataForm
+              className="w-full border-0 bg-neutral-50 px-3 pt-3"
+              register={register}
+              recordDate={recordDate}
+              recordTime={recordTime}
+              onDateChange={setRecordDate}
+              onTimeChange={setRecordTime}
+            />
+          </VoiceFormSection>
         </DataFormCard.Content>
         <DataFormCard.Footer>
           <RoundedButtonPrimary

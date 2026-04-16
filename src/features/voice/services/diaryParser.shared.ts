@@ -1,4 +1,5 @@
 import type { DiaryDraft } from '@/pages/CareLog/types';
+import type { GroupMember } from '@/types/group';
 
 const DIARY_DATE_PATTERN = /(今天|明天|後天)/u;
 const DIARY_DATE_PATTERN_GLOBAL = /(今天|明天|後天)/gu;
@@ -307,6 +308,75 @@ function getRepeatPatternLabel(repeatPattern: DiaryDraft['repeatPattern']) {
 
 type DiaryDraftSummarySource = Omit<DiaryDraft, 'id' | 'summary'>;
 
+function normalizeDiaryParticipantName(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, '');
+}
+
+function isDiaryParticipantNameMatch(
+  candidateName: string,
+  memberName: string,
+) {
+  if (candidateName.length < 2 || memberName.length < 2) {
+    return false;
+  }
+
+  return (
+    candidateName === memberName ||
+    candidateName.includes(memberName) ||
+    memberName.includes(candidateName)
+  );
+}
+
+function resolveDiaryParticipantIds(
+  groupMembers: GroupMember[],
+  options: {
+    transcript?: string;
+    participantNames?: string[];
+  } = {},
+) {
+  if (groupMembers.length === 0) {
+    return [];
+  }
+
+  const resolvedIds = new Set<string>();
+  const normalizedParticipantNames = (options.participantNames ?? [])
+    .map(normalizeDiaryParticipantName)
+    .filter(Boolean);
+
+  normalizedParticipantNames.forEach((participantName) => {
+    groupMembers.forEach((member) => {
+      const normalizedMemberName = normalizeDiaryParticipantName(
+        member.username,
+      );
+
+      if (isDiaryParticipantNameMatch(participantName, normalizedMemberName)) {
+        resolvedIds.add(member.userId);
+      }
+    });
+  });
+
+  if (resolvedIds.size > 0 || !options.transcript) {
+    return [...resolvedIds];
+  }
+
+  const normalizedTranscript = normalizeDiaryParticipantName(
+    options.transcript,
+  );
+
+  groupMembers.forEach((member) => {
+    const normalizedMemberName = normalizeDiaryParticipantName(member.username);
+
+    if (
+      normalizedMemberName.length >= 2 &&
+      normalizedTranscript.includes(normalizedMemberName)
+    ) {
+      resolvedIds.add(member.userId);
+    }
+  });
+
+  return [...resolvedIds];
+}
+
 function getDiaryDraftSummarySource(
   draft: DiaryDraft,
 ): DiaryDraftSummarySource {
@@ -316,6 +386,7 @@ function getDiaryDraftSummarySource(
     timeValue: draft.timeValue,
     repeatPattern: draft.repeatPattern,
     note: draft.note,
+    participantIds: draft.participantIds,
     isImportant: draft.isImportant,
     transcript: draft.transcript,
   };
@@ -330,6 +401,10 @@ function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
 
   if (draft.note.trim() !== '') {
     summaryParts.push(`內容「${draft.note.trim()}」`);
+  }
+
+  if (draft.participantIds.length > 0) {
+    summaryParts.push(`包含 ${draft.participantIds.length} 位參與者`);
   }
 
   const repeatPatternLabel = getRepeatPatternLabel(draft.repeatPattern);
@@ -355,6 +430,7 @@ function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
     timeValue: formatTimeValue(date),
     repeatPattern: 'none',
     note: '',
+    participantIds: [],
     isImportant: false,
     transcript: '',
     summary: '請先錄音或手動輸入日誌內容。',
@@ -365,6 +441,7 @@ function hasDiaryDraftContent(draft: DiaryDraft) {
   return (
     draft.title.trim() !== '' ||
     draft.note.trim() !== '' ||
+    draft.participantIds.length > 0 ||
     draft.repeatPattern !== 'none' ||
     draft.isImportant
   );
@@ -398,6 +475,7 @@ export {
   hasDiaryDraftContent,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  resolveDiaryParticipantIds,
   resolveDiaryDateValue,
   resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,

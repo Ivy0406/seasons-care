@@ -17,14 +17,12 @@ import MemberExpenseSummary from '@/features/money/components/MemberExpenseSumma
 import MoneyTabsCard from '@/features/money/components/MoneyTabsCard';
 import useActivedMoneyTab from '@/features/money/hooks/useActivedMoneyTab';
 import useActiveExpenses from '@/features/money/hooks/useActiveExpenses';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 function MoneyPage() {
   const { activeTab } = useActivedMoneyTab();
   const { cardListItems, isLoading } = useActiveExpenses();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [showCreateCard, setShowCreateCard] = useState(false);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [createSuccessOpen, setCreateSuccessOpen] = useState(false);
 
   return (
@@ -64,20 +62,10 @@ function MoneyPage() {
                 setShowCreateCard(false);
                 setCreateSuccessOpen(true);
               }}
-              onVoiceInput={() => {
-                setShowCreateCard(false);
-                setShowRecordingDrawer(true);
-              }}
             />
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
-
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
-      />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
 

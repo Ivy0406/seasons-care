@@ -44,10 +44,7 @@ export default function VoiceCTA({
           <button
             type="button"
             className="font-label-md inline-flex h-10 w-20 items-center justify-center rounded-full bg-neutral-800 px-4 text-neutral-50"
-            onClick={() => {
-              onClose();
-              onInputClick();
-            }}
+            onClick={onInputClick}
           >
             輸入
           </button>
