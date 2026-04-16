@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
 import Calendar from '@/components/common/Calendar';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import {
   EXPENSE_CATEGORY_CONFIGS,
@@ -20,6 +21,7 @@ function DailyContent() {
   const { selectedDate, setSelectedDate } = useSelectedDate();
   const [visibleMonth, setVisibleMonth] = useState<Date>(selectedDate);
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
+  const [splitSuccessOpen, setSplitSuccessOpen] = useState(false);
   const visibleMonthStr = format(visibleMonth, 'yyyy-MM');
   const { expenses } = useExpenses(visibleMonthStr);
 
@@ -128,7 +130,19 @@ function DailyContent() {
         open={splitDialogOpen}
         onOpenChange={setSplitDialogOpen}
         scope="daily"
-        onConfirm={() => setSplitDialogOpen(false)}
+        onSuccess={() => {
+          setSplitDialogOpen(false);
+          setSplitSuccessOpen(true);
+        }}
+      />
+
+      <Modal
+        open={splitSuccessOpen}
+        variant="success"
+        title="分帳完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setSplitSuccessOpen(false)}
       />
     </div>
   );

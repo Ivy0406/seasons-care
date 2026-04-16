@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
@@ -33,6 +34,7 @@ function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
 
 function MonthlyContent() {
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
+  const [splitSuccessOpen, setSplitSuccessOpen] = useState(false);
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
   const { expenses } = useExpenses(selectedMonth);
   const { currentGroupId } = useCurrentGroupId();
@@ -121,7 +123,19 @@ function MonthlyContent() {
         open={splitDialogOpen}
         onOpenChange={setSplitDialogOpen}
         scope="monthly"
-        onConfirm={() => setSplitDialogOpen(false)}
+        onSuccess={() => {
+          setSplitDialogOpen(false);
+          setSplitSuccessOpen(true);
+        }}
+      />
+
+      <Modal
+        open={splitSuccessOpen}
+        variant="success"
+        title="分帳完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setSplitSuccessOpen(false)}
       />
     </div>
   );

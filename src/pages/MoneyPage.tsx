@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Loading from '@/components/common/Loading';
+import Modal from '@/components/common/Modal';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
 import {
@@ -20,10 +21,11 @@ import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 
 function MoneyPage() {
   const { activeTab } = useActivedMoneyTab();
-  const { monthlyExpenses, cardListItems, isLoading } = useActiveExpenses();
+  const { cardListItems, isLoading } = useActiveExpenses();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
+  const [createSuccessOpen, setCreateSuccessOpen] = useState(false);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20 text-neutral-900">
@@ -41,9 +43,7 @@ function MoneyPage() {
         </div>
       ) : (
         <>
-          {activeTab === 'monthly' && (
-            <MemberExpenseSummary expenses={monthlyExpenses} />
-          )}
+          {activeTab === 'monthly' && <MemberExpenseSummary />}
           <CardsList items={cardListItems} />
         </>
       )}
@@ -60,6 +60,10 @@ function MoneyPage() {
           <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateDataCard
               onClose={() => setShowCreateCard(false)}
+              onSuccess={() => {
+                setShowCreateCard(false);
+                setCreateSuccessOpen(true);
+              }}
               onVoiceInput={() => {
                 setShowCreateCard(false);
                 setShowRecordingDrawer(true);
@@ -76,6 +80,15 @@ function MoneyPage() {
       />
 
       <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
+
+      <Modal
+        open={createSuccessOpen}
+        variant="success"
+        title="帳目建立完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setCreateSuccessOpen(false)}
+      />
     </main>
   );
 }
