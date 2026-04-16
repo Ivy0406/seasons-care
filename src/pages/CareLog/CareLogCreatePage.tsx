@@ -4,6 +4,8 @@ import { format, isValid, parseISO } from 'date-fns';
 import { ChevronLeft } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
@@ -36,6 +38,8 @@ function CareLogCreatePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { currentGroupId } = useCurrentGroupId();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const initialSelectedDate = getSelectedDateFromState(location.state);
   const [draftEntry] = useState<CareLogEntry>(() =>
     createDraftCareLogEntry(initialSelectedDate),
@@ -94,6 +98,7 @@ function CareLogCreatePage() {
           isSubmitting={isLoading}
           onClose={handleClose}
           onSubmit={handleCreate}
+          groupMembers={groupMembers}
         />
       </section>
 

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
 import { format, parse, parseISO } from 'date-fns';
-import { ChevronRight } from 'lucide-react';
 
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import DataFormCard from '@/components/common/DataFormCard';
 import {
   ListFormDateTimeRow,
   ListFormImportantRow,
   ListFormInputRow,
   ListFormNoteRow,
-  ListFormRow,
+  ListFormParticipantsRow,
   ListFormRepeatRow,
   type RepeatPatternValue,
 } from '@/components/common/ListFormRows';
@@ -17,10 +17,10 @@ import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
-import SingleAvatar from '@/components/common/SingleAvatar';
 import VoiceCTA from '@/components/common/voiceCTA';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import type { CareLogEntry } from '@/pages/CareLog/types';
+import type { GroupMember } from '@/types/group';
 
 type CareLogFormCardProps = {
   entry: CareLogEntry;
@@ -33,6 +33,7 @@ type CareLogFormCardProps = {
   cardClassName?: string;
   toneClassName?: string;
   footerMode?: 'default' | 'submitOnly';
+  groupMembers?: GroupMember[];
 };
 
 function CareLogFormCard({
@@ -46,6 +47,7 @@ function CareLogFormCard({
   cardClassName = 'bg-neutral-800',
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
   footerMode = 'default',
+  groupMembers = [],
 }: CareLogFormCardProps) {
   const [titleValue, setTitleValue] = useState(entry.title);
   const [dateValue, setDateValue] = useState('');
@@ -56,6 +58,15 @@ function CareLogFormCard({
   const [isImportant, setIsImportant] = useState(entry.isImportant ?? false);
   const [note, setNote] = useState(entry.description);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
+  const [participantIds, setParticipantIds] = useState<string[]>(
+    entry.participants.map((p) => p.id),
+  );
+
+  const memberOptions = groupMembers.map((m) => ({
+    id: m.userId,
+    name: m.username,
+    avatar: getAvatarSrcByKey(m.avatarKey),
+  }));
 
   useEffect(() => {
     const startedAt = parseISO(entry.startsAt);
@@ -66,6 +77,7 @@ function CareLogFormCard({
     setRepeatPattern(entry.repeatPattern ?? 'none');
     setIsImportant(entry.isImportant ?? false);
     setNote(entry.description);
+    setParticipantIds(entry.participants.map((p) => p.id));
   }, [entry]);
 
   const isSubmitDisabled =
@@ -83,6 +95,10 @@ function CareLogFormCard({
       parseISO(entry.startsAt),
     );
 
+    const selectedParticipants = memberOptions.filter((m) =>
+      participantIds.includes(m.id),
+    );
+
     onSubmit({
       ...entry,
       title: titleValue,
@@ -90,6 +106,11 @@ function CareLogFormCard({
       startsAt: format(parsedStartsAt, "yyyy-MM-dd'T'HH:mm:ssxxx"),
       isImportant,
       repeatPattern: repeatPattern ?? 'none',
+      participants: selectedParticipants.map((m) => ({
+        id: m.id,
+        name: m.name,
+        src: m.avatar,
+      })),
     });
   };
 
@@ -99,7 +120,7 @@ function CareLogFormCard({
         title={title}
         className={cardClassName}
         toneClassName={toneClassName}
-        contentClassName="overflow-hidden px-0 py-0"
+        contentClassName="px-0 py-0"
       >
         <DataFormCard.Content>
           <div className="flex flex-col text-neutral-900">
@@ -140,28 +161,18 @@ function CareLogFormCard({
                 onChange={setRepeatPattern}
                 className="border-neutral-900"
               />
-              <ListFormRow
+              <ListFormParticipantsRow
                 label="參與者"
-                htmlFor={`${entry.id}-participants`}
+                members={memberOptions}
+                selectedIds={participantIds}
+                onSelectedChange={setParticipantIds}
+                fallbackParticipants={entry.participants.map((p) => ({
+                  id: p.id,
+                  name: p.name,
+                  avatar: p.src,
+                }))}
                 className="border-neutral-900"
-              >
-                <div
-                  id={`${entry.id}-participants`}
-                  className="flex items-center gap-2 text-neutral-900"
-                >
-                  <div className="flex items-center gap-2">
-                    {entry.participants.map((participant) => (
-                      <SingleAvatar
-                        key={participant.id}
-                        src={participant.src}
-                        name={participant.name}
-                        className="size-7 ring-1"
-                      />
-                    ))}
-                  </div>
-                  <ChevronRight className="size-4 shrink-0" strokeWidth={2.4} />
-                </div>
-              </ListFormRow>
+              />
               <ListFormImportantRow
                 label="是否標記為重要"
                 checked={isImportant}
