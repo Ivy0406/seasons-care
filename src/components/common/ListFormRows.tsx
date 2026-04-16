@@ -5,9 +5,8 @@ import type {
 } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { Check, ChevronRight } from 'lucide-react';
-
 import { format, getDaysInMonth, parse } from 'date-fns';
+import { Check, ChevronRight } from 'lucide-react';
 
 import FormDiaryRepeatSelector, {
   type FormDiaryRepeatValue,
@@ -354,7 +353,9 @@ function ListFormParticipantsRow({
               className="absolute top-full right-0 z-20 mt-2 min-w-52 overflow-hidden rounded-[8px] border-2 border-neutral-900 bg-neutral-100 shadow-[0_4px_0_0_rgba(33,37,41,0.08)]"
             >
               {members.length === 0 ? (
-                <p className="font-paragraph-md px-4 py-3 text-neutral-400">沒有群組成員</p>
+                <p className="font-paragraph-md px-4 py-3 text-neutral-400">
+                  沒有群組成員
+                </p>
               ) : (
                 members.map((member, index) => {
                   const isSelected = selectedIds.includes(member.id);
@@ -367,7 +368,9 @@ function ListFormParticipantsRow({
                         onClick={() => toggleMember(member.id)}
                         className={cn(
                           'font-paragraph-md flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none',
-                          isSelected ? 'bg-neutral-200 font-bold text-neutral-900' : 'hover:bg-neutral-200/70',
+                          isSelected
+                            ? 'bg-neutral-200 font-bold text-neutral-900'
+                            : 'hover:bg-neutral-200/70',
                         )}
                       >
                         <SingleAvatar
@@ -375,10 +378,15 @@ function ListFormParticipantsRow({
                           name={member.name}
                           className="size-10 shrink-0 ring-1"
                         />
-                        <span className="flex-1 text-neutral-900">{member.name}</span>
+                        <span className="flex-1 text-neutral-900">
+                          {member.name}
+                        </span>
                         <div className="flex size-5 items-center justify-center">
                           {isSelected && (
-                            <Check className="size-3.5 stroke-neutral-600" strokeWidth={3} />
+                            <Check
+                              className="size-3.5 stroke-neutral-600"
+                              strokeWidth={3}
+                            />
                           )}
                         </div>
                       </button>
