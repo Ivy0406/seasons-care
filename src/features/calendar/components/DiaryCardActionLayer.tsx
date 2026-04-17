@@ -67,8 +67,16 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
               <CareLogDetailCard
                 entry={detailEntry}
                 onClose={closeDetail}
-                onEdit={() => openEdit(detailEntry.id)}
-                onDelete={requestDeleteFromDetail}
+                onEdit={
+                  detailEntry.sourceType === 'event-series'
+                    ? undefined
+                    : () => openEdit(detailEntry.id)
+                }
+                onDelete={
+                  detailEntry.sourceType === 'event-series'
+                    ? undefined
+                    : requestDeleteFromDetail
+                }
               />
             ) : null}
           </AlertDialogPopup>

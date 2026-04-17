@@ -49,10 +49,16 @@ type CreateEventSeriesPayload = {
 
 type CreateEventSeriesResponse = EventSeriesApiResponse<EventSeriesItem>;
 
+type UpdateEventSeriesPayload = CreateEventSeriesPayload;
+
+type UpdateEventSeriesResponse = EventSeriesApiResponse<EventSeriesItem>;
+
 export type {
   EventSeriesRepeatPattern,
   EventSeriesItem,
   EventSeriesApiResponse,
   CreateEventSeriesPayload,
   CreateEventSeriesResponse,
+  UpdateEventSeriesPayload,
+  UpdateEventSeriesResponse,
 };

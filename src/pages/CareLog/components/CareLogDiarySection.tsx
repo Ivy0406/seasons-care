@@ -106,11 +106,7 @@ function CareLogDiarySection({
             <DiaryCard
               key={item.id}
               item={item}
-              onClick={
-                item.sourceType === 'event-series'
-                  ? undefined
-                  : () => diaryCardActions.openDetail(item.id)
-              }
+              onClick={() => diaryCardActions.openDetail(item.id)}
               onMoreClick={
                 item.sourceType === 'event-series'
                   ? undefined
