@@ -282,9 +282,7 @@ function HomepageNavigationBar({
 }: HomepageNavigationBarProps) {
   return (
     <div className={cn('border-b-2 border-neutral-900', className)}>
-      <div
-        className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5"
-      >
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
         <NavigationDateBadge
           selectedDate={selectedDate}
           onClick={onDateClick}
@@ -318,9 +316,7 @@ function PageNavigationBar({
 }: PageNavigationBarProps) {
   return (
     <div className={cn('border-b-2 border-neutral-900', className)}>
-      <div
-        className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5"
-      >
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
         {showTitle ? (
           <NavigationTitle
             as="span"

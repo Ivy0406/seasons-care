@@ -13,6 +13,7 @@ import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import type { HealthDraft } from '@/features/health/types';
 import type { MoneyDraft } from '@/features/money/types';
+import useVoiceDraftSubmit from '@/features/voice/hooks/useVoiceDraftSubmit';
 import {
   createEmptyDiaryDraft,
   hasDiaryDraftContent,
@@ -194,6 +195,16 @@ function DataFormCardCarousel() {
 
   const isLastSlide = activeIndex === visibleSlides.length - 1;
 
+  const { isSubmitting, handleSaveAll } = useVoiceDraftSubmit({
+    healthDraft: activeHealthDraft,
+    diaryDrafts: renderedDiaryDrafts,
+    moneyDraft: activeMoneyDraft,
+    groupMembers,
+    shouldSubmitHealth: shouldShowHealthForm,
+    shouldSubmitMoney: shouldShowMoneyForm,
+    onSuccess: () => setShowSuccessModal(true),
+  });
+
   const handleCloseResultFlow = () => {
     setShowSuccessModal(false);
     clearVoiceInput();
@@ -242,13 +253,15 @@ function DataFormCardCarousel() {
 
       <div className="mt-6 flex flex-col items-center gap-3 px-4">
         <RoundedButtonSecondary
-          className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800"
-          onClick={() => {
-            if (isLastSlide) {
-              setShowSuccessModal(true);
-            } else {
+          className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800 disabled:opacity-50"
+          disabled={isSubmitting}
+          onClick={async () => {
+            if (!isLastSlide) {
               swiper?.slideNext();
+              return;
             }
+
+            await handleSaveAll();
           }}
         >
           {isLastSlide ? '儲存全部' : '確認'}

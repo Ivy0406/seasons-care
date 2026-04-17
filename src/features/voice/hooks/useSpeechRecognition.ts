@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type SpeechRecognitionResult = {
   isSupported: boolean;
@@ -50,6 +50,7 @@ function useSpeechRecognition(): SpeechRecognitionResult {
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const isListeningRef = useRef(false);
 
   useEffect(() => {
     const SpeechRecognition =
@@ -66,16 +67,19 @@ function useSpeechRecognition(): SpeechRecognitionResult {
       recognition.lang = 'zh-TW';
 
       recognition.onstart = () => {
+        isListeningRef.current = true;
         setIsListening(true);
         setError(null);
       };
 
       recognition.onend = () => {
+        isListeningRef.current = false;
         setIsListening(false);
         setInterimTranscript('');
       };
 
       recognition.onerror = (event) => {
+        isListeningRef.current = false;
         setError(event.error);
         setIsListening(false);
       };
@@ -115,17 +119,17 @@ function useSpeechRecognition(): SpeechRecognitionResult {
     };
   }, []);
 
-  const startListening = () => {
-    if (!recognitionRef.current || isListening) return;
+  const startListening = useCallback(() => {
+    if (!recognitionRef.current || isListeningRef.current) return;
 
     try {
       recognitionRef.current.start();
     } catch {
       setError('start-failed');
     }
-  };
+  }, []);
 
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     if (!recognitionRef.current) return;
 
     try {
@@ -133,13 +137,13 @@ function useSpeechRecognition(): SpeechRecognitionResult {
     } catch {
       setError('stop-failed');
     }
-  };
+  }, []);
 
-  const resetTranscript = () => {
+  const resetTranscript = useCallback(() => {
     setTranscript('');
     setInterimTranscript('');
     setError(null);
-  };
+  }, []);
 
   return {
     isSupported,
