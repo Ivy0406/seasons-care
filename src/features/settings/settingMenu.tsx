@@ -4,6 +4,7 @@ import { NavigationSubheader } from '@/components/common/NavigationBar';
 
 type SettingMenuItem = {
   label: string;
+  path?: string;
   danger?: boolean;
 };
 
@@ -15,7 +16,7 @@ type SettingMenuSection = {
 const SETTING_MENU_SECTIONS: SettingMenuSection[] = [
   {
     title: '個人檔案',
-    items: [{ label: '編輯個人資料' }],
+    items: [{ label: '編輯個人資料', path: '/settings/profile' }],
   },
   {
     title: '幫助',
@@ -48,12 +49,15 @@ function SettingMenu() {
           <section key={title} className="mb-6">
             <h2 className="font-heading-sm mb-4 text-neutral-900">{title}</h2>
             <ul className="flex flex-col gap-4">
-              {items.map(({ label, danger }) => (
+              {items.map(({ label, path, danger }) => (
                 <li
                   key={label}
                   className={danger ? '' : 'border-b-2 border-neutral-400 pb-2'}
                 >
-                  <button className="w-full text-left">
+                  <button
+                    className="w-full text-left"
+                    onClick={() => path && navigate(path)}
+                  >
                     <p
                       className={`font-label-md ${danger ? 'text-error' : 'text-neutral-900'}`}
                     >
