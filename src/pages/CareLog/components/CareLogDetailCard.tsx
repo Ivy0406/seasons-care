@@ -101,28 +101,22 @@ function CareLogDetailCard({
         </div>
       </DataFormCard.Content>
 
-      {(onDelete || onEdit) ? (
-        <DataFormCard.Footer>
-          <div className="grid grid-cols-2 gap-4">
-            {onDelete ? (
-              <RoundedButtonSecondary
-                onClick={onDelete}
-                className="min-w-0 border-neutral-50 bg-transparent text-neutral-50"
-              >
-                刪除日誌
-              </RoundedButtonSecondary>
-            ) : null}
-            {onEdit ? (
-              <RoundedButtonPrimary
-                onClick={onEdit}
-                className="bg-primary-default min-w-0 border-neutral-900 text-neutral-900"
-              >
-                編輯日誌
-              </RoundedButtonPrimary>
-            ) : null}
-          </div>
-        </DataFormCard.Footer>
-      ) : null}
+      <DataFormCard.Footer>
+        <div className="grid grid-cols-2 gap-4">
+          <RoundedButtonSecondary
+            onClick={onDelete}
+            className="min-w-0 border-neutral-50 bg-transparent text-neutral-50"
+          >
+            刪除日誌
+          </RoundedButtonSecondary>
+          <RoundedButtonPrimary
+            onClick={onEdit}
+            className="bg-primary-default min-w-0 border-neutral-900 text-neutral-900"
+          >
+            編輯日誌
+          </RoundedButtonPrimary>
+        </div>
+      </DataFormCard.Footer>
     </DataFormCard>
   );
 }
