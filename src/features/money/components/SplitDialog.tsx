@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { X } from 'lucide-react';
 
@@ -48,14 +48,18 @@ function SplitDialog({
   const { isLoading: isSubmitting, handleSubmitSplit } = useSubmitSplit();
 
   const expenses = scope === 'daily' ? dailyExpenses : monthlyExpenses;
-  const pendingItems = expenses
-    .filter(({ splitStatus }) => splitStatus === 'pending')
-    .map(({ id, title, amount, createdBy }) => ({
-      id,
-      title,
-      amount,
-      createdBy,
-    }));
+  const pendingItems = useMemo(
+    () =>
+      expenses
+        .filter(({ splitStatus }) => splitStatus === 'pending')
+        .map(({ id, title, amount, createdBy }) => ({
+          id,
+          title,
+          amount,
+          createdBy,
+        })),
+    [expenses],
+  );
 
   const [step, setStep] = useState<'select' | 'preview'>('select');
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
@@ -66,16 +70,23 @@ function SplitDialog({
     open: boolean;
     message?: string;
   }>({ open: false });
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
-    setSelectedItemIds(pendingItems.map(({ id }) => id));
-    setSelectedMemberIds(members.map(({ userId }) => userId));
-    setStep('select');
-    setPreviewData(null);
-    setPreviewError(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+    if (!open) {
+      setIsInitialized(false);
+      setStep('select');
+      setPreviewData(null);
+      setPreviewError(null);
+      return;
+    }
+
+    if (!isInitialized && pendingItems.length > 0 && members.length > 0) {
+      setSelectedItemIds(pendingItems.map(({ id }) => id));
+      setSelectedMemberIds(members.map(({ userId }) => userId));
+      setIsInitialized(true);
+    }
+  }, [open, isInitialized, pendingItems, members]);
 
   const handleGoToPreview = async () => {
     setPreviewError(null);
