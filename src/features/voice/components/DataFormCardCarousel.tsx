@@ -168,7 +168,7 @@ function DataFormCardCarousel() {
           key: `diary-${draft.id}`,
           content: (
             <DiaryDataFormCard
-              title={`新日誌 ${index + 1}`}
+              title={`新任務 ${index + 1}`}
               value={draft}
               onChange={(updates) => handleDiaryDraftChange(draft.id, updates)}
               groupMembers={groupMembers}
@@ -286,7 +286,7 @@ function DataFormCardCarousel() {
           if (!result.hasDetectedContent) {
             clearVoiceInput();
             toast.error(
-              '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+              '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
             );
             return { shouldClose: false };
           }

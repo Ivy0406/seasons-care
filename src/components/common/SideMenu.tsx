@@ -24,9 +24,9 @@ type SideMenuItem = {
 
 const SIDE_MENU_ITEMS: SideMenuItem[] = [
   { name: '總覽', path: '/homepage' },
-  { name: '日誌', path: '/calendar-page' },
+  { name: '任務', path: '/calendar-page' },
   { name: '帳目', path: '/money' },
-  { name: '報告', path: '/health-report' },
+  { name: '健康', path: '/health-report' },
   { name: '設定', path: '/settings' },
 ];
 

@@ -89,7 +89,7 @@ function CreateEntryDrawer({
 
         <div className="divide-y divide-neutral-400 overflow-hidden rounded-[8px] bg-neutral-300">
           <ActionButton
-            label="日誌"
+            label="任務"
             icon={<NotebookText className="size-6" strokeWidth={2} />}
             onClick={() => {
               onOpenChange(false);

@@ -81,20 +81,20 @@ function CareLogCreatePage() {
       <div className="relative flex items-center justify-center px-4 py-5">
         <button
           type="button"
-          aria-label="返回日誌頁"
+          aria-label="返回任務頁"
           className="absolute left-4 inline-flex size-10 items-center justify-center text-neutral-50"
           onClick={handleClose}
         >
           <ChevronLeft className="size-7" strokeWidth={2} />
         </button>
-        <h1 className="font-label-lg">新增日誌</h1>
+        <h1 className="font-label-lg">新增任務</h1>
       </div>
 
       <section className="mx-auto w-full max-w-200 flex-1 px-4 pt-4">
         <CareLogFormCard
           entry={draftEntry}
-          title="新增日誌"
-          submitLabel="新增日誌"
+          title="新增任務"
+          submitLabel="新增任務"
           isSubmitting={isLoading}
           onClose={handleClose}
           onSubmit={handleCreate}
