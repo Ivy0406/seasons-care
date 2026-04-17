@@ -257,7 +257,7 @@ function JournalDataSmallForm({
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
-        label="日誌名稱"
+        label="任務名稱"
         inputProps={{
           value: value.title,
           onChange: (event) => onChange({ title: event.target.value }),

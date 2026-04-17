@@ -13,7 +13,7 @@ type DiaryDataFormCardProps = {
 };
 
 function DiaryDataFormCard({
-  title = '新日誌',
+  title = '新任務',
   value,
   onChange,
   groupMembers = [],

@@ -51,12 +51,12 @@ function useCreateCareLogEntry() {
     const currentUserId = getCurrentUserId();
 
     if (!careGroupId) {
-      toast.error('尚未選擇照護群組，無法新增日誌');
+      toast.error('尚未選擇照護群組，無法新增任務');
       return null;
     }
 
     if (!currentUserId) {
-      toast.error('尚未取得目前使用者資訊，無法新增日誌');
+      toast.error('尚未取得目前使用者資訊，無法新增任務');
       return null;
     }
 
@@ -75,19 +75,19 @@ function useCreateCareLogEntry() {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 400:
-            toast.error(detail ?? '請確認日誌資料格式是否正確');
+            toast.error(detail ?? '請確認任務資料格式是否正確');
             break;
           case 401:
-            toast.error(detail ?? '請先登入後再新增日誌');
+            toast.error(detail ?? '請先登入後再新增任務');
             break;
           case 403:
-            toast.error(detail ?? '你沒有權限在此群組新增日誌');
+            toast.error(detail ?? '你沒有權限在此群組新增任務');
             break;
           case 404:
             toast.error(detail ?? '找不到目前的照護群組');
             break;
           default:
-            toast.error(detail ?? '新增日誌失敗，請稍後再試');
+            toast.error(detail ?? '新增任務失敗，請稍後再試');
             break;
         }
       }

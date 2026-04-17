@@ -25,7 +25,7 @@ const TABS_LIST: {
 }[] = [
   {
     value: 'diary',
-    label: '今日日誌',
+    label: '今日任務',
     bgClass: 'bg-primary-default data-active:bg-primary-default',
     textClass: 'font-heading-sm text-neutral-900',
   },
