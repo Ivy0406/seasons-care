@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { format, parseISO } from 'date-fns';
-import { Check, EllipsisVertical } from 'lucide-react';
+import { Check, EllipsisVertical, Repeat } from 'lucide-react';
 
 import { CheckBoxButton } from '@/components/common/CircleIButton';
 import SingleAvatar from '@/components/common/SingleAvatar';
@@ -71,7 +71,15 @@ function DiaryCardContent({
             <p className="font-label-lg">{displayTime}</p>
           </div>
           <div className="pl-4.5">
-            <h2 className="font-heading-sm">{item.title}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="font-heading-sm">{item.title}</h2>
+              {item.sourceType === 'event-series' ? (
+                <Repeat
+                  className="size-5 shrink-0 text-neutral-500"
+                  strokeWidth={1.5}
+                />
+              ) : null}
+            </div>
             <p className="font-paragraph-sm mt-3 text-neutral-700">
               {item.description}
             </p>
