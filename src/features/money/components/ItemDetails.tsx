@@ -77,7 +77,7 @@ function ItemDetails({ item }: { item: ExpenseItem }) {
         <div className="flex items-center gap-2">
           <p className="font-paragraph-md text-neutral-900">金額</p>
           <p className="font-heading-md text-neutral-900">
-            $ {item.amount.toLocaleString()}
+            $ {(item.amount ?? 0).toLocaleString()}
           </p>
         </div>
         <div className="min-h-8 border-t-2 border-neutral-900">

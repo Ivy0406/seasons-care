@@ -93,7 +93,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
 
             <div className="flex items-center justify-between pt-2">
               <span className="font-label-lg text-neutral-900">
-                $ {item.amount.toLocaleString()}
+                $ {(item.amount ?? 0).toLocaleString()}
               </span>
               {creator && (
                 <SingleAvatar
