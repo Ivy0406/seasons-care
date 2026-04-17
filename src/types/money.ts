@@ -95,6 +95,9 @@ type MemberTotalItem = {
   payerCount: number;
   shareTotal: number;
   shareCount: number;
+  selfExpenseTotal: number;
+  selfExpenseCount: number;
+  personalPayableTotal: number;
 };
 
 type MemberTotalsData = {
