@@ -29,7 +29,7 @@ function CalendarDayButton({
     <button
       type="button"
       className={cn(
-        'font-paragraph-sm relative flex size-10 items-center justify-center rounded-full transition-colors',
+        'font-paragraph-md relative flex size-10 items-center justify-center rounded-full transition-colors',
         modifiers.outside && 'text-neutral-600/50',
         modifiers.today &&
           !modifiers.selected &&
@@ -173,7 +173,7 @@ function Calendar({
           'inline-flex size-4  items-center justify-center rounded-full text-neutral-900 transition-colors hover:bg-neutral-50/80',
         [UI.MonthGrid]: 'w-full',
         [UI.Weekdays]: 'grid grid-cols-7',
-        [UI.Weekday]: 'font-paragraph-sm flex items-center justify-center',
+        [UI.Weekday]: 'font-paragraph-md flex items-center justify-center',
         [UI.Week]: 'mt-2 grid grid-cols-7',
         [UI.Day]: 'flex  items-center justify-center p-0',
         [UI.DayButton]: 'size-9',
