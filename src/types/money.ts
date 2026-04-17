@@ -91,8 +91,10 @@ type MemberTotalItem = {
   userId: string;
   name: string;
   avatarUrl: string | null;
-  totalAmount: number;
-  expenseCount: number;
+  payerTotal: number;
+  payerCount: number;
+  shareTotal: number;
+  shareCount: number;
 };
 
 type MemberTotalsData = {
