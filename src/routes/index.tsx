@@ -13,6 +13,7 @@ import LoginPage from '@/pages/LoginPage';
 import MoneyPage from '@/pages/MoneyPage';
 import OnboardingPage from '@/pages/OnboardingPage';
 import RegistrationPage from '@/pages/RegistrationPage';
+import SettingPage from '@/pages/SettingPage';
 
 const router = createHashRouter([
   {
@@ -66,6 +67,10 @@ const router = createHashRouter([
       {
         path: 'money',
         Component: MoneyPage,
+      },
+      {
+        path: 'settings',
+        Component: SettingPage,
       },
     ],
   },
