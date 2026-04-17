@@ -98,6 +98,7 @@ type MemberTotalItem = {
   selfExpenseTotal: number;
   selfExpenseCount: number;
   personalPayableTotal: number;
+  currentPayableTotal: number;
 };
 
 type MemberTotalsData = {
