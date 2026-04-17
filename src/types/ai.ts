@@ -190,7 +190,7 @@ const DIARY_EXTRACTION_SCHEMA = {
 } as const;
 
 const DIARY_EXTRACTION_PROMPT = `
-你是照護日誌語音紀錄抽取器。請從使用者的中文語音轉文字中，擷取日誌表單需要的欄位並輸出 JSON。
+你是照護任務語音紀錄抽取器。請從使用者的中文語音轉文字中，擷取任務表單需要的欄位並輸出 JSON。
 
 規則：
 1. 只能回傳符合 schema 的 JSON，不要加任何說明文字。
@@ -202,7 +202,7 @@ const DIARY_EXTRACTION_PROMPT = `
 7. title 要優先填寫，請用 4 到 16 字的短標題概括主要事件，不要留空後只填 note。
 8. note 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 note，也不要讓 note 和 title 重複。
 9. participants 暫時由使用者自行加入，無需判斷回傳。
-10. summary 用繁體中文，簡短描述已抽取到的日誌內容。
+10. summary 用繁體中文，簡短描述已抽取到的任務內容。
 `;
 
 function isDiaryExtractionResult(

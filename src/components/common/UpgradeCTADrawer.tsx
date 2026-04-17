@@ -35,7 +35,7 @@ function UpgradeCTADrawer({ open, onOpenChange }: UpgradeCTADrawerProps) {
           />
         </div>
         <div className="font-paragraph-md flex flex-col items-center text-neutral-100">
-          <p>儲存完整歷史日誌與醫療數據，</p>
+          <p>儲存完整歷史任務與醫療數據，</p>
           <p>為家人提供最周全的守護！</p>
         </div>
       </div>

@@ -48,8 +48,8 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
           openEdit(selectedActionEntry.id);
         }}
         onDelete={requestDeleteFromActions}
-        editLabel="編輯日誌"
-        deleteLabel="刪除日誌"
+        editLabel="編輯任務"
+        deleteLabel="刪除任務"
       />
 
       <AlertDialog

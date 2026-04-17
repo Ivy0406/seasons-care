@@ -49,7 +49,7 @@ async function handleCareLogVoiceFinish({
   const parsedDraft = parsedDrafts[0];
 
   if (!parsedDraft || !hasDiaryDraftContent(parsedDraft)) {
-    toast.error('這段語音暫時無法辨識成日誌內容，請重新錄製或手動輸入。');
+    toast.error('這段語音暫時無法辨識成任務內容，請重新錄製或手動輸入。');
     return { shouldClose: false };
   }
 

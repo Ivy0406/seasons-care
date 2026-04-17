@@ -26,7 +26,7 @@ function useGetCareLogEntries() {
         const response = await getCareLogEntries(careGroupId);
         return response.data.data;
       } catch {
-        toast.error('載入日誌失敗');
+        toast.error('載入任務失敗');
         return [];
       }
     },

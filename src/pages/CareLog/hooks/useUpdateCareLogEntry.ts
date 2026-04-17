@@ -31,7 +31,7 @@ function useUpdateCareLogEntry() {
     const careGroupId = getCurrentCareGroupId();
 
     if (!careGroupId) {
-      toast.error('尚未選擇照護群組，無法更新日誌');
+      toast.error('尚未選擇照護群組，無法更新任務');
       return null;
     }
 
@@ -51,19 +51,19 @@ function useUpdateCareLogEntry() {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 400:
-            toast.error(detail ?? '請確認日誌資料格式是否正確');
+            toast.error(detail ?? '請確認任務資料格式是否正確');
             break;
           case 401:
-            toast.error(detail ?? '請先登入後再更新日誌');
+            toast.error(detail ?? '請先登入後再更新任務');
             break;
           case 403:
-            toast.error(detail ?? '你沒有權限更新此日誌');
+            toast.error(detail ?? '你沒有權限更新此任務');
             break;
           case 404:
-            toast.error(detail ?? '找不到要更新的日誌');
+            toast.error(detail ?? '找不到要更新的任務');
             break;
           default:
-            toast.error(detail ?? '更新日誌失敗，請稍後再試');
+            toast.error(detail ?? '更新任務失敗，請稍後再試');
             break;
         }
       }

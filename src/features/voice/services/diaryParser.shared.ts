@@ -155,7 +155,7 @@ function resolveDiaryTimeValue(transcript: string, fallbackTimeValue: string) {
 function stripDiaryLeadIn(text: string) {
   return text
     .replace(
-      /^(提醒我|幫我記錄|幫我新增|記一下|記得|新增日誌|寫日誌|幫我寫日誌)\s*/u,
+      /^(提醒我|幫我記錄|幫我新增|記一下|記得|新增任務|寫任務|幫我寫任務)\s*/u,
       '',
     )
     .trim();
@@ -396,7 +396,7 @@ function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
   const summaryParts: string[] = [];
 
   if (draft.title.trim() !== '') {
-    summaryParts.push(`日誌名稱「${draft.title.trim()}」`);
+    summaryParts.push(`任務名稱「${draft.title.trim()}」`);
   }
 
   if (draft.note.trim() !== '') {
@@ -418,8 +418,8 @@ function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
   }
 
   return summaryParts.length > 0
-    ? `已從語音擷取日誌內容：${summaryParts.join('、')}。`
-    : '已建立語音日誌草稿，請確認欄位後再儲存。';
+    ? `已從語音擷取任務內容：${summaryParts.join('、')}。`
+    : '已建立語音任務草稿，請確認欄位後再儲存。';
 }
 
 function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
@@ -433,7 +433,7 @@ function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
     participantIds: [],
     isImportant: false,
     transcript: '',
-    summary: '請先錄音或手動輸入日誌內容。',
+    summary: '請先錄音或手動輸入任務內容。',
   };
 }
 
