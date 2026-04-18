@@ -46,12 +46,11 @@ function useUpdateEventOccurrence() {
         description: entry.description,
         participants: entry.participants.map((participant) => participant.id),
       });
+      const responseData = response.data.data;
 
       return {
         startsAt:
-          response.data.data.scheduledAt ??
-          response.data.data.startsAt ??
-          entry.startsAt,
+          responseData?.scheduledAt ?? responseData?.startsAt ?? entry.startsAt,
       };
     } catch (error) {
       const detail = getErrorDetail(error);

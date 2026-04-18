@@ -147,6 +147,7 @@ function CareLogFormCard({
           <ListFormRepeatRow
             value={repeatPattern}
             onChange={setRepeatPattern}
+            selectedDateValue={dateValue}
             className="border-neutral-900"
           />
         </>
