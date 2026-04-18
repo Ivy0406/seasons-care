@@ -177,6 +177,11 @@ function NotificationPage() {
                 expense={expense}
                 groupMembers={groupMembers}
                 label="已執行分帳"
+                onClick={() =>
+                  navigate('/money', {
+                    state: { date: expense.expenseDate, expenseId: expense.id },
+                  })
+                }
               />
             ))}
           </>
@@ -212,6 +217,11 @@ function NotificationPage() {
                 expense={expense}
                 groupMembers={groupMembers}
                 label="待執行分帳"
+                onClick={() =>
+                  navigate('/money', {
+                    state: { date: expense.expenseDate, expenseId: expense.id },
+                  })
+                }
               />
             ))}
           </>

@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { isValid, parseISO } from 'date-fns';
+import { useLocation } from 'react-router';
 
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Loading from '@/components/common/Loading';
@@ -17,11 +20,43 @@ import MemberExpenseSummary from '@/features/money/components/MemberExpenseSumma
 import MoneyTabsCard from '@/features/money/components/MoneyTabsCard';
 import useActivedMoneyTab from '@/features/money/hooks/useActivedMoneyTab';
 import useActiveExpenses from '@/features/money/hooks/useActiveExpenses';
+import useSelectedDate from '@/features/money/hooks/useSelectedDate';
 
 function MoneyPage() {
-  const { activeTab } = useActivedMoneyTab();
+  const location = useLocation();
+  const { activeTab, setActivedMoneyTab } = useActivedMoneyTab();
+  const { setSelectedDate } = useSelectedDate();
   const { cardListItems, isLoading } = useActiveExpenses();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+
+  const initialOpenExpenseId = useMemo(() => {
+    if (
+      !location.state ||
+      typeof location.state !== 'object' ||
+      !('expenseId' in location.state)
+    ) {
+      return undefined;
+    }
+    const { expenseId } = location.state as { expenseId?: unknown };
+    return typeof expenseId === 'string' ? expenseId : undefined;
+  }, [location.state]);
+
+  useEffect(() => {
+    if (
+      !location.state ||
+      typeof location.state !== 'object' ||
+      !('date' in location.state)
+    ) {
+      return;
+    }
+    const { date } = location.state as { date?: unknown };
+    if (typeof date !== 'string') return;
+    const parsed = parseISO(date.replace('Z', ''));
+    if (!isValid(parsed)) return;
+    setSelectedDate(parsed);
+    setActivedMoneyTab('daily');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [createSuccessOpen, setCreateSuccessOpen] = useState(false);
 
@@ -42,7 +77,10 @@ function MoneyPage() {
       ) : (
         <>
           {activeTab === 'monthly' && <MemberExpenseSummary />}
-          <CardsList items={cardListItems} />
+          <CardsList
+            items={cardListItems}
+            initialOpenExpenseId={initialOpenExpenseId}
+          />
         </>
       )}
       <FixedBottomButton onClick={() => setShowCreateCard(true)} label="新增" />
