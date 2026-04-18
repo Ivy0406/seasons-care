@@ -150,7 +150,11 @@ function NotificationPage() {
                 eventType="重要任務"
                 title={entry.title}
                 time={format(parseISO(entry.startsAt), 'HH:mm')}
-                onClick={() => {}}
+                onClick={() =>
+                  navigate('/calendar-page', {
+                    state: { selectedDate: entry.startsAt, entryId: entry.id },
+                  })
+                }
               />
             ))}
             {completedImportantEntries.map((entry) => (
@@ -160,7 +164,11 @@ function NotificationPage() {
                 eventType="已完成重要任務"
                 title={entry.title}
                 time={format(parseISO(entry.startsAt), 'HH:mm')}
-                onClick={() => {}}
+                onClick={() =>
+                  navigate('/calendar-page', {
+                    state: { selectedDate: entry.startsAt, entryId: entry.id },
+                  })
+                }
               />
             ))}
             {todaySplitExpenses.map((expense) => (
@@ -191,7 +199,11 @@ function NotificationPage() {
                 eventType="重要任務"
                 title={entry.title}
                 time={format(parseISO(entry.startsAt), 'MM/dd HH:mm')}
-                onClick={() => {}}
+                onClick={() =>
+                  navigate('/calendar-page', {
+                    state: { selectedDate: entry.startsAt, entryId: entry.id },
+                  })
+                }
               />
             ))}
             {upcomingSplitExpenses.map((expense) => (

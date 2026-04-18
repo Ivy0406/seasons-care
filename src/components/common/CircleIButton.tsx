@@ -28,7 +28,7 @@ const sizeClassMap = {
   md: 'h-10 w-10 [&&_svg]:size-6 [&&_svg]:stroke-[2]',
   modal: 'h-10 w-10 [&&_svg]:size-4 [&&_svg]:stroke-[3]',
   lg: 'h-12 w-12 [&&_svg]:size-8 [&&_svg]:stroke-[2.5]',
-  notification: 'h-12 w-12 [&&_svg]:size-6 [&&_svg]:stroke-[2.5]',
+  notification: 'h-12 w-12 [&&_svg]:size-6 [&&_svg]:stroke-[1.5]',
 };
 
 // 1. Primary ：黑邊框、深色底
