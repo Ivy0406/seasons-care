@@ -38,6 +38,16 @@ function getSelectedDateFromState(state: unknown) {
   return isValid(parsedDate) ? parsedDate : undefined;
 }
 
+function getEntryIdFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('entryId' in state)) {
+    return undefined;
+  }
+
+  const { entryId } = state as { entryId?: unknown };
+
+  return typeof entryId === 'string' ? entryId : undefined;
+}
+
 function CalendarPage() {
   const location = useLocation();
   const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
@@ -46,6 +56,7 @@ function CalendarPage() {
     useUpdateCareLogEntry();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const initialSelectedDate = getSelectedDateFromState(location.state);
+  const initialDetailEntryId = getEntryIdFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     initialSelectedDate ?? defaultSelectedDate,
@@ -112,6 +123,7 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
+          initialDetailEntryId={initialDetailEntryId}
           isUpdatingEntry={isUpdatingEntry}
           isDeletingEntry={isDeletingEntry}
           onToggleStatus={async (entryId, status) => {
