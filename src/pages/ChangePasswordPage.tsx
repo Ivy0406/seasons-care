@@ -9,6 +9,7 @@ function ChangePasswordPage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <NavigationSubheader
+        className="mx-auto max-w-200"
         layout="centered"
         title="變更密碼"
         showChevron={false}

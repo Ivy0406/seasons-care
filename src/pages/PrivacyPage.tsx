@@ -9,6 +9,7 @@ function PrivacyPage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <NavigationSubheader
+        className="mx-auto max-w-200"
         layout="centered"
         title="隱私權與免責聲明"
         showChevron={false}

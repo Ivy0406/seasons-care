@@ -68,7 +68,10 @@ function UpdateProfile({
   const handleFormSubmit = async (data: UpdateProfileFormValues) => {
     setIsLoading(true);
     try {
-      await setupProfile({ userName: data.name, avatarKey: selectedAvatar.avatarKey });
+      await setupProfile({
+        userName: data.name,
+        avatarKey: selectedAvatar.avatarKey,
+      });
       setModal({ open: true, variant: 'success', message: '個人資料已更新' });
     } catch (error) {
       const detail = axios.isAxiosError(error)
@@ -86,7 +89,7 @@ function UpdateProfile({
   };
 
   return (
-    <>
+    <section className="mx-auto max-w-200">
       <form
         className="flex w-full flex-col items-center gap-8 p-6"
         onSubmit={handleSubmit(handleFormSubmit)}
@@ -168,7 +171,7 @@ function UpdateProfile({
         autoCloseMs={modal.variant === 'success' ? 1500 : undefined}
         onClose={handleModalClose}
       />
-    </>
+    </section>
   );
 }
 

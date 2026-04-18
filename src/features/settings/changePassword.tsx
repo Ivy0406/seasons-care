@@ -43,7 +43,7 @@ function ChangePassword() {
   const confirmPasswordValue = watch('confirmPassword', '');
 
   return (
-    <>
+    <section className='mx-auto max-w-200'>
       <form
         className="flex w-full flex-col gap-6 p-6"
         onSubmit={handleSubmit(() => setIsModalOpen(true))}
@@ -125,7 +125,7 @@ function ChangePassword() {
         autoCloseMs={1500}
         onClose={() => navigate('/settings')}
       />
-    </>
+    </section>
   );
 }
 

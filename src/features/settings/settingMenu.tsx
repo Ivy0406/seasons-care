@@ -41,7 +41,7 @@ function SettingMenu() {
 
   return (
     <>
-      <div className="min-h-screen bg-neutral-100">
+      <div className="w-full max-w-200 mx-auto min-h-screen bg-neutral-100">
         <NavigationSubheader
           layout="centered"
           title="設定"
