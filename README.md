@@ -1,7 +1,9 @@
-<h1 align="center">
-  <img src="public/favicon.svg" width="32" /> 
-  Seasons Care 蒔歲
-</h1>
+<p align="center">
+  <img src="public/favicon.svg" width="80" />
+</p>
+
+<h1 align="center">Seasons Care 季節照護</h1>
+
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite)](https://vitejs.dev/)
@@ -83,24 +85,30 @@ npm run dev
 ## 🤝 協作規範
 🌱 **分支命名規範**
 
-類別  | 用途                        | 範例 
----------------|-----------------------------------|----------------------------
-feature/       | 新增功能                           | feature/[branch-name]
-update/        | 更新、優化（UI & UX、改文案）         | update/[branch-name]
-fix/           | 修復 Bug                           | fix/[branch-name]
-hotfix/        | 修復重大 Bug                        | hotfix/[branch-name]
-chore/         | 初始化專案或環境建置 (npm 安裝)       | chore/[branch-name]
+*   **格式**：`類型/任務說明`（以烤肉串 kebab-case 命名為主）
+
+| 分支類型 | 分支名稱 | 來自 | 合併至 | 說明 |
+| :--- | :--- | :--- | :--- | :--- |
+| **主分支** | `main` | - | - | 穩定版本，嚴禁直接 push。 |
+| **開發分支** | `dev` | `main` | `main` | 開發基準線。 |
+| **測試分支** | `qa` | `dev` | - | 模擬正式環境的測試分支。 |
+| **新增分支** | `feature` | `dev` | `dev` | 新增功能或畫面。 |
+| **更新分支** | `update` | `dev` | `dev` | 現有功能的邏輯或 UI 變更。 |
+| **修復分支** | `fix` | `dev` | `dev` | 開發中發現的 Bug 修復。 |
+| **緊急修復** | `hotfix` | `main` | `main` & `dev` | 線上環境緊急修復。 |
+| **重構分支** | `refactor` | `dev` | `dev` | 代碼優化，不改變外部行為。 |
+| **雜事分支** | `chore` | `dev` | `dev` | 專案文件、yml 腳本、依賴包、格式調整。 |
 
 💬 **Commit 訊息規範**
-* 用「 類別 : 做的事」
-* 「：」後面要空格後，再打要做的事。
 
-類別  | 用途 
----------------|------------------------------------------------------------
-feat           | 新增功能 
-update         | 修改既有項目或功能（UI / UX 微調、既有功能的行為優化）
-fix            | 修復 Bug 
-style          | 格式、風格（不影響程式碼運行的變動，如空白鍵、分號等）
-perf           | 改善效能 
-chore          | 建構程序或輔助工具的變動（如：npm 安裝、文件更新）
-refactor       | 重構（既不是修復 Bug 也不是新增功能的程式碼變動）
+*   **格式**：`類型: 訊息描述`（中間加空格，訊息以英文為主）
+*   **範例**：`fix: read care-log participant id from currentUser`
+
+| 類型 | 說明 |
+| :--- | :--- |
+| **feat** | 新增 UI 或功能。 |
+| **update** | 既有功能或 UI 調整。 |
+| **fix** | 修補 Bug。 |
+| **refactor** | 重構（非功能、非 Bug）。 |
+| **chore** | 雜項、環境設定。（如：README、skills 文件） |
+| **style** | 僅影響程式碼排版，不涉及邏輯。 |
