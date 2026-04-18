@@ -50,7 +50,6 @@ function CalendarPage() {
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
-  const { eventSeries, refetch: refetchEventSeries } = useGetEventSeries();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const initialSelectedDate = getSelectedDateFromState(location.state);
@@ -61,6 +60,7 @@ function CalendarPage() {
   const [visibleMonth, setVisibleMonth] = useState<Date>(
     initialSelectedDate ?? defaultSelectedDate,
   );
+  const { eventSeries } = useGetEventSeries(visibleMonth);
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
 
   useEffect(() => {
@@ -196,10 +196,9 @@ function CalendarPage() {
         onCreated={async (createdEntry) => {
           const createdDate = parseISO(createdEntry.startsAt);
 
-          await refetchEntries();
-          await refetchEventSeries();
           setSelectedDate(createdDate);
           setVisibleMonth(createdDate);
+          await refetchEntries();
         }}
       />
 

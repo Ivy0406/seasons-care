@@ -60,13 +60,19 @@ function useCreateEventSeries() {
         toCreateEventSeriesPayload(entry, currentUserId),
       );
 
-      return { startsAt: response.data.data.startsAt };
+      return {
+        startsAt:
+          response.data.data.scheduledAt ??
+          response.data.data.startsAt ??
+          entry.startsAt,
+      };
     } catch (error) {
       const detail = getErrorDetail(error);
 
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 400:
+          case 422:
             toast.error(detail ?? '請確認重複事件資料格式是否正確');
             break;
           case 401:
@@ -82,6 +88,8 @@ function useCreateEventSeries() {
             toast.error(detail ?? '新增重複事件失敗，請稍後再試');
             break;
         }
+      } else {
+        toast.error('新增重複事件失敗，請稍後再試');
       }
 
       return null;

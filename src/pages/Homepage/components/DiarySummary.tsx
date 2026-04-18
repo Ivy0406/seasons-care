@@ -4,8 +4,8 @@ import { isSameDay, parseISO } from 'date-fns';
 
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
-import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
@@ -46,7 +46,7 @@ function groupByStatus(
 
 function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const { entries, refetchEntries } = useGetCareLogEntries();
-  const { eventSeries } = useGetEventSeries();
+  const { eventSeries } = useGetEventSeries(selectedDate);
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =

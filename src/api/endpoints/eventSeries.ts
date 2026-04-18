@@ -7,7 +7,7 @@ import type {
 } from '@/types/eventSeries';
 
 const buildEventSeriesPath = (careGroupId: string) =>
-  `/api/care-groups/${careGroupId}/event-series`;
+  `/api/care-groups/${careGroupId}/events`;
 
 const createEventSeries = (
   careGroupId: string,

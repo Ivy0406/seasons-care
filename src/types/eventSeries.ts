@@ -3,24 +3,20 @@ import type { CareLogPagination } from '@/types/careLog';
 type EventSeriesRepeatPattern = 'none' | 'daily' | 'weeklyDay' | 'monthly';
 
 type EventSeriesItem = {
-  id: string;
+  eventSeriesId: string;
   title: string;
   description: string;
-  startsAt: string;
-  durationMinutes: number;
+  scheduledAt?: string;
+  startsAt?: string;
   repeatPattern: EventSeriesRepeatPattern;
-  repeatInterval: number;
-  daysOfWeek: number[];
-  endType: number;
-  endAt: string;
-  occurrenceCount: number;
   participants: string[];
   status: string;
   isImportant: boolean;
-  careGroupId: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
+  daysOfWeek?: number[];
+  careGroupId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
 };
 
 type EventSeriesApiResponse<T> = {
@@ -35,15 +31,9 @@ type CreateEventSeriesPayload = {
   title: string;
   description: string;
   startsAt: string;
-  durationMinutes: number;
   repeatPattern: EventSeriesRepeatPattern;
-  repeatInterval: number;
   daysOfWeek: number[];
-  endType: number;
-  endAt: string;
-  occurrenceCount: number;
   participants: string[];
-  status: string;
   isImportant: boolean;
 };
 

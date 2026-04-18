@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { toast } from 'sonner';
 
 import apiClient from '@/api/client';
@@ -12,13 +13,15 @@ import type {
 const getCurrentCareGroupId = () =>
   window.localStorage.getItem(CURRENT_GROUP_ID_KEY);
 
-function useGetEventSeries() {
+function useGetEventSeries(date: Date) {
   const careGroupId = getCurrentCareGroupId();
   const hasCareGroupId = !!careGroupId;
+  const from = format(startOfMonth(date), 'yyyy-MM-dd');
+  const to = format(endOfMonth(date), 'yyyy-MM-dd');
 
   const query = useQuery({
     queryKey: careGroupId
-      ? calendarKeys.eventSeries(careGroupId)
+      ? calendarKeys.eventSeries(careGroupId, from, to)
       : calendarKeys.all,
     queryFn: async () => {
       if (!careGroupId) return [];
@@ -26,7 +29,11 @@ function useGetEventSeries() {
       try {
         const response = await apiClient.get<
           EventSeriesApiResponse<EventSeriesItem[]>
-        >(`/api/care-groups/${careGroupId}/event-series`, {
+        >(`/api/care-groups/${careGroupId}/events`, {
+          params: {
+            from,
+            to,
+          },
           headers: {
             careGroupId,
           },
