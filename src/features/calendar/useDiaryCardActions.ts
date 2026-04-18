@@ -90,16 +90,28 @@ function useDiaryCardActions({
   const requestDeleteFromActions = () => {
     if (selectedActionEntryId === null) return;
 
+    const targetEntry = items.find((item) => item.id === selectedActionEntryId);
+
     setPendingDeleteEntryId(selectedActionEntryId);
     setSelectedActionEntryId(null);
-    setModalKey('deleteConfirm');
+    setModalKey(
+      targetEntry?.sourceType === 'event-series'
+        ? 'deleteRecurringConfirm'
+        : 'deleteConfirm',
+    );
   };
 
   const requestDeleteFromDetail = () => {
     if (detailEntryId === null) return;
 
+    const targetEntry = items.find((item) => item.id === detailEntryId);
+
     setPendingDeleteEntryId(detailEntryId);
-    setModalKey('deleteConfirm');
+    setModalKey(
+      targetEntry?.sourceType === 'event-series'
+        ? 'deleteRecurringConfirm'
+        : 'deleteConfirm',
+    );
   };
 
   const confirmDelete = async () => {

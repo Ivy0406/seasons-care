@@ -104,7 +104,9 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
           variant={modalKey}
           onClose={closeModal}
           onConfirm={
-            modalKey === 'deleteConfirm' && !isDeletingEntry
+            (modalKey === 'deleteConfirm' ||
+              modalKey === 'deleteRecurringConfirm') &&
+            !isDeletingEntry
               ? confirmDelete
               : undefined
           }

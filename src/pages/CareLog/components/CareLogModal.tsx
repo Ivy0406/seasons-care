@@ -2,6 +2,7 @@ import Modal from '@/components/common/Modal';
 
 type CareLogModalVariant =
   | 'deleteConfirm'
+  | 'deleteRecurringConfirm'
   | 'deleteSuccess'
   | 'deleteError'
   | 'updateSuccess'
@@ -20,6 +21,15 @@ const modalContent = {
     status: 'confirm',
     title: '是否要刪除這項日誌？',
     description: '',
+    confirmText: '刪除',
+    cancelText: '取消',
+    bodyClassName: 'gap-6',
+  },
+  deleteRecurringConfirm: {
+    status: 'confirm',
+    title: '確定要刪除這個重複事件嗎？',
+    description:
+      '刪除後，這組重複事件的所有內容都會一起移除，包括已完成、已編輯的紀錄與未來重複事件。此操作無法復原。',
     confirmText: '刪除',
     cancelText: '取消',
     bodyClassName: 'gap-6',
