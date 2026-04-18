@@ -18,7 +18,11 @@ function App() {
     pathname === '/health-report' ||
     pathname === '/money' ||
     pathname === '/group-entrance' ||
-    pathname === '/homepage';
+    pathname === '/homepage' ||
+    pathname === '/settings' ||
+    pathname === '/settings/profile' ||
+    pathname === '/settings/change-password' ||
+    pathname === '/settings/privacy';
 
   return (
     <VoiceInputProvider>
