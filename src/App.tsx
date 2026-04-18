@@ -19,7 +19,8 @@ function App() {
     pathname === '/health-report' ||
     pathname === '/money' ||
     pathname === '/group-entrance' ||
-    pathname === '/homepage';
+    pathname === '/homepage' ||
+    pathname === '/notifications';
 
   return (
     <VoiceInputProvider>
