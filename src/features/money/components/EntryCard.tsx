@@ -25,12 +25,18 @@ import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import ItemDetailsCard from './ItemDetailsCard';
 import UpdateDataCard from './UpdateDataCard';
 
-function EntryCard({ item }: { item: ExpenseItem }) {
+function EntryCard({
+  item,
+  initialOpen = false,
+}: {
+  item: ExpenseItem;
+  initialOpen?: boolean;
+}) {
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(initialOpen);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [updateSuccessOpen, setUpdateSuccessOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);

@@ -23,7 +23,8 @@ function App() {
     pathname === '/settings' ||
     pathname === '/settings/profile' ||
     pathname === '/settings/change-password' ||
-    pathname === '/settings/privacy';
+    pathname === '/settings/privacy' ||
+    pathname === '/notifications';
 
   return (
     <VoiceInputProvider>

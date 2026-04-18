@@ -21,6 +21,7 @@ type CareLogDiarySectionProps = {
   onCreateEntry: (date?: Date) => void;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
+  initialDetailEntryId?: string;
 };
 
 const statusFilterOptions = [
@@ -39,6 +40,7 @@ function CareLogDiarySection({
   onCreateEntry,
   isUpdatingEntry = false,
   isDeletingEntry = false,
+  initialDetailEntryId,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
@@ -47,6 +49,7 @@ function CareLogDiarySection({
     onDeleteEntry,
     isUpdatingEntry,
     isDeletingEntry,
+    initialDetailEntryId,
   });
   const now = new Date();
   const activeItems = items;

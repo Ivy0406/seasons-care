@@ -9,6 +9,7 @@ type UseDiaryCardActionsOptions = {
   onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
+  initialDetailEntryId?: string;
 };
 
 export type UseDiaryCardActionsResult = {
@@ -37,8 +38,11 @@ function useDiaryCardActions({
   onDeleteEntry,
   isUpdatingEntry = false,
   isDeletingEntry = false,
+  initialDetailEntryId,
 }: UseDiaryCardActionsOptions): UseDiaryCardActionsResult {
-  const [detailEntryId, setDetailEntryId] = useState<string | null>(null);
+  const [detailEntryId, setDetailEntryId] = useState<string | null>(
+    initialDetailEntryId ?? null,
+  );
   const [selectedActionEntryId, setSelectedActionEntryId] = useState<
     string | null
   >(null);

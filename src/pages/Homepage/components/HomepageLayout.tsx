@@ -37,6 +37,7 @@ import cn from '@/lib/utils';
 import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
+import useNotificationBadge from '@/pages/Notification/hooks/useNotificationBadge';
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
@@ -50,6 +51,7 @@ type HomepageLayoutProps = {
 
 function HomepageLayout({ className }: HomepageLayoutProps) {
   const queryClient = useQueryClient();
+  const { hasUnread } = useNotificationBadge();
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
@@ -369,7 +371,8 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
         )}
       >
         <HomepageNavigationBar
-          hasNotification
+          hasNotification={hasUnread}
+          onNotificationClick={() => navigate('/notifications')}
           onMenuClick={() => setIsSideMenuOpen(true)}
           selectedDate={selectedDate}
           onDateClick={() => setIsDateDrawerOpen(true)}
