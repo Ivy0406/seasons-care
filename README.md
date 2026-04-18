@@ -2,7 +2,7 @@
   <img src="public/favicon.svg" width="80" />
 </p>
 
-<h1 align="center">Seasons Care 季節照護</h1>
+<h1 align="center">Seasons Care 蒔歲</h1>
 
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react)](https://react.dev/)
