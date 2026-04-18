@@ -10,6 +10,7 @@ import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
@@ -47,8 +48,10 @@ function CalendarPage() {
   const location = useLocation();
   const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
-  const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
+  const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
+  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
+    useUpdateEventSeries();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
@@ -60,7 +63,8 @@ function CalendarPage() {
   const [visibleMonth, setVisibleMonth] = useState<Date>(
     initialSelectedDate ?? defaultSelectedDate,
   );
-  const { eventSeries } = useGetEventSeries(visibleMonth);
+  const { eventSeries, refetch: refetchEventSeries } =
+    useGetEventSeries(visibleMonth);
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
 
   useEffect(() => {
@@ -126,7 +130,7 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
-          isUpdatingEntry={isUpdatingEntry}
+          isUpdatingEntry={isUpdatingCareLog || isUpdatingEventSeries}
           isDeletingEntry={isDeletingEntry}
           onToggleStatus={async (entryId, status) => {
             const targetEntry = fetchedEntries.find(
@@ -153,8 +157,15 @@ function CalendarPage() {
           }}
           onUpdateEntry={async (updatedEntry) => {
             if (updatedEntry.sourceType === 'event-series') {
-              toast.error('重複事件目前不支援在這裡編輯');
-              return false;
+              const persistedEntry =
+                await handleUpdateEventSeries(updatedEntry);
+
+              if (persistedEntry === null) {
+                return false;
+              }
+
+              await refetchEventSeries();
+              return true;
             }
 
             const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);

@@ -5,6 +5,7 @@ import { isSameDay, parseISO } from 'date-fns';
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
@@ -46,11 +47,14 @@ function groupByStatus(
 
 function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const { entries, refetchEntries } = useGetCareLogEntries();
-  const { eventSeries } = useGetEventSeries(selectedDate);
+  const { eventSeries, refetch: refetchEventSeries } =
+    useGetEventSeries(selectedDate);
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
-  const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
+  const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
+  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
+    useUpdateEventSeries();
   const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
   const filteredEntries = useMemo(() => {
@@ -69,9 +73,20 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
-    isUpdatingEntry,
+    isUpdatingEntry: isUpdatingCareLog || isUpdatingEventSeries,
     isDeletingEntry,
     onUpdateEntry: async (updatedEntry) => {
+      if (updatedEntry.sourceType === 'event-series') {
+        const persistedEntry = await handleUpdateEventSeries(updatedEntry);
+
+        if (persistedEntry === null) {
+          return false;
+        }
+
+        await refetchEventSeries();
+        return true;
+      }
+
       const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);
 
       if (persistedEntry === null) {
@@ -115,7 +130,9 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
                   item={item}
                   className="mb-3"
                   isStatusUpdating={
-                    item.sourceType === 'event-series' ? true : isUpdatingEntry
+                    item.sourceType === 'event-series'
+                      ? true
+                      : isUpdatingCareLog || isUpdatingEventSeries
                   }
                   onClick={() => diaryCardActions.openDetail(item.id)}
                   onMoreClick={

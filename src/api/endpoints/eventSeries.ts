@@ -28,7 +28,7 @@ const updateEventSeries = (
   seriesId: string,
   payload: UpdateEventSeriesPayload,
 ) =>
-  apiClient.put<UpdateEventSeriesResponse>(
+  apiClient.post<UpdateEventSeriesResponse>(
     `${buildEventSeriesPath(careGroupId)}/${seriesId}`,
     payload,
     {
