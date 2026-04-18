@@ -12,7 +12,7 @@
 [![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=react-router)](https://reactrouter.com/)
 
 
-這是一個以 React 19 與 TypeScript 開發的 SPA（單頁式應用程式）全方位健康與生活照護平台。透過 TanStack Query 進行狀態管理，並串接 RESTful API 實現健康數據追蹤、照護日誌紀錄、群組共享與記帳功能。整合 AI 語音辨識，使用者只需口說即可自動填寫紀錄表單，大幅降低長輩或忙碌照護者輸入數據的門檻，讓紀錄變得直覺又快速。
+這是一個以 React 19 與 TypeScript 開發的 SPA（單頁式應用程式）家庭共同照護工具。透過 TanStack Query 進行狀態管理，並串接 RESTful API 實現健康數據追蹤、照護日誌紀錄、群組共享與記帳功能。整合 AI 語音辨識，使用者只需口說即可自動填寫紀錄表單，大幅降低忙碌照護者輸入數據的門檻，讓紀錄變得直覺又快速。
 
 ---
 
