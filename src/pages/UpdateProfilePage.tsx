@@ -22,6 +22,7 @@ function UpdateProfilePage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <NavigationSubheader
+        className="mx-auto max-w-200"
         layout="centered"
         title="編輯個人資料"
         showChevron={false}
