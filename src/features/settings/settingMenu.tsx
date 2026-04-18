@@ -23,7 +23,7 @@ const SETTING_MENU_SECTIONS: SettingMenuSection[] = [
   },
   {
     title: '幫助',
-    items: [{ label: '意見回饋' }, { label: '隱私權與免責聲明' }],
+    items: [{ label: '意見回饋' }, { label: '隱私權與免責聲明', path: '/settings/privacy' }],
   },
   {
     title: '密碼',

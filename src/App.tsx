@@ -22,7 +22,8 @@ function App() {
     pathname === '/homepage' ||
     pathname === '/settings' ||
     pathname === '/settings/profile' ||
-    pathname === '/settings/change-password';
+    pathname === '/settings/change-password' ||
+    pathname === '/settings/privacy';
 
   return (
     <VoiceInputProvider>
