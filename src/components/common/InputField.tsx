@@ -96,6 +96,7 @@ function InputFieldEmail(props: Omit<InputFieldProps, 'type' | 'suffix'>) {
 function InputFieldPassword({
   onChange,
   value,
+  placeholder = '6-12位數密碼，請區分大小寫',
   ...props
 }: Omit<InputFieldProps, 'type' | 'suffix'>) {
   const [showPassword, setShowPassword] = useState(false);
@@ -111,7 +112,7 @@ function InputFieldPassword({
       {...props}
       value={value}
       type={showPassword ? 'text' : 'password'}
-      placeholder="6-12位數密碼，請區分大小寫"
+      placeholder={placeholder}
       onChange={handleChange}
       suffix={
         hasValue && (
