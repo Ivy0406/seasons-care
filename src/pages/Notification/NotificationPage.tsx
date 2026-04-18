@@ -9,7 +9,7 @@ import {
   parseISO,
   startOfDay,
 } from 'date-fns';
-import { Calendar, Check, ClipboardList, PiggyBank } from 'lucide-react';
+import { Calendar, Check, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
@@ -22,6 +22,7 @@ import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 
 import NotificationBar from './components/NotificationBar';
+import SplitExpenseBar from './components/SplitExpenseBar';
 
 function NotificationPage() {
   const navigate = useNavigate();
@@ -74,8 +75,8 @@ function NotificationPage() {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
     return allExpenses.filter(
       (expense) =>
-        expense.expenseDate.replace('Z', '').startsWith(todayStr) &&
-        expense.splitStatus !== 'none',
+        expense.splitStatus === 'settled' &&
+        expense.updatedAt.replace('Z', '').startsWith(todayStr),
     );
   }, [allExpenses]);
 
@@ -104,7 +105,7 @@ function NotificationPage() {
     return allExpenses.filter((expense) => {
       const date = startOfDay(parseISO(expense.expenseDate.replace('Z', '')));
       return (
-        expense.splitStatus !== 'none' &&
+        expense.splitStatus === 'pending' &&
         isAfter(date, today) &&
         isBefore(date, weekEnd)
       );
@@ -131,6 +132,7 @@ function NotificationPage() {
             icon={<Calendar />}
             title="目前沒有收到任何通知"
             showChevron={false}
+            iconClassName="bg-neutral-500 border-neutral-500"
           />
         ) : (
           <>
@@ -154,23 +156,14 @@ function NotificationPage() {
                 onClick={() => {}}
               />
             ))}
-            {todaySplitExpenses.map((expense) => {
-              const creator = groupMembers.find(
-                (m) => m.userId === expense.createdBy,
-              );
-              const creatorLabel = creator
-                ? `${creator.username} 已執行分帳`
-                : '已執行分帳';
-              return (
-                <NotificationBar
-                  key={expense.id}
-                  icon={<PiggyBank />}
-                  eventType="分帳紀錄"
-                  title={creatorLabel}
-                  onClick={() => {}}
-                />
-              );
-            })}
+            {todaySplitExpenses.map((expense) => (
+              <SplitExpenseBar
+                key={expense.id}
+                expense={expense}
+                groupMembers={groupMembers}
+                label="已執行分帳"
+              />
+            ))}
           </>
         )}
         <h2 className="font-label-lg flex py-3">其他</h2>
@@ -194,23 +187,14 @@ function NotificationPage() {
                 onClick={() => {}}
               />
             ))}
-            {upcomingSplitExpenses.map((expense) => {
-              const creator = groupMembers.find(
-                (m) => m.userId === expense.createdBy,
-              );
-              const creatorLabel = creator
-                ? `${creator.username} 已執行分帳`
-                : '已執行分帳';
-              return (
-                <NotificationBar
-                  key={expense.id}
-                  icon={<PiggyBank />}
-                  eventType="分帳紀錄"
-                  title={creatorLabel}
-                  onClick={() => {}}
-                />
-              );
-            })}
+            {upcomingSplitExpenses.map((expense) => (
+              <SplitExpenseBar
+                key={expense.id}
+                expense={expense}
+                groupMembers={groupMembers}
+                label="待執行分帳"
+              />
+            ))}
           </>
         )}
       </section>
