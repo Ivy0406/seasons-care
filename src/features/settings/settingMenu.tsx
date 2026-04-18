@@ -24,7 +24,7 @@ const SETTING_MENU_SECTIONS: SettingMenuSection[] = [
   },
   {
     title: '密碼',
-    items: [{ label: '更改密碼' }],
+    items: [{ label: '更改密碼', path: '/settings/change-password' }],
   },
   {
     title: '帳號',

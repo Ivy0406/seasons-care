@@ -20,7 +20,9 @@ function App() {
     pathname === '/money' ||
     pathname === '/group-entrance' ||
     pathname === '/homepage' ||
-    pathname === '/settings';
+    pathname === '/settings' ||
+    pathname === '/settings/profile' ||
+    pathname === '/settings/change-password';
 
   return (
     <VoiceInputProvider>
