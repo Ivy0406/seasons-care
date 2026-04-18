@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   addDays,
@@ -23,10 +23,16 @@ import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 
 import NotificationBar from './components/NotificationBar';
 import SplitExpenseBar from './components/SplitExpenseBar';
+import useNotificationBadge from './hooks/useNotificationBadge';
 
 function NotificationPage() {
   const navigate = useNavigate();
+  const { markAsRead } = useNotificationBadge();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
+
+  useEffect(() => {
+    markAsRead();
+  }, [markAsRead]);
   const { data: groups = [] } = useGetGroups();
   const { entries } = useGetCareLogEntries();
   const { expenses: thisMonthExpenses } = useExpenses(
@@ -53,10 +59,10 @@ function NotificationPage() {
       );
     return {
       pendingImportantEntries: todayImportant.filter(
-        (e) => e.status === 'pending',
+        (entry) => entry.status === 'pending',
       ),
       completedImportantEntries: todayImportant.filter(
-        (e) => e.status === 'completed',
+        (entry) => entry.status === 'completed',
       ),
     };
   }, [entries]);
@@ -65,7 +71,8 @@ function NotificationPage() {
     () => [
       ...thisMonthExpenses,
       ...nextMonthExpenses.filter(
-        (e) => !thisMonthExpenses.some((t) => t.id === e.id),
+        (expense) =>
+          !thisMonthExpenses.some((existing) => existing.id === expense.id),
       ),
     ],
     [thisMonthExpenses, nextMonthExpenses],
