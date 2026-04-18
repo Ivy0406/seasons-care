@@ -120,13 +120,13 @@ function NotificationPage() {
   }, [allExpenses]);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col text-neutral-900">
+    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 text-neutral-900">
       <NavigationGroupTrigger
         groupName={currentGroup?.name ?? ''}
         showBackButton
         onBackClick={() => navigate(-1)}
         onClick={() => setIsGroupDrawerOpen(true)}
-        className="border-b-2 px-6 pb-3.25"
+        className="border-b-2 px-6 py-3.25"
         titleClassName="font-heading-sm"
       />
 
