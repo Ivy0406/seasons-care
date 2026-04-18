@@ -12,6 +12,7 @@ import HomepagePage from '@/pages/Homepage/HomepagePage';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import MoneyPage from '@/pages/MoneyPage';
+import NotificationPage from '@/pages/Notification/NotificationPage';
 import OnboardingPage from '@/pages/OnboardingPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import RegistrationPage from '@/pages/RegistrationPage';
@@ -86,6 +87,10 @@ const router = createHashRouter([
       {
         path: 'settings/privacy',
         Component: PrivacyPage,
+      },
+      {
+        path: 'notifications',
+        Component: NotificationPage,
       },
     ],
   },

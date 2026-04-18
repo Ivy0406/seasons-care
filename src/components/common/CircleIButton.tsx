@@ -5,7 +5,7 @@ import cn from '@/lib/utils';
 
 type CircleButtonProps = Omit<React.ComponentProps<typeof Button>, 'size'> & {
   children: ReactNode;
-  size?: 'sm' | 'md' | 'modal' | 'lg';
+  size?: 'sm' | 'md' | 'modal' | 'lg' | 'notification';
 };
 
 type CheckBoxButtonProps = CircleButtonProps & {
@@ -28,6 +28,7 @@ const sizeClassMap = {
   md: 'h-10 w-10 [&&_svg]:size-6 [&&_svg]:stroke-[2]',
   modal: 'h-10 w-10 [&&_svg]:size-4 [&&_svg]:stroke-[3]',
   lg: 'h-12 w-12 [&&_svg]:size-8 [&&_svg]:stroke-[2.5]',
+  notification: 'h-12 w-12 [&&_svg]:size-6 [&&_svg]:stroke-[2.5]',
 };
 
 // 1. Primary ：黑邊框、深色底
