@@ -6,7 +6,7 @@ import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
-import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
+import useUpdateEventOccurrence from '@/features/calendar/hooks/useUpdateEventOccurrence';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
@@ -54,8 +54,8 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
-  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
-    useUpdateEventSeries();
+  const { isLoading: isUpdatingEventOccurrence, handleUpdateEventOccurrence } =
+    useUpdateEventOccurrence();
   const { isLoading: isDeletingCareLog, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
   const { isLoading: isDeletingEventSeries, handleDeleteEventSeries } =
@@ -76,11 +76,11 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
-    isUpdatingEntry: isUpdatingCareLog || isUpdatingEventSeries,
+    isUpdatingEntry: isUpdatingCareLog || isUpdatingEventOccurrence,
     isDeletingEntry: isDeletingCareLog || isDeletingEventSeries,
     onUpdateEntry: async (updatedEntry) => {
       if (updatedEntry.sourceType === 'event-series') {
-        const persistedEntry = await handleUpdateEventSeries(updatedEntry);
+        const persistedEntry = await handleUpdateEventOccurrence(updatedEntry);
 
         if (persistedEntry === null) {
           return false;
@@ -150,9 +150,7 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
                   item={item}
                   className="mb-3"
                   isStatusUpdating={
-                    item.sourceType === 'event-series'
-                      ? true
-                      : isUpdatingCareLog || isUpdatingEventSeries
+                    isUpdatingCareLog || isUpdatingEventOccurrence
                   }
                   onClick={() => diaryCardActions.openDetail(item.id)}
                   onMoreClick={
@@ -160,25 +158,33 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
                       ? undefined
                       : () => diaryCardActions.openActions(item.id)
                   }
-                  onStatusChange={
-                    item.sourceType === 'event-series'
-                      ? undefined
-                      : async (checked) => {
-                          const persistedEntry = await handleUpdateCareLogEntry(
-                            {
-                              ...item,
-                              status: checked ? 'completed' : 'pending',
-                            },
-                          );
+                  onStatusChange={async (checked) => {
+                    if (item.sourceType === 'event-series') {
+                      const persistedEntry = await handleUpdateEventOccurrence({
+                        ...item,
+                        status: checked ? 'completed' : 'pending',
+                      });
 
-                          if (persistedEntry === null) {
-                            return false;
-                          }
+                      if (persistedEntry === null) {
+                        return false;
+                      }
 
-                          await refetchEntries();
-                          return true;
-                        }
-                  }
+                      await refetchEventSeries();
+                      return true;
+                    }
+
+                    const persistedEntry = await handleUpdateCareLogEntry({
+                      ...item,
+                      status: checked ? 'completed' : 'pending',
+                    });
+
+                    if (persistedEntry === null) {
+                      return false;
+                    }
+
+                    await refetchEntries();
+                    return true;
+                  }}
                 />
               ))}
             </div>

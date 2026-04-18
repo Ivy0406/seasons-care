@@ -11,7 +11,7 @@ import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
-import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
+import useUpdateEventOccurrence from '@/features/calendar/hooks/useUpdateEventOccurrence';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
@@ -53,8 +53,8 @@ function CalendarPage() {
     useDeleteEventSeries();
   const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
-  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
-    useUpdateEventSeries();
+  const { isLoading: isUpdatingEventOccurrence, handleUpdateEventOccurrence } =
+    useUpdateEventOccurrence();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
@@ -133,17 +133,32 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
-          isUpdatingEntry={isUpdatingCareLog || isUpdatingEventSeries}
+          isUpdatingEntry={isUpdatingCareLog || isUpdatingEventOccurrence}
           isDeletingEntry={isDeletingCareLog || isDeletingEventSeries}
           onToggleStatus={async (entryId, status) => {
+            const targetEventEntry = selectedEntries.find(
+              (entry) => entry.id === entryId,
+            );
+
+            if (targetEventEntry?.sourceType === 'event-series') {
+              const persistedEntry = await handleUpdateEventOccurrence({
+                ...targetEventEntry,
+                status,
+              });
+
+              if (persistedEntry === null) {
+                return false;
+              }
+
+              await refetchEventSeries();
+              return true;
+            }
+
             const targetEntry = fetchedEntries.find(
               (entry) => entry.id === entryId,
             );
 
-            if (!targetEntry) {
-              toast.error('重複事件目前不支援在這裡變更完成狀態');
-              return false;
-            }
+            if (!targetEntry) return false;
 
             const persistedEntry = await handleUpdateCareLogEntry({
               ...targetEntry,
@@ -161,7 +176,7 @@ function CalendarPage() {
           onUpdateEntry={async (updatedEntry) => {
             if (updatedEntry.sourceType === 'event-series') {
               const persistedEntry =
-                await handleUpdateEventSeries(updatedEntry);
+                await handleUpdateEventOccurrence(updatedEntry);
 
               if (persistedEntry === null) {
                 return false;

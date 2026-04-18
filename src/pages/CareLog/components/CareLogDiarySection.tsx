@@ -112,17 +112,9 @@ function CareLogDiarySection({
                   ? undefined
                   : () => diaryCardActions.openActions(item.id)
               }
-              isStatusUpdating={
-                item.sourceType === 'event-series' ? true : isUpdatingEntry
-              }
-              onStatusChange={
-                item.sourceType === 'event-series'
-                  ? undefined
-                  : (checked) =>
-                      onToggleStatus(
-                        item.id,
-                        checked ? 'completed' : 'pending',
-                      )
+              isStatusUpdating={isUpdatingEntry}
+              onStatusChange={(checked) =>
+                onToggleStatus(item.id, checked ? 'completed' : 'pending')
               }
             />
           ))

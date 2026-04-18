@@ -43,6 +43,15 @@ type UpdateEventSeriesPayload = CreateEventSeriesPayload;
 
 type UpdateEventSeriesResponse = EventSeriesApiResponse<EventSeriesItem>;
 
+type UpdateEventOccurrencePayload = {
+  scheduledAt: string;
+  status: string;
+  description: string;
+  participants: string[];
+};
+
+type UpdateEventOccurrenceResponse = EventSeriesApiResponse<EventSeriesItem>;
+
 type DeleteEventSeriesResponse = EventSeriesApiResponse<null>;
 
 export type {
@@ -53,5 +62,7 @@ export type {
   CreateEventSeriesResponse,
   UpdateEventSeriesPayload,
   UpdateEventSeriesResponse,
+  UpdateEventOccurrencePayload,
+  UpdateEventOccurrenceResponse,
   DeleteEventSeriesResponse,
 };

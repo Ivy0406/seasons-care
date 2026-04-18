@@ -3,6 +3,8 @@ import type {
   CreateEventSeriesPayload,
   CreateEventSeriesResponse,
   DeleteEventSeriesResponse,
+  UpdateEventOccurrencePayload,
+  UpdateEventOccurrenceResponse,
   UpdateEventSeriesPayload,
   UpdateEventSeriesResponse,
 } from '@/types/eventSeries';
@@ -39,6 +41,21 @@ const updateEventSeries = (
     },
   );
 
+const updateEventOccurrenceStatus = (
+  careGroupId: string,
+  seriesId: string,
+  payload: UpdateEventOccurrencePayload,
+) =>
+  apiClient.post<UpdateEventOccurrenceResponse>(
+    `${buildEventSeriesPath(careGroupId)}/${seriesId}/status`,
+    payload,
+    {
+      headers: {
+        careGroupId,
+      },
+    },
+  );
+
 const deleteEventSeries = (careGroupId: string, seriesId: string) =>
   apiClient.delete<DeleteEventSeriesResponse>(
     `${buildEventSeriesPath(careGroupId)}/${seriesId}`,
@@ -49,6 +66,6 @@ const deleteEventSeries = (careGroupId: string, seriesId: string) =>
     },
   );
 
-export { updateEventSeries, deleteEventSeries };
+export { updateEventSeries, updateEventOccurrenceStatus, deleteEventSeries };
 
 export default createEventSeries;

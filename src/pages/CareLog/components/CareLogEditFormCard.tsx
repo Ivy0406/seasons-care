@@ -22,13 +22,20 @@ function CareLogEditFormCard({
   return (
     <CareLogFormCard
       entry={entry}
-      title="編輯日誌"
-      submitLabel="更新日誌"
+      title={
+        entry.sourceType === 'event-series' ? '編輯單次重複事件' : '編輯日誌'
+      }
+      submitLabel={
+        entry.sourceType === 'event-series' ? '更新此事件' : '更新日誌'
+      }
       isSubmitting={isSubmitting}
       onClose={onClose}
       onSubmit={onSubmit}
       groupMembers={groupMembers}
       showVoiceInput={false}
+      editMode={
+        entry.sourceType === 'event-series' ? 'recurring-occurrence' : 'default'
+      }
     />
   );
 }
