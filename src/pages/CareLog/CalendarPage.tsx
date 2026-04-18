@@ -9,6 +9,7 @@ import Calendar from '@/components/common/Calendar';
 import FixedBottomButton from '@/components/common/FixedBottomButton';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import SideMenu from '@/components/common/SideMenu';
+import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
 import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
@@ -46,8 +47,10 @@ function getSelectedDateFromState(state: unknown) {
 
 function CalendarPage() {
   const location = useLocation();
-  const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
+  const { isLoading: isDeletingCareLog, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
+  const { isLoading: isDeletingEventSeries, handleDeleteEventSeries } =
+    useDeleteEventSeries();
   const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
     useUpdateCareLogEntry();
   const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
@@ -131,7 +134,7 @@ function CalendarPage() {
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
           isUpdatingEntry={isUpdatingCareLog || isUpdatingEventSeries}
-          isDeletingEntry={isDeletingEntry}
+          isDeletingEntry={isDeletingCareLog || isDeletingEventSeries}
           onToggleStatus={async (entryId, status) => {
             const targetEntry = fetchedEntries.find(
               (entry) => entry.id === entryId,
@@ -179,9 +182,26 @@ function CalendarPage() {
             return true;
           }}
           onDeleteEntry={async (entryId) => {
-            if (entryId.includes('__')) {
-              toast.error('重複事件目前不支援在這裡刪除');
-              return false;
+            const targetEntry = selectedEntries.find(
+              (entry) => entry.id === entryId,
+            );
+
+            if (targetEntry?.sourceType === 'event-series') {
+              if (!targetEntry.sourceId) {
+                toast.error('缺少重複事件識別資訊，無法刪除');
+                return false;
+              }
+
+              const didDelete = await handleDeleteEventSeries(
+                targetEntry.sourceId,
+              );
+
+              if (!didDelete) {
+                return false;
+              }
+
+              await refetchEventSeries();
+              return true;
             }
 
             const didDelete = await handleDeleteCareLogEntry(entryId);

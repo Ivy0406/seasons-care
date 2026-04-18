@@ -4,6 +4,7 @@ import { isSameDay, parseISO } from 'date-fns';
 
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
+import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
 import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
@@ -55,8 +56,10 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
     useUpdateCareLogEntry();
   const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
     useUpdateEventSeries();
-  const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
+  const { isLoading: isDeletingCareLog, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
+  const { isLoading: isDeletingEventSeries, handleDeleteEventSeries } =
+    useDeleteEventSeries();
   const filteredEntries = useMemo(() => {
     const recurringEntries = toEventSeriesEntries(
       eventSeries,
@@ -74,7 +77,7 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
     isUpdatingEntry: isUpdatingCareLog || isUpdatingEventSeries,
-    isDeletingEntry,
+    isDeletingEntry: isDeletingCareLog || isDeletingEventSeries,
     onUpdateEntry: async (updatedEntry) => {
       if (updatedEntry.sourceType === 'event-series') {
         const persistedEntry = await handleUpdateEventSeries(updatedEntry);
@@ -97,6 +100,23 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
       return true;
     },
     onDeleteEntry: async (entryId) => {
+      const targetEntry = filteredEntries.find((entry) => entry.id === entryId);
+
+      if (targetEntry?.sourceType === 'event-series') {
+        if (!targetEntry.sourceId) {
+          return false;
+        }
+
+        const didDelete = await handleDeleteEventSeries(targetEntry.sourceId);
+
+        if (!didDelete) {
+          return false;
+        }
+
+        await refetchEventSeries();
+        return true;
+      }
+
       const didDelete = await handleDeleteCareLogEntry(entryId);
 
       if (!didDelete) {

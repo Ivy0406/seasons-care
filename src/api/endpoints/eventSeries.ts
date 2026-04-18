@@ -2,6 +2,7 @@ import apiClient from '@/api/client';
 import type {
   CreateEventSeriesPayload,
   CreateEventSeriesResponse,
+  DeleteEventSeriesResponse,
   UpdateEventSeriesPayload,
   UpdateEventSeriesResponse,
 } from '@/types/eventSeries';
@@ -38,6 +39,16 @@ const updateEventSeries = (
     },
   );
 
-export { updateEventSeries };
+const deleteEventSeries = (careGroupId: string, seriesId: string) =>
+  apiClient.delete<DeleteEventSeriesResponse>(
+    `${buildEventSeriesPath(careGroupId)}/${seriesId}`,
+    {
+      headers: {
+        careGroupId,
+      },
+    },
+  );
+
+export { updateEventSeries, deleteEventSeries };
 
 export default createEventSeries;

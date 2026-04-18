@@ -43,6 +43,8 @@ type UpdateEventSeriesPayload = CreateEventSeriesPayload;
 
 type UpdateEventSeriesResponse = EventSeriesApiResponse<EventSeriesItem>;
 
+type DeleteEventSeriesResponse = EventSeriesApiResponse<null>;
+
 export type {
   EventSeriesRepeatPattern,
   EventSeriesItem,
@@ -51,4 +53,5 @@ export type {
   CreateEventSeriesResponse,
   UpdateEventSeriesPayload,
   UpdateEventSeriesResponse,
+  DeleteEventSeriesResponse,
 };
