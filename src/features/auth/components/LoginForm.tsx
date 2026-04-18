@@ -71,7 +71,7 @@ function LoginForm() {
           <div className="flex w-full justify-end">
             <p className="font-paragraph-sm text-neutral-900">是否忘記密碼？</p>
             <Link
-              to="../reset-password"
+              to="/settings/change-password"
               className="font-paragraph-sm text-primary-dark"
             >
               點此重設
