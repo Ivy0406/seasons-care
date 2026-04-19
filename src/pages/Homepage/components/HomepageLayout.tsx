@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Mic } from 'lucide-react';
@@ -44,13 +44,21 @@ import type { GroupMember } from '@/types/group';
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
+import OnboardingOverlay from './OnboardingOverlay';
 
 type HomepageLayoutProps = {
   className?: string;
 };
 
+const ONBOARDING_KEY = 'hasSeenOnboarding';
+
 function HomepageLayout({ className }: HomepageLayoutProps) {
   const queryClient = useQueryClient();
+  const micButtonRef = useRef<HTMLElement>(null);
+  const addButtonRef = useRef<HTMLDivElement>(null);
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
+  );
   const { hasUnread } = useNotificationBadge();
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
@@ -332,6 +340,11 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     setShowQuickRecordingDrawer(true);
   };
 
+  const handleDismissOnboarding = () => {
+    localStorage.setItem(ONBOARDING_KEY, 'true');
+    setShowOnboarding(false);
+  };
+
   const handleVoiceFinish = async ({ transcript }: { transcript: string }) => {
     if (transcript.trim() === '') {
       return { shouldClose: false };
@@ -430,7 +443,10 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
           </div>
         </section>
 
-        <section className="mx-6 mt-8 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
+        <section
+          ref={micButtonRef}
+          className="mx-6 mt-8 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3"
+        >
           <p className="font-label-md pl-6 text-neutral-900">
             {currentUser?.userName ?? ''}，你好 <br />
             今天想要記錄什麼照護資訊呢？
@@ -455,9 +471,18 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
       </main>
 
       <FixedBottomButton
+        ref={addButtonRef}
         label="新增"
         onClick={() => setIsCreateEntryDrawerOpen(true)}
       />
+
+      {showOnboarding && (
+        <OnboardingOverlay
+          micButtonRef={micButtonRef}
+          addButtonRef={addButtonRef}
+          onDismiss={handleDismissOnboarding}
+        />
+      )}
 
       <CreateEntryDrawer
         open={isCreateEntryDrawerOpen}
