@@ -222,7 +222,10 @@ function NavigationGroupTrigger({
       ) : null}
       <button
         type="button"
-        onClick={onClick}
+        onClick={(event) => {
+          event.currentTarget.blur();
+          onClick?.();
+        }}
         aria-label={`切換群組，目前為${groupName}`}
         className="inline-flex min-w-0 items-center gap-2 py-2 text-left text-neutral-900"
       >
