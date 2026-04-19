@@ -1,6 +1,7 @@
 import Modal from '@/components/common/Modal';
 
 type CareLogModalVariant =
+  | 'editRecurringChoice'
   | 'deleteConfirm'
   | 'deleteRecurringConfirm'
   | 'deleteSuccess'
@@ -14,9 +15,19 @@ type CareLogModalProps = {
   variant: CareLogModalVariant;
   onClose: () => void;
   onConfirm?: () => void | Promise<void>;
+  onCancel?: () => void | Promise<void>;
 };
 
 const modalContent = {
+  editRecurringChoice: {
+    status: 'confirm',
+    title: '要編輯這次事件，還是整個重複事件？',
+    description:
+      '編輯這次事件只會影響當前日期；編輯整個重複事件會影響整串規則與內容。',
+    confirmText: '編輯整個重複事件',
+    cancelText: '編輯這次事件',
+    bodyClassName: 'gap-6',
+  },
   deleteConfirm: {
     status: 'confirm',
     title: '是否要刪除這項日誌？',
@@ -71,6 +82,7 @@ function CareLogModal({
   variant,
   onClose,
   onConfirm,
+  onCancel,
 }: CareLogModalProps) {
   const content = modalContent[variant];
 
@@ -87,6 +99,7 @@ function CareLogModal({
       bodyClassName={content.bodyClassName}
       autoCloseMs={content.status === 'success' ? 1600 : undefined}
       onConfirm={content.status === 'confirm' ? onConfirm : undefined}
+      onCancel={content.status === 'confirm' ? onCancel : undefined}
       onClose={onClose}
     />
   );

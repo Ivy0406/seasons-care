@@ -17,11 +17,14 @@ type DiaryCardActionLayerProps = {
 function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
   const {
     detailEntry,
+    editMode,
     editingEntry,
     isDeletingEntry,
     isUpdatingEntry,
     modalKey,
     selectedActionEntry,
+    chooseRecurringOccurrenceEdit,
+    chooseRecurringSeriesEdit,
     closeActions,
     closeDetail,
     closeEdit,
@@ -32,6 +35,18 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
     requestDeleteFromDetail,
     submitEdit,
   } = actions;
+  const shouldConfirmDelete =
+    (modalKey === 'deleteConfirm' || modalKey === 'deleteRecurringConfirm') &&
+    !isDeletingEntry;
+  let modalConfirm: (() => void | Promise<void>) | undefined;
+  let modalCancel: (() => void | Promise<void>) | undefined;
+
+  if (modalKey === 'editRecurringChoice') {
+    modalConfirm = chooseRecurringSeriesEdit;
+    modalCancel = chooseRecurringOccurrenceEdit;
+  } else if (shouldConfirmDelete) {
+    modalConfirm = confirmDelete;
+  }
 
   return (
     <>
@@ -89,6 +104,7 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
             {editingEntry ? (
               <CareLogEditFormCard
                 entry={editingEntry}
+                editMode={editMode}
                 onClose={closeEdit}
                 isSubmitting={isUpdatingEntry}
                 onSubmit={submitEdit}
@@ -103,13 +119,8 @@ function DiaryCardActionLayer({ actions }: DiaryCardActionLayerProps) {
           open
           variant={modalKey}
           onClose={closeModal}
-          onConfirm={
-            (modalKey === 'deleteConfirm' ||
-              modalKey === 'deleteRecurringConfirm') &&
-            !isDeletingEntry
-              ? confirmDelete
-              : undefined
-          }
+          onCancel={modalCancel}
+          onConfirm={modalConfirm}
         />
       ) : null}
     </>

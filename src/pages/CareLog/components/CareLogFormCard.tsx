@@ -58,6 +58,7 @@ function CareLogFormCard({
   const [repeatPattern, setRepeatPattern] = useState<RepeatPatternValue>(
     entry.repeatPattern ?? 'none',
   );
+  const [status, setStatus] = useState(entry.status);
   const [isImportant, setIsImportant] = useState(entry.isImportant ?? false);
   const [note, setNote] = useState(entry.description);
   const [participantIds, setParticipantIds] = useState<string[]>(
@@ -77,6 +78,7 @@ function CareLogFormCard({
     setDateValue(format(startedAt, 'yyyy/MM/dd'));
     setTimeValue(format(startedAt, 'HH:mm'));
     setRepeatPattern(entry.repeatPattern ?? 'none');
+    setStatus(entry.status);
     setIsImportant(entry.isImportant ?? false);
     setNote(entry.description);
     setParticipantIds(entry.participants.map((p) => p.id));
@@ -113,6 +115,7 @@ function CareLogFormCard({
       title: titleValue,
       description: note,
       startsAt,
+      status,
       isImportant,
       repeatPattern: repeatPattern ?? 'none',
       participants: selectedParticipants.map((m) => ({
@@ -171,7 +174,16 @@ function CareLogFormCard({
           onCheckedChange={setIsImportant}
           className="border-neutral-900"
         />
-      ) : null}
+      ) : (
+        <ListFormImportantRow
+          label="是否已完成"
+          checked={status === 'completed'}
+          onCheckedChange={(checked) =>
+            setStatus(checked ? 'completed' : 'pending')
+          }
+          className="border-neutral-900"
+        />
+      )}
       <ListFormNoteRow
         label="備註"
         textareaProps={{

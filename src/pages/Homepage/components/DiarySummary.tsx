@@ -7,6 +7,7 @@ import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardAction
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
 import useUpdateEventOccurrence from '@/features/calendar/hooks/useUpdateEventOccurrence';
+import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
@@ -56,6 +57,8 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
     useUpdateCareLogEntry();
   const { isLoading: isUpdatingEventOccurrence, handleUpdateEventOccurrence } =
     useUpdateEventOccurrence();
+  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
+    useUpdateEventSeries();
   const { isLoading: isDeletingCareLog, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
   const { isLoading: isDeletingEventSeries, handleDeleteEventSeries } =
@@ -76,11 +79,26 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
-    isUpdatingEntry: isUpdatingCareLog || isUpdatingEventOccurrence,
+    isUpdatingEntry:
+      isUpdatingCareLog || isUpdatingEventOccurrence || isUpdatingEventSeries,
     isDeletingEntry: isDeletingCareLog || isDeletingEventSeries,
-    onUpdateEntry: async (updatedEntry) => {
-      if (updatedEntry.sourceType === 'event-series') {
+    onUpdateEntry: async (updatedEntry, editMode) => {
+      if (
+        updatedEntry.sourceType === 'event-series' &&
+        editMode === 'recurring-occurrence'
+      ) {
         const persistedEntry = await handleUpdateEventOccurrence(updatedEntry);
+
+        if (persistedEntry === null) {
+          return false;
+        }
+
+        await refetchEventSeries();
+        return true;
+      }
+
+      if (updatedEntry.sourceType === 'event-series') {
+        const persistedEntry = await handleUpdateEventSeries(updatedEntry);
 
         if (persistedEntry === null) {
           return false;
@@ -150,7 +168,9 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
                   item={item}
                   className="mb-3"
                   isStatusUpdating={
-                    isUpdatingCareLog || isUpdatingEventOccurrence
+                    isUpdatingCareLog ||
+                    isUpdatingEventOccurrence ||
+                    isUpdatingEventSeries
                   }
                   onClick={() => diaryCardActions.openDetail(item.id)}
                   onMoreClick={

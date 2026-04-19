@@ -3,9 +3,17 @@ import { useState } from 'react';
 import type { CareLogModalVariant } from '@/pages/CareLog/components/CareLogModal';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 
+type RecurringEditMode =
+  | 'default'
+  | 'recurring-occurrence'
+  | 'recurring-series';
+
 type UseDiaryCardActionsOptions = {
   items: CareLogEntry[];
-  onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
+  onUpdateEntry: (
+    entry: CareLogEntry,
+    editMode?: RecurringEditMode,
+  ) => Promise<boolean> | boolean;
   onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
@@ -14,6 +22,7 @@ type UseDiaryCardActionsOptions = {
 export type UseDiaryCardActionsResult = {
   detailEntry: CareLogEntry | null;
   editingEntry: CareLogEntry | null;
+  editMode: RecurringEditMode;
   modalKey: CareLogModalVariant | null;
   selectedActionEntry: CareLogEntry | null;
   isUpdatingEntry: boolean;
@@ -22,6 +31,8 @@ export type UseDiaryCardActionsResult = {
   closeDetail: () => void;
   closeEdit: () => void;
   closeModal: () => void;
+  chooseRecurringOccurrenceEdit: () => void;
+  chooseRecurringSeriesEdit: () => void;
   confirmDelete: () => Promise<void>;
   openActions: (entryId: string) => void;
   openDetail: (entryId: string) => void;
@@ -46,6 +57,9 @@ function useDiaryCardActions({
   const [pendingDeleteEntryId, setPendingDeleteEntryId] = useState<
     string | null
   >(null);
+  const [pendingRecurringEditEntryId, setPendingRecurringEditEntryId] =
+    useState<string | null>(null);
+  const [editMode, setEditMode] = useState<RecurringEditMode>('default');
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
 
   const detailEntry =
@@ -78,13 +92,42 @@ function useDiaryCardActions({
   };
 
   const openEdit = (entryId: string) => {
+    const targetEntry = items.find((item) => item.id === entryId);
+
     setDetailEntryId(null);
     setSelectedActionEntryId(null);
+
+    if (targetEntry?.sourceType === 'event-series') {
+      setPendingRecurringEditEntryId(entryId);
+      setModalKey('editRecurringChoice');
+      return;
+    }
+
+    setEditMode('default');
     setEditingEntryId(entryId);
   };
 
   const closeEdit = () => {
     setEditingEntryId(null);
+    setEditMode('default');
+  };
+
+  const chooseRecurringOccurrenceEdit = () => {
+    if (pendingRecurringEditEntryId === null) return;
+
+    setEditMode('recurring-occurrence');
+    setEditingEntryId(pendingRecurringEditEntryId);
+    setPendingRecurringEditEntryId(null);
+    setModalKey(null);
+  };
+
+  const chooseRecurringSeriesEdit = () => {
+    if (pendingRecurringEditEntryId === null) return;
+
+    setEditMode('recurring-series');
+    setEditingEntryId(pendingRecurringEditEntryId);
+    setPendingRecurringEditEntryId(null);
+    setModalKey(null);
   };
 
   const requestDeleteFromActions = () => {
@@ -139,24 +182,27 @@ function useDiaryCardActions({
   };
 
   const submitEdit = async (entry: CareLogEntry) => {
-    const didUpdate = await onUpdateEntry(entry);
+    const didUpdate = await onUpdateEntry(entry, editMode);
 
     if (!didUpdate) {
       return;
     }
 
     setEditingEntryId(null);
+    setEditMode('default');
     setModalKey('updateSuccess');
   };
 
   const closeModal = () => {
     setModalKey(null);
     setPendingDeleteEntryId(null);
+    setPendingRecurringEditEntryId(null);
   };
 
   return {
     detailEntry,
     editingEntry,
+    editMode,
     isUpdatingEntry,
     isDeletingEntry,
     modalKey,
@@ -165,6 +211,8 @@ function useDiaryCardActions({
     closeDetail,
     closeEdit,
     closeModal,
+    chooseRecurringOccurrenceEdit,
+    chooseRecurringSeriesEdit,
     confirmDelete,
     openActions,
     openDetail,
@@ -176,3 +224,4 @@ function useDiaryCardActions({
 }
 
 export default useDiaryCardActions;
+export type { RecurringEditMode };

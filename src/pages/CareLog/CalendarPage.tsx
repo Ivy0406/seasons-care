@@ -12,6 +12,7 @@ import SideMenu from '@/components/common/SideMenu';
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
 import useUpdateEventOccurrence from '@/features/calendar/hooks/useUpdateEventOccurrence';
+import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
@@ -55,6 +56,8 @@ function CalendarPage() {
     useUpdateCareLogEntry();
   const { isLoading: isUpdatingEventOccurrence, handleUpdateEventOccurrence } =
     useUpdateEventOccurrence();
+  const { isLoading: isUpdatingEventSeries, handleUpdateEventSeries } =
+    useUpdateEventSeries();
   const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
@@ -133,7 +136,11 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
-          isUpdatingEntry={isUpdatingCareLog || isUpdatingEventOccurrence}
+          isUpdatingEntry={
+            isUpdatingCareLog ||
+            isUpdatingEventOccurrence ||
+            isUpdatingEventSeries
+          }
           isDeletingEntry={isDeletingCareLog || isDeletingEventSeries}
           onToggleStatus={async (entryId, status) => {
             const targetEventEntry = selectedEntries.find(
@@ -173,10 +180,25 @@ function CalendarPage() {
 
             return true;
           }}
-          onUpdateEntry={async (updatedEntry) => {
-            if (updatedEntry.sourceType === 'event-series') {
+          onUpdateEntry={async (updatedEntry, editMode) => {
+            if (
+              updatedEntry.sourceType === 'event-series' &&
+              editMode === 'recurring-occurrence'
+            ) {
               const persistedEntry =
                 await handleUpdateEventOccurrence(updatedEntry);
+
+              if (persistedEntry === null) {
+                return false;
+              }
+
+              await refetchEventSeries();
+              return true;
+            }
+
+            if (updatedEntry.sourceType === 'event-series') {
+              const persistedEntry =
+                await handleUpdateEventSeries(updatedEntry);
 
               if (persistedEntry === null) {
                 return false;
