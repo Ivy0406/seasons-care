@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { NavigationGroupTrigger } from '@/components/common/NavigationBar';
+import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import GroupManagementDrawer from '@/features/groups/components/GroupManagementDrawer';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
@@ -35,6 +37,10 @@ function NotificationPage() {
   }, [markAsRead]);
   const { data: groups = [] } = useGetGroups();
   const { entries } = useGetCareLogEntries();
+  const { eventSeries: thisMonthEventSeries } = useGetEventSeries(new Date());
+  const { eventSeries: nextMonthEventSeries } = useGetEventSeries(
+    addDays(new Date(), 7),
+  );
   const { expenses: thisMonthExpenses } = useExpenses(
     format(new Date(), 'yyyy-MM'),
   );
@@ -44,11 +50,34 @@ function NotificationPage() {
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const [isGroupDrawerOpen, setIsGroupDrawerOpen] = useState(false);
 
+  const recurringEntries = useMemo(
+    () => [
+      ...toEventSeriesEntries(thisMonthEventSeries, new Date(), groupMembers),
+      ...toEventSeriesEntries(
+        nextMonthEventSeries,
+        addDays(new Date(), 7),
+        groupMembers,
+      ).filter(
+        (entry) =>
+          !thisMonthEventSeries.some(
+            (eventSeries) =>
+              `${eventSeries.eventSeriesId}__${eventSeries.scheduledAt ?? eventSeries.startsAt ?? ''}` ===
+              entry.id,
+          ),
+      ),
+    ],
+    [groupMembers, nextMonthEventSeries, thisMonthEventSeries],
+  );
+  const allEntries = useMemo(
+    () => [...entries, ...recurringEntries],
+    [entries, recurringEntries],
+  );
+
   const currentGroup = groups.find((g) => g.id === currentGroupId) ?? groups[0];
 
   const { pendingImportantEntries, completedImportantEntries } = useMemo(() => {
     const today = new Date();
-    const todayImportant = entries
+    const todayImportant = allEntries
       .filter(
         (entry) =>
           entry.isImportant && isSameDay(parseISO(entry.startsAt), today),
@@ -65,7 +94,7 @@ function NotificationPage() {
         (entry) => entry.status === 'completed',
       ),
     };
-  }, [entries]);
+  }, [allEntries]);
 
   const allExpenses = useMemo(
     () => [
@@ -90,7 +119,7 @@ function NotificationPage() {
   const upcomingImportantEntries = useMemo(() => {
     const today = startOfDay(new Date());
     const weekEnd = addDays(today, 7);
-    return entries
+    return allEntries
       .filter((entry) => {
         const date = startOfDay(parseISO(entry.startsAt));
         return (
@@ -104,7 +133,7 @@ function NotificationPage() {
         (a, b) =>
           parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
       );
-  }, [entries]);
+  }, [allEntries]);
 
   const upcomingSplitExpenses = useMemo(() => {
     const today = startOfDay(new Date());
