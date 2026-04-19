@@ -21,9 +21,9 @@ type CareLogModalProps = {
 const modalContent = {
   editRecurringChoice: {
     status: 'confirm',
-    title: '要編輯這次事件，還是整個重複事件？',
+    title: '編輯此事件，或整個重複事件？',
     description:
-      '編輯這次事件只會影響當前日期；編輯整個重複事件會影響整串規則與內容。',
+      '編輯此事件更新當前日期；或編輯完整重複事件會影響整串規則與內容。',
     confirmText: '編輯整個重複事件',
     cancelText: '編輯這次事件',
     bodyClassName: 'gap-6',

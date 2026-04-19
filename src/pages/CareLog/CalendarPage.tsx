@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { format, isSameDay, isValid, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { useLocation } from 'react-router';
@@ -13,6 +14,7 @@ import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
 import useUpdateEventOccurrence from '@/features/calendar/hooks/useUpdateEventOccurrence';
 import useUpdateEventSeries from '@/features/calendar/hooks/useUpdateEventSeries';
+import calendarKeys from '@/features/calendar/queryKeys';
 import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
@@ -47,6 +49,7 @@ function getSelectedDateFromState(state: unknown) {
 }
 
 function CalendarPage() {
+  const queryClient = useQueryClient();
   const location = useLocation();
   const { isLoading: isDeletingCareLog, handleDeleteCareLogEntry } =
     useDeleteCareLogEntry();
@@ -267,6 +270,7 @@ function CalendarPage() {
           setSelectedDate(createdDate);
           setVisibleMonth(createdDate);
           await refetchEntries();
+          await queryClient.invalidateQueries({ queryKey: calendarKeys.all });
         }}
       />
 
