@@ -285,7 +285,7 @@ function HomepageNavigationBar({
 }: HomepageNavigationBarProps) {
   return (
     <div className={cn('border-b-2 border-neutral-900', className)}>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 pt-2 pb-5">
         <NavigationDateBadge
           selectedDate={selectedDate}
           onClick={onDateClick}
@@ -367,7 +367,7 @@ function HomepageGroupNavigationBar({
   return (
     <div
       className={cn(
-        'flex items-center justify-between border-b-2 border-neutral-900 pt-2 pb-5 text-neutral-900',
+        'flex items-center justify-between px-6 pt-2 pb-5 text-neutral-900',
         className,
       )}
     >
