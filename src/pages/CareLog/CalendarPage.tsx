@@ -48,6 +48,16 @@ function getSelectedDateFromState(state: unknown) {
   return isValid(parsedDate) ? parsedDate : undefined;
 }
 
+function getEntryIdFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('entryId' in state)) {
+    return undefined;
+  }
+
+  const { entryId } = state as { entryId?: unknown };
+
+  return typeof entryId === 'string' ? entryId : undefined;
+}
+
 function CalendarPage() {
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -65,6 +75,7 @@ function CalendarPage() {
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const initialSelectedDate = getSelectedDateFromState(location.state);
+  const initialDetailEntryId = getEntryIdFromState(location.state);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     initialSelectedDate ?? defaultSelectedDate,
@@ -110,7 +121,7 @@ function CalendarPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col pb-10 text-neutral-900">
       <PageNavigationBar
         className="sticky top-0 z-10 border-0 bg-neutral-200 px-6"
-        title="日誌"
+        title="任務"
         onMenuClick={() => setIsSideMenuOpen(true)}
       />
 
@@ -139,6 +150,7 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
+          initialDetailEntryId={initialDetailEntryId}
           isUpdatingEntry={
             isUpdatingCareLog ||
             isUpdatingEventOccurrence ||

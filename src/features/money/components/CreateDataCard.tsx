@@ -14,16 +14,15 @@ import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 
 type CreateDataCardProps = {
   onClose: () => void;
+  onSuccess: () => void;
   initialDate?: Date;
 };
 
-type ResultModal = {
-  open: boolean;
-  variant: 'success' | 'error';
-  message?: string;
-};
-
-function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
+function CreateDataCard({
+  onClose,
+  onSuccess,
+  initialDate,
+}: CreateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => {
     const base = createEmptyMoneyDraft();
     const now = initialDate ?? new Date();
@@ -34,10 +33,10 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
     };
   });
 
-  const [resultModal, setResultModal] = useState<ResultModal>({
-    open: false,
-    variant: 'success',
-  });
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    message?: string;
+  }>({ open: false });
 
   const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
 
@@ -82,16 +81,11 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
   const handleSubmit = async (event: React.SubmitEvent) => {
     event.preventDefault();
     const result = await handleCreateMoneyItem(draft);
-    setResultModal({
-      open: true,
-      variant: result.success ? 'success' : 'error',
-      message: result.success ? undefined : result.message,
-    });
-  };
-
-  const handleModalClose = () => {
-    setResultModal((prev) => ({ ...prev, open: false }));
-    if (resultModal.variant === 'success') onClose();
+    if (result.success) {
+      onSuccess();
+    } else {
+      setErrorModal({ open: true, message: result.message });
+    }
   };
 
   return (
@@ -135,17 +129,12 @@ function CreateDataCard({ onClose, initialDate }: CreateDataCardProps) {
       </form>
 
       <Modal
-        open={resultModal.open}
-        variant={resultModal.variant}
-        title={
-          resultModal.variant === 'success'
-            ? '帳目建立完成！'
-            : '帳目建立失敗！'
-        }
-        description={resultModal.message}
+        open={errorModal.open}
+        variant="error"
+        title="帳目建立失敗！"
+        description={errorModal.message}
         statusLayout="icon-first"
-        autoCloseMs={resultModal.variant === 'success' ? 1500 : undefined}
-        onClose={handleModalClose}
+        onClose={() => setErrorModal({ open: false })}
       />
     </>
   );

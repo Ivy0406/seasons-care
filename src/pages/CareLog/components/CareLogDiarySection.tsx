@@ -25,6 +25,7 @@ type CareLogDiarySectionProps = {
   onCreateEntry: (date?: Date) => void;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
+  initialDetailEntryId?: string;
 };
 
 const statusFilterOptions = [
@@ -43,6 +44,7 @@ function CareLogDiarySection({
   onCreateEntry,
   isUpdatingEntry = false,
   isDeletingEntry = false,
+  initialDetailEntryId,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
@@ -51,6 +53,7 @@ function CareLogDiarySection({
     onDeleteEntry,
     isUpdatingEntry,
     isDeletingEntry,
+    initialDetailEntryId,
   });
   const now = new Date();
   const activeItems = items;
@@ -87,7 +90,7 @@ function CareLogDiarySection({
         />
       );
     } else {
-      emptyState = <CareLogEmptyState message="目前沒有符合篩選條件的日誌。" />;
+      emptyState = <CareLogEmptyState message="目前沒有符合篩選條件的任務。" />;
     }
   }
   return (
@@ -95,7 +98,7 @@ function CareLogDiarySection({
       {selectedDate ? (
         <header className="flex items-start justify-between">
           <div className="flex flex-col justify-between">
-            <p className="font-heading-md">日誌列表</p>
+            <p className="font-heading-md">任務列表</p>
           </div>
           <FilterDropdownButton
             value={statusFilter}

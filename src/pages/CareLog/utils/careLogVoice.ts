@@ -2,11 +2,13 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import { toast } from 'sonner';
 
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import type { RepeatPatternValue } from '@/components/common/ListFormRows';
 import {
   hasDiaryDraftContent,
   parseDiaryTranscript,
 } from '@/features/voice/services/diaryParser';
+import type { CareLogEntry, DiaryDraft } from '@/pages/CareLog/types';
 import type { GroupMember } from '@/types/group';
 
 type CareLogVoiceFieldSetters = {
@@ -47,7 +49,7 @@ async function handleCareLogVoiceFinish({
   const parsedDraft = parsedDrafts[0];
 
   if (!parsedDraft || !hasDiaryDraftContent(parsedDraft)) {
-    toast.error('這段語音暫時無法辨識成日誌內容，請重新錄製或手動輸入。');
+    toast.error('這段語音暫時無法辨識成任務內容，請重新錄製或手動輸入。');
     return { shouldClose: false };
   }
 
@@ -80,5 +82,35 @@ async function handleCareLogVoiceFinish({
   return { shouldClose: true };
 }
 
-export { handleCareLogVoiceFinish };
+function diaryDraftToCareLogEntry(
+  draft: DiaryDraft,
+  groupMembers: GroupMember[],
+): CareLogEntry {
+  const startsAt = new Date(
+    `${draft.dateValue.replace(/\//g, '-')}T${draft.timeValue}:00`,
+  ).toISOString();
+
+  const participants = draft.participantIds.map((id) => {
+    const member = groupMembers.find((m) => m.userId === id);
+
+    return {
+      id,
+      name: member?.username ?? '成員',
+      src: member ? getAvatarSrcByKey(member.avatarKey) : '',
+    };
+  });
+
+  return {
+    id: draft.id,
+    title: draft.title,
+    description: draft.note,
+    startsAt,
+    repeatPattern: draft.repeatPattern,
+    participants,
+    status: 'pending',
+    isImportant: draft.isImportant,
+  };
+}
+
+export { diaryDraftToCareLogEntry, handleCareLogVoiceFinish };
 export type { CareLogVoiceFieldSetters };

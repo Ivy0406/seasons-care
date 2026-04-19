@@ -131,7 +131,7 @@ function CareLogFormCard({
       {editMode === 'default' ? (
         <>
           <ListFormInputRow
-            label="日誌名稱"
+            label="任務名稱"
             inputProps={{
               id: `${entry.id}-title`,
               value: titleValue,
@@ -208,7 +208,7 @@ function CareLogFormCard({
         <div className="flex flex-col text-neutral-900">
           {showVoiceInput ? (
             <VoiceFormSection
-              title="日誌"
+              title="任務"
               onClose={onClose}
               onVoiceFinish={({ transcript }) =>
                 handleCareLogVoiceFinish({

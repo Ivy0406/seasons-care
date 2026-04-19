@@ -37,6 +37,7 @@ import cn from '@/lib/utils';
 import CreateCareLogDialog from '@/pages/CareLog/components/CreateCareLogDialog';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
+import useNotificationBadge from '@/pages/Notification/hooks/useNotificationBadge';
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
@@ -50,6 +51,7 @@ type HomepageLayoutProps = {
 
 function HomepageLayout({ className }: HomepageLayoutProps) {
   const queryClient = useQueryClient();
+  const { hasUnread } = useNotificationBadge();
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
@@ -79,6 +81,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     variant: 'success',
     title: '',
   });
+  const [moneyCreateSuccessOpen, setMoneyCreateSuccessOpen] = useState(false);
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [groupEntryMode, setGroupEntryMode] = useState<'create' | 'edit'>(
     'create',
@@ -339,7 +342,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     if (!result.hasDetectedContent) {
       clearVoiceInput();
       toast.error(
-        '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+        '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
       );
       return { shouldClose: false };
     }
@@ -368,7 +371,8 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
         )}
       >
         <HomepageNavigationBar
-          hasNotification
+          hasNotification={hasUnread}
+          onNotificationClick={() => navigate('/notifications')}
           onMenuClick={() => setIsSideMenuOpen(true)}
           selectedDate={selectedDate}
           onDateClick={() => setIsDateDrawerOpen(true)}
@@ -481,6 +485,10 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             <CreateMoneyDataCard
               initialDate={selectedDate}
               onClose={() => setShowCreateMoneyCard(false)}
+              onSuccess={() => {
+                setShowCreateMoneyCard(false);
+                setMoneyCreateSuccessOpen(true);
+              }}
             />
           </AlertDialogPopup>
         </AlertDialogPortal>
@@ -580,6 +588,15 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
         onClose={() =>
           setHealthSubmitModal((prev) => ({ ...prev, open: false }))
         }
+      />
+
+      <Modal
+        open={moneyCreateSuccessOpen}
+        variant="success"
+        title="帳目建立完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setMoneyCreateSuccessOpen(false)}
       />
     </>
   );

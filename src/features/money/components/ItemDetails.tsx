@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { X } from 'lucide-react';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
@@ -25,10 +25,7 @@ function ItemDetails({ item }: { item: ExpenseItem }) {
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
 
   const hashColor = SPLIT_HASH_COLOR[item.splitStatus] ?? 'text-neutral-900';
-  const displayDate = format(
-    new Date(item.expenseDate.replace('Z', '')),
-    'yyyy/MM/dd HH:mm',
-  );
+  const displayDate = format(parseISO(item.expenseDate), 'yyyy/MM/dd HH:mm');
 
   return (
     <div>
@@ -80,7 +77,7 @@ function ItemDetails({ item }: { item: ExpenseItem }) {
         <div className="flex items-center gap-2">
           <p className="font-paragraph-md text-neutral-900">金額</p>
           <p className="font-heading-md text-neutral-900">
-            $ {item.amount.toLocaleString()}
+            $ {(item.amount ?? 0).toLocaleString()}
           </p>
         </div>
         <div className="min-h-8 border-t-2 border-neutral-900">

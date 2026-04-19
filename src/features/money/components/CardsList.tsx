@@ -22,6 +22,7 @@ const SPLIT_FILTER_OPTIONS: FilterOption<SplitFilter>[] = [
 
 type CardsListProps = {
   items: ExpenseItem[];
+  initialOpenExpenseId?: string;
 };
 
 const filterItems = (items: ExpenseItem[], filter: SplitFilter) => {
@@ -36,8 +37,7 @@ const formatDateLabel = (date: string) => date.replace(/-/g, '.');
 const groupByDate = (items: ExpenseItem[]): DateGroup[] => {
   const sorted = [...items].sort(
     (a, b) =>
-      parseISO(b.expenseDate.replace('Z', '')).getTime() -
-      parseISO(a.expenseDate.replace('Z', '')).getTime(),
+      parseISO(b.expenseDate).getTime() - parseISO(a.expenseDate).getTime(),
   );
   return sorted.reduce<DateGroup[]>((acc, item) => {
     const dateKey = item.expenseDate.slice(0, 10);
@@ -51,7 +51,7 @@ const groupByDate = (items: ExpenseItem[]): DateGroup[] => {
   }, []);
 };
 
-function CardsList({ items }: CardsListProps) {
+function CardsList({ items, initialOpenExpenseId }: CardsListProps) {
   const [filter, setFilter] = useState<SplitFilter>('all');
   const { activeTab } = useActivedMoneyTab();
   const filteredItems = filterItems(items, filter);
@@ -89,7 +89,11 @@ function CardsList({ items }: CardsListProps) {
               </p>
             )}
             {group.items.map((item) => (
-              <EntryCard key={item.id} item={item} />
+              <EntryCard
+                key={item.id}
+                item={item}
+                initialOpen={item.id === initialOpenExpenseId}
+              />
             ))}
           </div>
         ))}

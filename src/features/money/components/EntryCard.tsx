@@ -25,13 +25,20 @@ import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import ItemDetailsCard from './ItemDetailsCard';
 import UpdateDataCard from './UpdateDataCard';
 
-function EntryCard({ item }: { item: ExpenseItem }) {
+function EntryCard({
+  item,
+  initialOpen = false,
+}: {
+  item: ExpenseItem;
+  initialOpen?: boolean;
+}) {
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(initialOpen);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [updateSuccessOpen, setUpdateSuccessOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showError, setShowError] = useState(false);
@@ -92,7 +99,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
 
             <div className="flex items-center justify-between pt-2">
               <span className="font-label-lg text-neutral-900">
-                $ {item.amount.toLocaleString()}
+                $ {(item.amount ?? 0).toLocaleString()}
               </span>
               {creator && (
                 <SingleAvatar
@@ -108,7 +115,7 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         <AlertDialogPortal>
           <AlertDialogBackdrop />
           <AlertDialogPopup className="border-0 bg-transparent">
-              <ItemDetailsCard
+            <ItemDetailsCard
               item={item}
               onDeleteClick={handleDeleteClick}
               onEditClick={handleEditClick}
@@ -124,6 +131,10 @@ function EntryCard({ item }: { item: ExpenseItem }) {
             <UpdateDataCard
               item={item}
               onClose={() => setUpdateOpen(false)}
+              onSuccess={() => {
+                setUpdateOpen(false);
+                setUpdateSuccessOpen(true);
+              }}
               onDeleteClick={handleDeleteClick}
             />
           </AlertDialogPopup>
@@ -156,6 +167,15 @@ function EntryCard({ item }: { item: ExpenseItem }) {
         title="刪除失敗"
         description={errorMessage}
         onClose={() => setShowError(false)}
+      />
+
+      <Modal
+        open={updateSuccessOpen}
+        variant="success"
+        title="帳目更新完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setUpdateSuccessOpen(false)}
       />
     </>
   );

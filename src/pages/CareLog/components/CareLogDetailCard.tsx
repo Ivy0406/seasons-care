@@ -32,7 +32,7 @@ function CareLogDetailCard({
 
   return (
     <DataFormCard
-      title="日誌"
+      title="任務"
       className="bg-neutral-800"
       toneClassName="-mt-0.5 text-neutral-50 bg-neutral-800"
       contentClassName="px-4 py-4"
@@ -42,7 +42,7 @@ function CareLogDetailCard({
           <div className="flex justify-end">
             <button
               type="button"
-              aria-label="關閉日誌詳情"
+              aria-label="關閉任務詳情"
               className="inline-flex size-6 items-center justify-center rounded-full text-neutral-900"
               onClick={onClose}
             >
@@ -79,7 +79,7 @@ function CareLogDetailCard({
             {entry.isImportant ? (
               <div className="bg-primary-default inline-flex w-fit px-2 py-1">
                 <p className="font-label-sm leading-5 tracking-[0.01em] text-neutral-900">
-                  重要日誌
+                  重要任務
                 </p>
               </div>
             ) : null}
@@ -115,13 +115,13 @@ function CareLogDetailCard({
             onClick={onDelete}
             className="min-w-0 border-neutral-50 bg-transparent text-neutral-50"
           >
-            刪除日誌
+            刪除任務
           </RoundedButtonSecondary>
           <RoundedButtonPrimary
             onClick={onEdit}
             className="bg-primary-default min-w-0 border-neutral-900 text-neutral-900"
           >
-            編輯日誌
+            編輯任務
           </RoundedButtonPrimary>
         </div>
       </DataFormCard.Footer>

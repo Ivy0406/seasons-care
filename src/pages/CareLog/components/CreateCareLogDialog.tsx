@@ -47,8 +47,8 @@ function CreateCareLogDialog({
             {entry ? (
               <CareLogFormCard
                 entry={entry}
-                title="新日誌"
-                submitLabel="新增日誌"
+                title="新任務"
+                submitLabel="新增任務"
                 isSubmitting={isLoading}
                 cardClassName="bg-primary-default"
                 toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
