@@ -1,6 +1,5 @@
 import { ChevronRight } from 'lucide-react';
 
-import { CircleButtonPrimary } from '@/components/common/CircleIButton';
 import cn from '@/lib/utils';
 
 type NotificationBarProps = {
@@ -28,12 +27,15 @@ function NotificationBar({
       onClick={onClick}
       className="flex w-full items-center gap-3 py-2 text-neutral-900"
     >
-      <CircleButtonPrimary
-        size="notification"
-        className={cn('[&_svg]:size-3', iconClassName)}
+      <span
+        className={cn(
+          'flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50 [&_svg]:size-6 [&_svg]:stroke-[1.5]',
+          iconClassName,
+        )}
+        aria-hidden="true"
       >
         {icon}
-      </CircleButtonPrimary>
+      </span>
       <div className="flex flex-1 flex-col text-left">
         {eventType ? <p className="font-paragraph-md">{eventType}</p> : null}
         <div className="flex gap-1">
