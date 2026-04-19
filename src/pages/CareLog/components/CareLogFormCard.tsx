@@ -35,6 +35,7 @@ type CareLogFormCardProps = {
   footerMode?: 'default' | 'submitOnly';
   groupMembers?: GroupMember[];
   showVoiceInput?: boolean;
+  editMode?: 'default' | 'recurring-occurrence';
 };
 
 function CareLogFormCard({
@@ -49,6 +50,7 @@ function CareLogFormCard({
   footerMode = 'default',
   groupMembers = [],
   showVoiceInput = true,
+  editMode = 'default',
 }: CareLogFormCardProps) {
   const [titleValue, setTitleValue] = useState(entry.title);
   const [dateValue, setDateValue] = useState('');
@@ -56,6 +58,7 @@ function CareLogFormCard({
   const [repeatPattern, setRepeatPattern] = useState<RepeatPatternValue>(
     entry.repeatPattern ?? 'none',
   );
+  const [status, setStatus] = useState(entry.status);
   const [isImportant, setIsImportant] = useState(entry.isImportant ?? false);
   const [note, setNote] = useState(entry.description);
   const [participantIds, setParticipantIds] = useState<string[]>(
@@ -75,6 +78,7 @@ function CareLogFormCard({
     setDateValue(format(startedAt, 'yyyy/MM/dd'));
     setTimeValue(format(startedAt, 'HH:mm'));
     setRepeatPattern(entry.repeatPattern ?? 'none');
+    setStatus(entry.status);
     setIsImportant(entry.isImportant ?? false);
     setNote(entry.description);
     setParticipantIds(entry.participants.map((p) => p.id));
@@ -82,18 +86,25 @@ function CareLogFormCard({
 
   const isSubmitDisabled =
     isSubmitting ||
-    titleValue.trim().length === 0 ||
-    dateValue.trim().length === 0 ||
-    timeValue.trim().length === 0;
+    (editMode === 'default' &&
+      (titleValue.trim().length === 0 ||
+        dateValue.trim().length === 0 ||
+        timeValue.trim().length === 0));
 
   const handleSubmit = () => {
     if (isSubmitDisabled) return;
 
-    const parsedStartsAt = parse(
-      `${dateValue} ${timeValue}`,
-      'yyyy/MM/dd HH:mm',
-      parseISO(entry.startsAt),
-    );
+    const startsAt =
+      editMode === 'default'
+        ? format(
+            parse(
+              `${dateValue} ${timeValue}`,
+              'yyyy/MM/dd HH:mm',
+              parseISO(entry.startsAt),
+            ),
+            "yyyy-MM-dd'T'HH:mm:ssxxx",
+          )
+        : entry.startsAt;
 
     const selectedParticipants = memberOptions.filter((m) =>
       participantIds.includes(m.id),
@@ -103,7 +114,8 @@ function CareLogFormCard({
       ...entry,
       title: titleValue,
       description: note,
-      startsAt: format(parsedStartsAt, "yyyy-MM-dd'T'HH:mm:ssxxx"),
+      startsAt,
+      status,
       isImportant,
       repeatPattern: repeatPattern ?? 'none',
       participants: selectedParticipants.map((m) => ({
@@ -116,28 +128,33 @@ function CareLogFormCard({
 
   const formFields = (
     <div className="px-4 py-2">
-      <ListFormInputRow
-        label="任務名稱"
-        inputProps={{
-          id: `${entry.id}-title`,
-          value: titleValue,
-          onChange: (event) => setTitleValue(event.target.value),
-        }}
-        className="border-neutral-900"
-      />
-      <ListFormDateTimeRow
-        label="時間"
-        dateValue={dateValue}
-        timeValue={timeValue}
-        onDateChange={setDateValue}
-        onTimeChange={setTimeValue}
-        className="border-neutral-900"
-      />
-      <ListFormRepeatRow
-        value={repeatPattern}
-        onChange={setRepeatPattern}
-        className="border-neutral-900"
-      />
+      {editMode === 'default' ? (
+        <>
+          <ListFormInputRow
+            label="任務名稱"
+            inputProps={{
+              id: `${entry.id}-title`,
+              value: titleValue,
+              onChange: (event) => setTitleValue(event.target.value),
+            }}
+            className="border-neutral-900"
+          />
+          <ListFormDateTimeRow
+            label="時間"
+            dateValue={dateValue}
+            timeValue={timeValue}
+            onDateChange={setDateValue}
+            onTimeChange={setTimeValue}
+            className="border-neutral-900"
+          />
+          <ListFormRepeatRow
+            value={repeatPattern}
+            onChange={setRepeatPattern}
+            selectedDateValue={dateValue}
+            className="border-neutral-900"
+          />
+        </>
+      ) : null}
       <ListFormParticipantsRow
         label="參與者"
         members={memberOptions}
@@ -150,12 +167,23 @@ function CareLogFormCard({
         }))}
         className="border-neutral-900"
       />
-      <ListFormImportantRow
-        label="是否標記為重要"
-        checked={isImportant}
-        onCheckedChange={setIsImportant}
-        className="border-neutral-900"
-      />
+      {editMode === 'default' ? (
+        <ListFormImportantRow
+          label="是否標記為重要"
+          checked={isImportant}
+          onCheckedChange={setIsImportant}
+          className="border-neutral-900"
+        />
+      ) : (
+        <ListFormImportantRow
+          label="是否已完成"
+          checked={status === 'completed'}
+          onCheckedChange={(checked) =>
+            setStatus(checked ? 'completed' : 'pending')
+          }
+          className="border-neutral-900"
+        />
+      )}
       <ListFormNoteRow
         label="備註"
         textareaProps={{

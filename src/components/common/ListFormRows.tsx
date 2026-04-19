@@ -104,6 +104,7 @@ type RepeatPatternValue = FormDiaryRepeatValue;
 type ListFormRepeatRowProps = {
   value: RepeatPatternValue;
   onChange: (value: RepeatPatternValue) => void;
+  selectedDateValue?: string;
   className?: string;
 };
 
@@ -508,12 +509,17 @@ function ListFormSelectRow({
 function ListFormRepeatRow({
   value,
   onChange,
+  selectedDateValue,
   className,
 }: ListFormRepeatRowProps) {
   return (
     <ListFormRow label="是否標示為重複" className={className}>
       <div className="relative min-w-0">
-        <FormDiaryRepeatSelector value={value} onChange={onChange} />
+        <FormDiaryRepeatSelector
+          value={value}
+          onChange={onChange}
+          selectedDateValue={selectedDateValue}
+        />
       </div>
     </ListFormRow>
   );
