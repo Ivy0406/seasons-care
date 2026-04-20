@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './assets/styles/index.css';
+
+import { Outlet, useLocation } from 'react-router';
+
+import Toaster from '@/components/ui/sonner';
+import { VoiceInputProvider } from '@/features/voice/VoiceInputContext';
+import cn from '@/lib/utils';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { pathname } = useLocation();
+  const isFullWidthRoute =
+    pathname === '/' ||
+    pathname === '/login' ||
+    pathname === '/registration' ||
+    pathname === '/onboarding' ||
+    pathname === '/calendar-page' ||
+    pathname === '/calendar-page/new' ||
+    pathname === '/data-form' ||
+    pathname === '/health-report' ||
+    pathname === '/money' ||
+    pathname === '/group-entrance' ||
+    pathname === '/homepage' ||
+    pathname === '/settings' ||
+    pathname === '/settings/profile' ||
+    pathname === '/settings/change-password' ||
+    pathname === '/settings/privacy' ||
+    pathname === '/notifications' ||
+    pathname === '/reset-password';
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <VoiceInputProvider>
+      <div
+        className={cn(
+          'flex min-h-screen w-full flex-col bg-neutral-200',
+          isFullWidthRoute ? '' : 'mx-auto max-w-200',
+          isFullWidthRoute ? '' : 'px-6',
+        )}
+      >
+        {/* 可放header */}
+        <Outlet />
+        <Toaster />
+        {/* 可放footer */}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </VoiceInputProvider>
+  );
 }
 
-export default App
+export default App;
