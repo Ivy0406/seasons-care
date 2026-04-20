@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Mic } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { Bell, Mic } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -43,6 +44,7 @@ import useNotificationBadge from '@/pages/Notification/hooks/useNotificationBadg
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
+import useUpcomingImportantEntry from '../hooks/useUpcomingImportantEntry';
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
@@ -105,6 +107,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     null,
   );
   const { setVoiceTranscript, clearVoiceInput } = useVoiceInput();
+  const upcomingImportantEntry = useUpcomingImportantEntry(selectedDate);
 
   const {
     rootRef: mainRef,
@@ -435,23 +438,45 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             </div>
           </div>
 
-          <div className="bg-primary-default mx-6 mt-5 flex gap-5 overflow-hidden rounded-xl border-2 border-neutral-900 px-3 py-5">
-            <SingleAvatar
-              src={currentUserAvatarSrc}
-              name={currentUser?.userName ?? ''}
-              className="size-18.25 ring-2 ring-neutral-900"
-            />
-            <div className="flex-1">
-              <div className="flex flex-col">
-                <p className="font-label-md self-start bg-neutral-800 px-2 py-1 text-neutral-50">
-                  今日分析摘要
-                </p>
-                <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
-                  下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
-                  80%，再加油一點點！
-                </p>
+          <div className="bg-primary-default mx-6 mt-5 flex flex-col gap-3 overflow-hidden rounded-xl border-2 border-neutral-900 px-3 py-5">
+            <div className="flex gap-5">
+              <SingleAvatar
+                src={currentUserAvatarSrc}
+                name={currentUser?.userName ?? ''}
+                className="size-18.25 ring-2 ring-neutral-900"
+              />
+              <div className="flex-1">
+                <div className="flex flex-col">
+                  <p className="font-label-md self-start bg-neutral-800 px-2 py-1 text-neutral-50">
+                    今日分析摘要
+                  </p>
+                  <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
+                    下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
+                    80%，再加油一點點！
+                  </p>
+                </div>
               </div>
             </div>
+            {upcomingImportantEntry ? (
+              <div className="flex items-center gap-5 rounded-sm bg-neutral-800 px-4 py-3 text-neutral-100">
+                <Bell className="size-8 shrink-0" />
+                <div className="flex min-w-0 flex-col">
+                  <p className="font-label-md">即將到來的重要行程</p>
+                  <div className="flex items-center justify-center gap-1">
+                    <p className="font-label-md truncate">
+                      {format(
+                        parseISO(upcomingImportantEntry.startsAt),
+                        'HH:mm',
+                      )}{' '}
+                    </p>
+                    <p className="font-paragraph-md">
+                      {' '}
+                      {upcomingImportantEntry.title}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="mx-6 mt-8 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
