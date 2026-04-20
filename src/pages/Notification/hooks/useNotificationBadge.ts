@@ -2,6 +2,9 @@ import { useCallback, useMemo } from 'react';
 
 import { addDays, format, isSameDay, parseISO } from 'date-fns';
 
+import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
+import toEventSeriesEntries from '@/features/calendar/utils/eventSeriesEntries';
+import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useExpenses from '@/features/money/hooks/useExpenses';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
@@ -15,6 +18,11 @@ function computeSnapshot(ids: string[]) {
 function useNotificationBadge() {
   const { currentGroupId } = useCurrentGroupId();
   const { entries } = useGetCareLogEntries();
+  const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
+  const { eventSeries: thisMonthEventSeries } = useGetEventSeries(new Date());
+  const { eventSeries: nextMonthEventSeries } = useGetEventSeries(
+    addDays(new Date(), 7),
+  );
   const { expenses: thisMonthExpenses } = useExpenses(
     format(new Date(), 'yyyy-MM'),
   );
@@ -33,11 +41,34 @@ function useNotificationBadge() {
     [thisMonthExpenses, nextMonthExpenses],
   );
 
+  const recurringEntries = useMemo(
+    () => [
+      ...toEventSeriesEntries(thisMonthEventSeries, new Date(), groupMembers),
+      ...toEventSeriesEntries(
+        nextMonthEventSeries,
+        addDays(new Date(), 7),
+        groupMembers,
+      ).filter(
+        (entry) =>
+          !thisMonthEventSeries.some(
+            (eventSeries) =>
+              `${eventSeries.eventSeriesId}__${eventSeries.scheduledAt ?? eventSeries.startsAt ?? ''}` ===
+              entry.id,
+          ),
+      ),
+    ],
+    [groupMembers, nextMonthEventSeries, thisMonthEventSeries],
+  );
+  const allEntries = useMemo(
+    () => [...entries, ...recurringEntries],
+    [entries, recurringEntries],
+  );
+
   const currentSnapshot = useMemo(() => {
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
 
-    const pendingIds = entries
+    const pendingIds = allEntries
       .filter(
         (entry) =>
           entry.isImportant &&
@@ -46,7 +77,7 @@ function useNotificationBadge() {
       )
       .map((entry) => entry.id);
 
-    const completedIds = entries
+    const completedIds = allEntries
       .filter(
         (entry) =>
           entry.isImportant &&
@@ -64,7 +95,7 @@ function useNotificationBadge() {
       .map((expense) => `s_${expense.id}`);
 
     return computeSnapshot([...pendingIds, ...completedIds, ...splitIds]);
-  }, [entries, allExpenses]);
+  }, [allEntries, allExpenses]);
 
   const storageKey = getStorageKey(currentGroupId ?? '');
   const storedSnapshot = localStorage.getItem(storageKey) ?? '';

@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import { X } from 'lucide-react';
+import { Repeat, X } from 'lucide-react';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import {
@@ -67,7 +67,15 @@ function CareLogDetailCard({
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="font-heading-md">{entry.title}</h3>
+            <div className="flex items-center gap-3">
+              <h3 className="font-heading-md">{entry.title}</h3>
+              {entry.sourceType === 'event-series' ? (
+                <Repeat
+                  className="size-5 shrink-0 text-neutral-500"
+                  strokeWidth={1.5}
+                />
+              ) : null}
+            </div>
             {entry.isImportant ? (
               <div className="bg-primary-default inline-flex w-fit px-2 py-1">
                 <p className="font-label-sm leading-5 tracking-[0.01em] text-neutral-900">

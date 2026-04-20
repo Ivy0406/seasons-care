@@ -13,7 +13,7 @@ type Spotlight = {
 };
 
 type Props = {
-  micButtonRef: React.RefObject<HTMLElement | null>;
+  micButtonRef: React.RefObject<HTMLDivElement | null>;
   addButtonRef: React.RefObject<HTMLDivElement | null>;
   onDismiss: () => void;
 };
