@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { format, parseISO } from 'date-fns';
-import { Bell, Mic } from 'lucide-react';
+import { Mic } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -48,6 +47,7 @@ import useUpcomingImportantEntry from '../hooks/useUpcomingImportantEntry';
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
+import UpcomingImportantEntryNotice from './UpcomingImportantEntryNotice';
 
 type HomepageLayoutProps = {
   className?: string;
@@ -458,24 +458,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
               </div>
             </div>
             {upcomingImportantEntry ? (
-              <div className="flex items-center gap-5 rounded-sm bg-neutral-800 px-4 py-3 text-neutral-100">
-                <Bell className="size-8 shrink-0" />
-                <div className="flex min-w-0 flex-col">
-                  <p className="font-label-md">即將到來的重要行程</p>
-                  <div className="flex items-center justify-center gap-1">
-                    <p className="font-label-md truncate">
-                      {format(
-                        parseISO(upcomingImportantEntry.startsAt),
-                        'HH:mm',
-                      )}{' '}
-                    </p>
-                    <p className="font-paragraph-md">
-                      {' '}
-                      {upcomingImportantEntry.title}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <UpcomingImportantEntryNotice entry={upcomingImportantEntry} />
             ) : null}
           </div>
 
