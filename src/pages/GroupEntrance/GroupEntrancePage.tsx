@@ -6,10 +6,12 @@ import BaseDrawer from '@/components/common/BaseDrawer';
 import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
 import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
 import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
+import useGetGroups from '@/features/groups/hooks/useGetGroups';
 
 import GroupEntranceLayout from './components/GroupEntranceLayout';
 
 function GroupEntrancePage() {
+  useGetGroups();
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [isGroupInviteDrawerOpen, setIsGroupInviteDrawerOpen] = useState(false);
   const [isGroupJoinDrawerOpen, setIsGroupJoinDrawerOpen] = useState(false);
