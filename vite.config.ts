@@ -18,11 +18,11 @@ export default defineConfig({
         'icons/apple-touch-icon-180x180.png',
       ],
       manifest: {
-        name: 'Seasons Care',
-        short_name: 'Seasons Care',
+        name: '蒔歲 Seasons Care',
+        short_name: '蒔歲',
         description: '健康照護管理應用',
-        theme_color: '#85C6B5',
-        background_color: '#ffffff',
+        theme_color: '#E9ECEF',
+        background_color: '#E9ECEF',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
