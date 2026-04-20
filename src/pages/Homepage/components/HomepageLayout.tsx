@@ -505,6 +505,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
         <OnboardingOverlay
           micButtonRef={micButtonRef}
           addButtonRef={addButtonRef}
+          scrollContainerRef={mainRef}
           onDismiss={handleDismissOnboarding}
         />
       )}

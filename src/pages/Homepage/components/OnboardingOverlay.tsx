@@ -15,12 +15,14 @@ type Spotlight = {
 type Props = {
   micButtonRef: React.RefObject<HTMLDivElement | null>;
   addButtonRef: React.RefObject<HTMLDivElement | null>;
+  scrollContainerRef: React.RefObject<HTMLElement | null>;
   onDismiss: () => void;
 };
 
 function measureSpotlight(
   el: HTMLElement | null,
   padding = 1,
+  offsetY = 0,
 ): Spotlight | null {
   if (!el) return null;
   const rect = el.getBoundingClientRect();
@@ -29,12 +31,12 @@ function measureSpotlight(
   const rx = Math.min(rawRx + padding, paddedHeight / 2);
   return {
     x: rect.left - padding,
-    y: rect.top - padding,
+    y: rect.top - padding + offsetY,
     width: rect.width + padding * 2,
     height: paddedHeight,
     rx,
     cx: rect.left + rect.width / 2,
-    cy: rect.top + rect.height / 2,
+    cy: rect.top + rect.height / 2 + offsetY,
   };
 }
 
@@ -63,6 +65,7 @@ const STEP_LABELS: Record<Step, StepLabel> = {
 export default function OnboardingOverlay({
   micButtonRef,
   addButtonRef,
+  scrollContainerRef,
   onDismiss,
 }: Props) {
   const [step, setStep] = useState<Step>('mic');
@@ -71,19 +74,22 @@ export default function OnboardingOverlay({
 
   useEffect(() => {
     const measure = () => {
-      setMicSpot(measureSpotlight(micButtonRef.current));
+      setMicSpot(measureSpotlight(micButtonRef.current, 1, 10));
       setAddSpot(measureSpotlight(addButtonRef.current));
     };
 
+    const container = scrollContainerRef.current;
     const raf = requestAnimationFrame(measure);
     window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, true);
+    container?.addEventListener('scroll', measure);
+    container?.addEventListener('scrollend', measure);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure, true);
+      container?.removeEventListener('scroll', measure);
+      container?.removeEventListener('scrollend', measure);
     };
-  }, [micButtonRef, addButtonRef]);
+  }, [micButtonRef, addButtonRef, scrollContainerRef]);
 
   const activeSpot = step === 'mic' ? micSpot : addSpot;
   const label = STEP_LABELS[step];
