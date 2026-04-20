@@ -26,14 +26,17 @@ function LandingPage() {
   }, [navigate]);
 
   return (
-    <main className="bg-neutral-100">
-      <div className="mx-auto flex h-screen w-full max-w-200 flex-col justify-center gap-15 px-6">
+    <main className="bg-primary-default flex h-screen items-center">
+      <div className="mx-auto flex h-screen max-h-122 w-full max-w-200 flex-col justify-between gap-15 px-6">
         <LandingKeyVisual />
         <div className="flex w-full flex-col items-center gap-3">
           <RoundedButtonPrimary onClick={() => navigate('login')}>
             登入
           </RoundedButtonPrimary>
-          <RoundedButtonSecondary onClick={() => navigate('registration')}>
+          <RoundedButtonSecondary
+            className="bg-transparent"
+            onClick={() => navigate('registration')}
+          >
             註冊
           </RoundedButtonSecondary>
         </div>
