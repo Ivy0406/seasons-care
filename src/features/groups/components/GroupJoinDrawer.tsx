@@ -13,6 +13,7 @@ type GroupJoinDrawerProps = {
   open: boolean;
   initialInviteCode?: string;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 };
 
 function extractInviteCode(value: string) {
@@ -63,6 +64,7 @@ function GroupJoinDrawer({
   open,
   initialInviteCode = '',
   onOpenChange,
+  onSuccess,
 }: GroupJoinDrawerProps) {
   const { isLoading, handleJoinGroup } = useJoinGroup();
   const [inviteCode, setInviteCode] = useState('');
@@ -139,7 +141,10 @@ function GroupJoinDrawer({
           <RoundedButtonPrimary
             type="button"
             className="bg-neutral-800"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false);
+              onSuccess?.();
+            }}
           >
             立即開始照護
           </RoundedButtonPrimary>
