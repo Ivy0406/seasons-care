@@ -146,16 +146,15 @@ export default function OnboardingOverlay({
               {label.title}
             </p>
           </div>
-          <div className="h-0 w-0 border-x-8 border-t-8 border-x-transparent border-t-neutral-900" />
         </div>
       )}
 
       <div
-        className="absolute bottom-1/3 left-1/2 -translate-x-1/2"
+        className="absolute bottom-3/5 left-1/2 -translate-x-1/2"
         style={{ pointerEvents: 'none' }}
       >
-        <p className="font-paragraph-sm text-center text-neutral-300">
-          {step === 'mic' ? '點擊繼續' : '點擊關閉'}
+        <p className="font-paragraph-md text-center text-neutral-50">
+          {step === 'mic' ? '任意點擊繼續' : '點擊關閉'}
         </p>
       </div>
     </button>
