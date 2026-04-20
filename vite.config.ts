@@ -2,11 +2,13 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    svgr(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
