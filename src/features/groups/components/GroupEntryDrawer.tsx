@@ -23,6 +23,7 @@ type GroupEntryDrawerProps = {
   onClose?: () => void;
   onComplete?: () => void;
   onInviteMembers?: (inviteCode?: string) => void;
+  onJoinGroup?: () => void;
   initialStep?: DrawerStep;
   mode?: GroupEntryMode;
   groupId?: string | null;
@@ -153,6 +154,7 @@ function GroupEntryDrawer({
   onClose,
   onComplete,
   onInviteMembers,
+  onJoinGroup,
   initialStep = 'entry',
   mode = 'create',
   groupId = null,
@@ -360,7 +362,7 @@ function GroupEntryDrawer({
       secondaryLabel="加入群組"
       imageClassName="aspect-square h-40"
       onPrimaryClick={() => setStep('create')}
-      onSecondaryClick={() => {}}
+      onSecondaryClick={() => onJoinGroup?.()}
     />
   );
 }
