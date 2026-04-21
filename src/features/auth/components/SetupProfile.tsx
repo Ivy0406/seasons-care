@@ -22,7 +22,6 @@ type SetupProfileProps = {
   isLoading?: boolean;
 };
 
-
 const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
   const avatarOptions = useAvatars();
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
@@ -64,6 +63,7 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
         </div>
         <div className="flex flex-col items-center gap-3">
           <SingleAvatar
+            isSelected
             src={selectedAvatar.url}
             className="h-35 w-35"
             name={currentName || '照護者'}

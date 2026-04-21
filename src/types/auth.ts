@@ -23,11 +23,14 @@ type UserInfo = {
 
 type LoginResponse = {
   success: boolean;
+  message: string;
+  traceId: string;
   data: {
     token: string;
     user: UserInfo;
+    careGroupCount: number;
+    defaultCareGroupId: string | null;
   };
-  traceId: string;
 };
 
 export type {
