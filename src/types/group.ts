@@ -21,7 +21,38 @@ type CreateGroupResponse = {
   success: boolean;
   message: string;
   data: CareGroupInfo;
-  traceId: string;
 };
 
-export type { CreateGroupPayload, CareGroupInfo, CreateGroupResponse };
+type GetMyGroupsResponse = {
+  success: boolean;
+  message: string;
+  data: CareGroupInfo[];
+};
+
+type GroupMember = {
+  userId: string;
+  username: string;
+  avatarKey: string;
+  role: number;
+  joinedAt: string;
+};
+
+type CareGroupDetail = CareGroupInfo & {
+  members: GroupMember[];
+};
+
+type GetGroupDetailResponse = {
+  success: boolean;
+  message: string;
+  data: CareGroupDetail;
+};
+
+export type {
+  CreateGroupPayload,
+  CareGroupInfo,
+  CreateGroupResponse,
+  GetMyGroupsResponse,
+  GroupMember,
+  CareGroupDetail,
+  GetGroupDetailResponse,
+};

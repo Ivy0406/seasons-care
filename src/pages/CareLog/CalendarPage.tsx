@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { format, isSameDay, parseISO } from 'date-fns';
+import { format, isSameDay, isValid, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import { Plus } from 'lucide-react';
+import { useLocation } from 'react-router';
 
 import Calendar from '@/components/common/Calendar';
+import FixedBottomButton from '@/components/common/FixedBottomButton';
+import { PageNavigationBar } from '@/components/common/NavigationBar';
+import SideMenu from '@/components/common/SideMenu';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -16,49 +19,70 @@ import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import {
-  getStoredCareLogEntries,
-  saveCareLogEntries,
-} from '@/pages/CareLog/data/careLogStorage';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
+import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
+import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
+import type { CareLogEntry } from '@/pages/CareLog/types';
+import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 
 const defaultSelectedDate = new Date();
 
-const defaultParticipant = {
-  id: 'current-user',
-  name: '王希銘',
-  src: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png',
-};
+function getSelectedDateFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('selectedDate' in state)) {
+    return undefined;
+  }
 
-function createDraftCareLogEntry(selectedDate = new Date()): CareLogEntry {
-  return {
-    id: globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`,
-    title: '',
-    description: '',
-    startsAt: format(selectedDate, "yyyy-MM-dd'T'HH:mm:ssxxx"),
-    repeatPattern: 'none',
-    participants: [defaultParticipant],
-    status: 'pending',
-    isImportant: false,
-  };
+  const { selectedDate } = state as { selectedDate?: unknown };
+
+  if (selectedDate instanceof Date) {
+    return isValid(selectedDate) ? selectedDate : undefined;
+  }
+
+  if (typeof selectedDate !== 'string') {
+    return undefined;
+  }
+
+  const parsedDate = parseISO(selectedDate);
+
+  return isValid(parsedDate) ? parsedDate : undefined;
 }
 
 function CalendarPage() {
-  const [entries, setEntries] = useState<CareLogEntry[]>(
-    getStoredCareLogEntries,
-  );
+  const location = useLocation();
+  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { isLoading: isDeletingEntry, handleDeleteCareLogEntry } =
+    useDeleteCareLogEntry();
+  const { isLoading: isUpdatingEntry, handleUpdateCareLogEntry } =
+    useUpdateCareLogEntry();
+  const { entries: fetchedEntries, refetchEntries } = useGetCareLogEntries();
+  const initialSelectedDate = getSelectedDateFromState(location.state);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    defaultSelectedDate,
+    initialSelectedDate ?? defaultSelectedDate,
   );
-  const [visibleMonth, setVisibleMonth] = useState<Date>(defaultSelectedDate);
+  const [visibleMonth, setVisibleMonth] = useState<Date>(
+    initialSelectedDate ?? defaultSelectedDate,
+  );
   const [creatingEntry, setCreatingEntry] = useState<CareLogEntry | null>(null);
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
 
-  const markedDates = entries.map((entry) => parseISO(entry.startsAt));
+  useEffect(() => {
+    const routedSelectedDate = getSelectedDateFromState(location.state);
+
+    if (!routedSelectedDate) {
+      return;
+    }
+
+    setSelectedDate(routedSelectedDate);
+    setVisibleMonth(routedSelectedDate);
+  }, [location.state]);
+
+  const markedDates = fetchedEntries.map((entry) => parseISO(entry.startsAt));
   const selectedEntries =
     selectedDate === undefined
       ? []
-      : entries.filter((entry) =>
+      : fetchedEntries.filter((entry) =>
           isSameDay(parseISO(entry.startsAt), selectedDate),
         );
   const openCreateEntry = (date?: Date) => {
@@ -70,17 +94,12 @@ function CalendarPage() {
   return (
     <main className="flex min-h-screen w-full flex-col pb-10 text-neutral-900">
       <section>
-        <div className="mx-auto flex w-full max-w-200 items-center justify-between px-6 py-3.75">
-          <h2 className="font-heading-lg">日誌</h2>
-          <button
-            type="button"
-            aria-label="新增日誌"
-            className="inline-flex size-10 items-center justify-center text-neutral-900"
-            onClick={() => openCreateEntry()}
-          >
-            <Plus className="size-8" strokeWidth={2} />
-          </button>
-        </div>
+        <PageNavigationBar
+          wrapperClassName="border-b-0"
+          className="px-4 ring-0"
+          title="日誌"
+          onMenuClick={() => setIsSideMenuOpen(true)}
+        />
       </section>
 
       <section className="bg-primary-default border-y border-neutral-900">
@@ -108,28 +127,58 @@ function CalendarPage() {
           items={selectedEntries}
           selectedDate={selectedDate}
           onCreateEntry={openCreateEntry}
-          onUpdateEntry={(updatedEntry) => {
-            setEntries((currentEntries) => {
-              const nextEntries = currentEntries.map((entry) =>
-                entry.id === updatedEntry.id ? updatedEntry : entry,
-              );
+          isUpdatingEntry={isUpdatingEntry}
+          isDeletingEntry={isDeletingEntry}
+          onToggleStatus={async (entryId, status) => {
+            const targetEntry = fetchedEntries.find(
+              (entry) => entry.id === entryId,
+            );
 
-              saveCareLogEntries(nextEntries);
-              return nextEntries;
+            if (!targetEntry) {
+              return false;
+            }
+
+            const persistedEntry = await handleUpdateCareLogEntry({
+              ...targetEntry,
+              status,
             });
+
+            if (persistedEntry === null) {
+              return false;
+            }
+
+            await refetchEntries();
+
+            return true;
           }}
-          onDeleteEntry={(entryId) => {
-            setEntries((currentEntries) => {
-              const nextEntries = currentEntries.filter(
-                (entry) => entry.id !== entryId,
-              );
+          onUpdateEntry={async (updatedEntry) => {
+            const persistedEntry = await handleUpdateCareLogEntry(updatedEntry);
 
-              saveCareLogEntries(nextEntries);
-              return nextEntries;
-            });
+            if (persistedEntry === null) {
+              return false;
+            }
+
+            await refetchEntries();
+
+            return true;
+          }}
+          onDeleteEntry={async (entryId) => {
+            const didDelete = await handleDeleteCareLogEntry(entryId);
+
+            if (!didDelete) {
+              return false;
+            }
+
+            const nextEntries = await refetchEntries();
+            return !nextEntries.some((entry) => entry.id === entryId);
           }}
         />
       </section>
+
+      <FixedBottomButton
+        onClick={() => openCreateEntry(new Date())}
+        label="新增"
+      />
 
       <AlertDialog
         open={creatingEntry !== null}
@@ -147,17 +196,23 @@ function CalendarPage() {
                 entry={creatingEntry}
                 title="新日誌"
                 submitLabel="新增日誌"
+                isSubmitting={isLoading}
                 cardClassName="bg-primary-default"
                 toneClassName="-mt-0.5 bg-primary-default text-neutral-900"
                 footerMode="submitOnly"
                 onClose={() => setCreatingEntry(null)}
-                onSubmit={(entry) => {
+                onSubmit={async (entry) => {
                   try {
-                    const createdDate = parseISO(entry.startsAt);
-                    const nextEntries = [entry, ...entries];
+                    const createdEntry = await handleCreateCareLogEntry(entry);
 
-                    saveCareLogEntries(nextEntries);
-                    setEntries(nextEntries);
+                    if (createdEntry === null) {
+                      setModalKey('createError');
+                      return;
+                    }
+
+                    const createdDate = parseISO(createdEntry.startsAt);
+
+                    await refetchEntries();
                     setSelectedDate(createdDate);
                     setVisibleMonth(createdDate);
                     setCreatingEntry(null);
@@ -179,6 +234,8 @@ function CalendarPage() {
           onClose={() => setModalKey(null)}
         />
       ) : null}
+
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
   );
 }

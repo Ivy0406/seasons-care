@@ -38,6 +38,7 @@ type HomepageNavigationBarProps = {
   hasNotification?: boolean;
   onNotificationClick?: () => void;
   onMenuClick?: () => void;
+  selectedDate?: Date;
   className?: string;
 };
 
@@ -45,6 +46,7 @@ type PageNavigationBarProps = {
   title: string;
   onMenuClick?: () => void;
   titleClassName?: string;
+  wrapperClassName?: string;
   className?: string;
 };
 
@@ -139,7 +141,7 @@ function NavigationMenuButton({
         className,
       )}
     >
-      <Menu className="size-8" strokeWidth={1.5} />
+      <Menu className="size-6" strokeWidth={1.5} />
     </button>
   );
 }
@@ -235,8 +237,11 @@ function NavigationGroupTrigger({
   );
 }
 
-function NavigationDateBadge() {
-  const dateLabel = useCurrentDateLabel();
+function NavigationDateBadge({ selectedDate }: { selectedDate?: Date }) {
+  const currentDateLabel = useCurrentDateLabel();
+  const dateLabel = selectedDate
+    ? createDateLabel(selectedDate)
+    : currentDateLabel;
 
   return (
     <div className="text-primary-dark inline-flex items-center gap-0.5 justify-self-start rounded-sm py-3">
@@ -250,6 +255,7 @@ function HomepageNavigationBar({
   hasNotification = false,
   onNotificationClick,
   onMenuClick,
+  selectedDate,
   className,
 }: HomepageNavigationBarProps) {
   return (
@@ -260,7 +266,7 @@ function HomepageNavigationBar({
           className,
         )}
       >
-        <NavigationDateBadge />
+        <NavigationDateBadge selectedDate={selectedDate} />
         <Link
           to="/homepage"
           aria-label="回到首頁"
@@ -283,10 +289,11 @@ function PageNavigationBar({
   title,
   onMenuClick,
   titleClassName,
+  wrapperClassName,
   className,
 }: PageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
+    <div className={cn('border-b-2 border-neutral-900', wrapperClassName)}>
       <div
         className={cn(
           'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
@@ -295,7 +302,7 @@ function PageNavigationBar({
       >
         <NavigationTitle
           as="span"
-          className={cn('font-label-lg justify-self-start', titleClassName)}
+          className={cn('font-heading-lg justify-self-start', titleClassName)}
         >
           {title}
         </NavigationTitle>

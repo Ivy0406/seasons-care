@@ -8,7 +8,7 @@ import {
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type CareLogDetailCardProps = {
   entry: CareLogEntry;

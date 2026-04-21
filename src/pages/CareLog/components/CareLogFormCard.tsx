@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { format, parse, parseISO } from 'date-fns';
-import { ChevronRight, Sparkles, X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import {
@@ -18,15 +18,18 @@ import {
   RoundedButtonSecondary,
 } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
+import VoiceCTA from '@/components/common/voiceCTA';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import type { CareLogEntry } from '@/pages/CareLog/types';
 
 type CareLogFormCardProps = {
   entry: CareLogEntry;
   title: string;
   submitLabel: string;
   onClose: () => void;
-  onSubmit: (entry: CareLogEntry) => void;
+  onSubmit: (entry: CareLogEntry) => void | Promise<void>;
+  onVoiceInput?: () => void;
+  isSubmitting?: boolean;
   cardClassName?: string;
   toneClassName?: string;
   footerMode?: 'default' | 'submitOnly';
@@ -38,6 +41,8 @@ function CareLogFormCard({
   submitLabel,
   onClose,
   onSubmit,
+  onVoiceInput,
+  isSubmitting = false,
   cardClassName = 'bg-neutral-800',
   toneClassName = '-mt-0.5 bg-neutral-800 text-neutral-50',
   footerMode = 'default',
@@ -64,6 +69,7 @@ function CareLogFormCard({
   }, [entry]);
 
   const isSubmitDisabled =
+    isSubmitting ||
     titleValue.trim().length === 0 ||
     dateValue.trim().length === 0 ||
     timeValue.trim().length === 0;
@@ -97,34 +103,19 @@ function CareLogFormCard({
       >
         <DataFormCard.Content>
           <div className="flex flex-col text-neutral-900">
-            <div className="flex justify-end px-4 pt-4 pb-3">
-              <button
-                type="button"
-                aria-label={`關閉${title}`}
-                className="inline-flex size-6 items-center justify-center rounded-full text-neutral-900"
-                onClick={onClose}
-              >
-                <X className="size-4" strokeWidth={3} />
-              </button>
-            </div>
+            <VoiceCTA
+              title="日誌"
+              onClose={onClose}
+              onInputClick={() => {
+                if (onVoiceInput) {
+                  onClose();
+                  onVoiceInput();
+                  return;
+                }
 
-            <div className="bg-secondary-default border-y-2 border-neutral-900 px-4 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="size-4 shrink-0" strokeWidth={2.2} />
-                  <p className="font-label-md text-neutral-900">
-                    立即試用語音輸入記帳！
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="font-label-md inline-flex h-10 min-w-24 items-center justify-center rounded-full bg-neutral-800 px-4 text-neutral-50"
-                  onClick={() => setShowRecordingDrawer(true)}
-                >
-                  輸入
-                </button>
-              </div>
-            </div>
+                setShowRecordingDrawer(true);
+              }}
+            />
 
             <div className="px-4 py-2">
               <ListFormInputRow
@@ -140,6 +131,8 @@ function CareLogFormCard({
                 label="時間"
                 dateValue={dateValue}
                 timeValue={timeValue}
+                onDateChange={setDateValue}
+                onTimeChange={setTimeValue}
                 className="border-neutral-900"
               />
               <ListFormRepeatRow

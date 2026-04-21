@@ -1,10 +1,10 @@
 import { Check, Ellipsis } from 'lucide-react';
 
-import type { CareGroup } from '@/features/groups/data/mockGroups';
 import cn from '@/lib/utils';
+import type { CareGroupInfo } from '@/types/group';
 
 type GroupManageContentProps = {
-  group: CareGroup;
+  group: CareGroupInfo;
   isSelected: boolean;
   onSelect: () => void;
   onManage: () => void;
@@ -41,7 +41,7 @@ function GroupManageContent({
             isSelected ? 'text-neutral-900' : 'text-neutral-700',
           )}
         >
-          {group.members.length} 位成員
+          {group.memberCount} 位成員
         </p>
       </div>
       <div className="flex items-center gap-3">

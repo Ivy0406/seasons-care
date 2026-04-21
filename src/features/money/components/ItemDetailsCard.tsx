@@ -28,7 +28,7 @@ function ItemDetailsCard({ item }: { item: ExpenseItem }) {
             toneClassName="bg-neutral-800 text-neutral-50"
           >
             <DataFormCard.Content>
-              <ItemDetails {...item} />
+              <ItemDetails item={item} />
             </DataFormCard.Content>
 
             <DataFormCard.Footer>

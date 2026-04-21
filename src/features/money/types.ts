@@ -1,17 +1,57 @@
-export type Recorder = {
-  name: string;
-  src: string;
+type SplitStatus = 'pending' | 'settled' | 'none';
+
+type MoneyCategoryValue = 'none' | 'medical' | 'food' | 'traffic' | 'other';
+
+type MoneyDraft = {
+  title: string;
+  amount: string;
+  dateValue: string;
+  timeValue: string;
+  category: MoneyCategoryValue;
+  needsSplit: boolean;
+  notes: string;
+  transcript: string;
+  summary: string;
 };
 
-export type ExpenseItem = {
+type ExpenseItem = {
   id: string;
-  name: string;
-  date: string;
-  time: string;
-  category: string;
+  title: string;
   amount: number;
-  needSplit: boolean;
-  isSplit: boolean;
-  creator: Recorder;
-  description?: string;
+  category: string;
+  notes?: string;
+  expenseDate: string;
+  careGroupId: string;
+  createdAt: string;
+  updatedAt: string;
+  splitStatus: SplitStatus;
+  createdBy: string;
+};
+
+type ExpensesCategory = 'medical' | 'food' | 'traffic' | 'other';
+
+type CategoryConfig = {
+  category: ExpensesCategory;
+  label: string;
+  color: string;
+};
+
+type CategoryWithAmount = CategoryConfig & {
+  amount: number;
+};
+
+type CategoryTotals = Record<ExpensesCategory, number>;
+
+type MoneyTab = 'daily' | 'monthly';
+
+export type {
+  SplitStatus,
+  MoneyCategoryValue,
+  MoneyDraft,
+  ExpenseItem,
+  ExpensesCategory,
+  CategoryConfig,
+  CategoryWithAmount,
+  CategoryTotals,
+  MoneyTab,
 };
