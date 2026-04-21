@@ -21,7 +21,7 @@ function BaseFormCard({ children, className }: BaseFormCardProps) {
   return (
     <div
       className={cn(
-        'h-119 w-full rounded-[8px] border-2 border-neutral-900 bg-neutral-100 p-4',
+        'h-119 w-full rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4',
         className,
       )}
     >

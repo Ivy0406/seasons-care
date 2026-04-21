@@ -52,7 +52,7 @@ const DataFormCard: DataFormCardComponent = Object.assign(
     return (
       <section className="w-full">
         <div className="">
-          <div className="relative top-0.5 z-10 inline-flex overflow-hidden rounded-t-[8px] rounded-b-none border-x-2 border-t-2 border-neutral-900">
+          <div className="relative top-0.5 z-10 inline-flex overflow-hidden rounded-t-lg rounded-b-none border-x-2 border-t-2 border-neutral-900">
             <div
               className={cn(
                 'font-heading-sm flex w-54.25 items-start bg-neutral-200 pt-3 pb-1.5 pl-6 text-xl text-neutral-800',
@@ -66,14 +66,14 @@ const DataFormCard: DataFormCardComponent = Object.assign(
 
         <div
           className={cn(
-            '-mt-[0.5px] rounded-tr-[8px] rounded-br-[8px] rounded-bl-[8px] border-2 border-neutral-900 bg-neutral-200 p-3',
+            '-mt-[0.5px] rounded-tr-lg rounded-br-lg rounded-bl-lg border-2 border-neutral-900 bg-neutral-200 p-3',
             toneClassName,
             className,
           )}
         >
           <div
             className={cn(
-              'rounded-[8px] border-2 border-neutral-900 bg-neutral-50 px-4 py-5',
+              'rounded-lg border-2 border-neutral-900 bg-neutral-50 px-4 py-5',
               contentClassName,
             )}
           >
