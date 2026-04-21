@@ -3,6 +3,7 @@ import {
   buildMoneyDraftSummary,
   createEmptyMoneyDraft,
   getMoneyDraftSummarySource,
+  hasGlobalSplitIntent,
   normalizeMoneyTitleAndNote,
   splitMoneySegments,
 } from '@/features/voice/services/moneyParser.shared';
@@ -64,7 +65,11 @@ const parseMoneyTranscriptWithRule: ParseMoneyTranscript = async (
   }
 
   const segments = splitMoneySegments(normalizedTranscript);
-  return segments.map(parseMoneySegment);
+  const globalSplit = hasGlobalSplitIntent(normalizedTranscript);
+  return segments.map((segment) => {
+    const draft = parseMoneySegment(segment);
+    return globalSplit ? { ...draft, needsSplit: true } : draft;
+  });
 };
 
 export default parseMoneyTranscriptWithRule;

@@ -183,6 +183,10 @@ function mergeMoneyDraft(
   };
 }
 
+function hasGlobalSplitIntent(transcript: string): boolean {
+  return /都要分帳|全部要分帳|全部分帳|通通要分帳|都分帳|一起分帳/.test(transcript);
+}
+
 function splitMoneySegments(transcript: string): string[] {
   const normalized = transcript.trim();
 
@@ -212,6 +216,7 @@ export {
   buildMoneyDraftSummary,
   createEmptyMoneyDraft,
   getMoneyDraftSummarySource,
+  hasGlobalSplitIntent,
   hasMoneyDraftContent,
   mergeMoneyDraft,
   normalizeMoneyTitleAndNote,

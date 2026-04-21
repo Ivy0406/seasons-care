@@ -6,6 +6,7 @@ import type { MoneyDraft } from '@/features/money/types';
 import parseMoneyTranscriptWithRule from '@/features/voice/services/moneyParser.rule';
 import {
   createEmptyMoneyDraft,
+  hasGlobalSplitIntent,
   mergeMoneyDraft,
   normalizeMoneyTitleAndNote,
   splitMoneySegments,
@@ -77,11 +78,13 @@ const parseMoneyTranscriptWithClient: ParseMoneyTranscript = async (
 
   try {
     const segments = splitMoneySegments(normalizedTranscript);
+    const globalSplit = hasGlobalSplitIntent(normalizedTranscript);
     const drafts = await Promise.all(
       segments.map((segment) =>
-        fetchMoneyExtractionWithProvider(segment).then((extraction) =>
-          createMoneyDraftFromAIResult(segment, extraction),
-        ),
+        fetchMoneyExtractionWithProvider(segment).then((extraction) => {
+          const draft = createMoneyDraftFromAIResult(segment, extraction);
+          return globalSplit ? { ...draft, needsSplit: true } : draft;
+        }),
       ),
     );
     return drafts;
