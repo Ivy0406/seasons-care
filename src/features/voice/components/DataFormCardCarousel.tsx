@@ -13,6 +13,7 @@ import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import type { HealthDraft } from '@/features/health/types';
 import type { MoneyDraft } from '@/features/money/types';
+import useVoiceDraftSubmit from '@/features/voice/hooks/useVoiceDraftSubmit';
 import {
   createEmptyDiaryDraft,
   hasDiaryDraftContent,
@@ -81,6 +82,7 @@ function DataFormCardCarousel() {
     healthDraft,
     diaryDrafts,
     moneyDraft,
+    groupMembers,
     setVoiceTranscript,
     updateHealthDraft,
     updateDiaryDraft,
@@ -166,9 +168,14 @@ function DataFormCardCarousel() {
           key: `diary-${draft.id}`,
           content: (
             <DiaryDataFormCard
-              title={`新日誌 ${index + 1}`}
+              title={`新任務 ${index + 1}`}
               value={draft}
               onChange={(updates) => handleDiaryDraftChange(draft.id, updates)}
+              groupMembers={groupMembers}
+              participantIds={draft.participantIds}
+              onParticipantsChange={(participantIds) =>
+                handleDiaryDraftChange(draft.id, { participantIds })
+              }
             />
           ),
         }))
@@ -187,6 +194,16 @@ function DataFormCardCarousel() {
   ].filter((slide) => slide !== null);
 
   const isLastSlide = activeIndex === visibleSlides.length - 1;
+
+  const { isSubmitting, handleSaveAll } = useVoiceDraftSubmit({
+    healthDraft: activeHealthDraft,
+    diaryDrafts: renderedDiaryDrafts,
+    moneyDraft: activeMoneyDraft,
+    groupMembers,
+    shouldSubmitHealth: shouldShowHealthForm,
+    shouldSubmitMoney: shouldShowMoneyForm,
+    onSuccess: () => setShowSuccessModal(true),
+  });
 
   const handleCloseResultFlow = () => {
     setShowSuccessModal(false);
@@ -236,13 +253,15 @@ function DataFormCardCarousel() {
 
       <div className="mt-6 flex flex-col items-center gap-3 px-4">
         <RoundedButtonSecondary
-          className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800"
-          onClick={() => {
-            if (isLastSlide) {
-              setShowSuccessModal(true);
-            } else {
+          className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800 disabled:opacity-50"
+          disabled={isSubmitting}
+          onClick={async () => {
+            if (!isLastSlide) {
               swiper?.slideNext();
+              return;
             }
+
+            await handleSaveAll();
           }}
         >
           {isLastSlide ? '儲存全部' : '確認'}
@@ -267,7 +286,7 @@ function DataFormCardCarousel() {
           if (!result.hasDetectedContent) {
             clearVoiceInput();
             toast.error(
-              '這段語音內容暫時無法辨識為健康、日誌或帳目，請重新錄製或手動輸入。',
+              '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
             );
             return { shouldClose: false };
           }

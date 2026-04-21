@@ -1,4 +1,5 @@
 import type { DiaryDraft } from '@/pages/CareLog/types';
+import type { GroupMember } from '@/types/group';
 
 const DIARY_DATE_PATTERN = /(今天|明天|後天)/u;
 const DIARY_DATE_PATTERN_GLOBAL = /(今天|明天|後天)/gu;
@@ -154,7 +155,7 @@ function resolveDiaryTimeValue(transcript: string, fallbackTimeValue: string) {
 function stripDiaryLeadIn(text: string) {
   return text
     .replace(
-      /^(提醒我|幫我記錄|幫我新增|記一下|記得|新增日誌|寫日誌|幫我寫日誌)\s*/u,
+      /^(提醒我|幫我記錄|幫我新增|記一下|記得|新增任務|寫任務|幫我寫任務)\s*/u,
       '',
     )
     .trim();
@@ -307,6 +308,75 @@ function getRepeatPatternLabel(repeatPattern: DiaryDraft['repeatPattern']) {
 
 type DiaryDraftSummarySource = Omit<DiaryDraft, 'id' | 'summary'>;
 
+function normalizeDiaryParticipantName(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, '');
+}
+
+function isDiaryParticipantNameMatch(
+  candidateName: string,
+  memberName: string,
+) {
+  if (candidateName.length < 2 || memberName.length < 2) {
+    return false;
+  }
+
+  return (
+    candidateName === memberName ||
+    candidateName.includes(memberName) ||
+    memberName.includes(candidateName)
+  );
+}
+
+function resolveDiaryParticipantIds(
+  groupMembers: GroupMember[],
+  options: {
+    transcript?: string;
+    participantNames?: string[];
+  } = {},
+) {
+  if (groupMembers.length === 0) {
+    return [];
+  }
+
+  const resolvedIds = new Set<string>();
+  const normalizedParticipantNames = (options.participantNames ?? [])
+    .map(normalizeDiaryParticipantName)
+    .filter(Boolean);
+
+  normalizedParticipantNames.forEach((participantName) => {
+    groupMembers.forEach((member) => {
+      const normalizedMemberName = normalizeDiaryParticipantName(
+        member.username,
+      );
+
+      if (isDiaryParticipantNameMatch(participantName, normalizedMemberName)) {
+        resolvedIds.add(member.userId);
+      }
+    });
+  });
+
+  if (resolvedIds.size > 0 || !options.transcript) {
+    return [...resolvedIds];
+  }
+
+  const normalizedTranscript = normalizeDiaryParticipantName(
+    options.transcript,
+  );
+
+  groupMembers.forEach((member) => {
+    const normalizedMemberName = normalizeDiaryParticipantName(member.username);
+
+    if (
+      normalizedMemberName.length >= 2 &&
+      normalizedTranscript.includes(normalizedMemberName)
+    ) {
+      resolvedIds.add(member.userId);
+    }
+  });
+
+  return [...resolvedIds];
+}
+
 function getDiaryDraftSummarySource(
   draft: DiaryDraft,
 ): DiaryDraftSummarySource {
@@ -316,6 +386,7 @@ function getDiaryDraftSummarySource(
     timeValue: draft.timeValue,
     repeatPattern: draft.repeatPattern,
     note: draft.note,
+    participantIds: draft.participantIds,
     isImportant: draft.isImportant,
     transcript: draft.transcript,
   };
@@ -325,11 +396,15 @@ function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
   const summaryParts: string[] = [];
 
   if (draft.title.trim() !== '') {
-    summaryParts.push(`日誌名稱「${draft.title.trim()}」`);
+    summaryParts.push(`任務名稱「${draft.title.trim()}」`);
   }
 
   if (draft.note.trim() !== '') {
     summaryParts.push(`內容「${draft.note.trim()}」`);
+  }
+
+  if (draft.participantIds.length > 0) {
+    summaryParts.push(`包含 ${draft.participantIds.length} 位參與者`);
   }
 
   const repeatPatternLabel = getRepeatPatternLabel(draft.repeatPattern);
@@ -343,8 +418,8 @@ function buildDiaryDraftSummary(draft: DiaryDraftSummarySource) {
   }
 
   return summaryParts.length > 0
-    ? `已從語音擷取日誌內容：${summaryParts.join('、')}。`
-    : '已建立語音日誌草稿，請確認欄位後再儲存。';
+    ? `已從語音擷取任務內容：${summaryParts.join('、')}。`
+    : '已建立語音任務草稿，請確認欄位後再儲存。';
 }
 
 function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
@@ -355,9 +430,10 @@ function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
     timeValue: formatTimeValue(date),
     repeatPattern: 'none',
     note: '',
+    participantIds: [],
     isImportant: false,
     transcript: '',
-    summary: '請先錄音或手動輸入日誌內容。',
+    summary: '請先錄音或手動輸入任務內容。',
   };
 }
 
@@ -365,6 +441,7 @@ function hasDiaryDraftContent(draft: DiaryDraft) {
   return (
     draft.title.trim() !== '' ||
     draft.note.trim() !== '' ||
+    draft.participantIds.length > 0 ||
     draft.repeatPattern !== 'none' ||
     draft.isImportant
   );
@@ -398,6 +475,7 @@ export {
   hasDiaryDraftContent,
   mergeDiaryDraft,
   normalizeDiaryTitleAndNote,
+  resolveDiaryParticipantIds,
   resolveDiaryDateValue,
   resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,

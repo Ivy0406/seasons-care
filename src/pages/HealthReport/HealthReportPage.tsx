@@ -4,6 +4,7 @@ import FixedBottomButton from '@/components/common/FixedBottomButton';
 import Modal from '@/components/common/Modal';
 import { PageNavigationBar } from '@/components/common/NavigationBar';
 import { RoundedButtonNew } from '@/components/common/RoundedButtons';
+import SideMenu from '@/components/common/SideMenu';
 import UpgradeCTADrawer from '@/components/common/UpgradeCTADrawer';
 import {
   AlertDialog,
@@ -17,7 +18,6 @@ import CreateDataCard from '@/features/health/components/CreateDataCard';
 import HealthSummaryCarousel from '@/features/health/components/HealthSummaryCarousel';
 import WeeklyHealthTrend from '@/features/health/components/WeeklyHealthTrend';
 import useGetWeeklyInsight from '@/features/health/hooks/useGetWeeklyInsight';
-import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
 type SubmitModalState = {
@@ -33,17 +33,21 @@ function HealthReportPage() {
   const patientName =
     groups?.find((g) => g.id === currentGroupId)?.recipientName ?? '';
   const [showCreateCard, setShowCreateCard] = useState(false);
-  const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
   const [showUpgradeCTA, setShowUpgradeCTA] = useState(false);
   const [submitModal, setSubmitModal] = useState<SubmitModalState>({
     open: false,
     variant: 'success',
     title: '',
   });
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   return (
-    <main className="flex min-h-screen w-full flex-col bg-neutral-200 pb-20">
-      <PageNavigationBar title="健康" />
+    <main className="mx-auto flex min-h-screen w-full max-w-200 flex-col bg-neutral-200 pb-20">
+      <PageNavigationBar
+        title="健康"
+        className="sticky top-0 z-10 border-0 bg-neutral-200 px-6"
+        onMenuClick={() => setIsSideMenuOpen(true)}
+      />
 
       <section className="w-full bg-neutral-800 py-5 text-neutral-50">
         <div className="mx-auto w-full max-w-200 px-6">
@@ -82,10 +86,6 @@ function HealthReportPage() {
           <AlertDialogPopup className="w-[calc(100vw-32px)] max-w-140 border-0 bg-transparent p-0 shadow-none">
             <CreateDataCard
               onClose={() => setShowCreateCard(false)}
-              onVoiceInput={() => {
-                setShowCreateCard(false);
-                setShowRecordingDrawer(true);
-              }}
               onSuccess={() => {
                 setShowCreateCard(false);
                 setSubmitModal({
@@ -111,12 +111,6 @@ function HealthReportPage() {
         onOpenChange={setShowUpgradeCTA}
       />
 
-      <RecordingDrawer
-        open={showRecordingDrawer}
-        onOpenChange={setShowRecordingDrawer}
-        onFinish={() => setShowRecordingDrawer(false)}
-      />
-
       <Modal
         open={submitModal.open}
         variant={submitModal.variant}
@@ -125,6 +119,7 @@ function HealthReportPage() {
         autoCloseMs={submitModal.variant === 'success' ? 1500 : undefined}
         onClose={() => setSubmitModal((prev) => ({ ...prev, open: false }))}
       />
+      <SideMenu open={isSideMenuOpen} onOpenChange={setIsSideMenuOpen} />
     </main>
   );
 }

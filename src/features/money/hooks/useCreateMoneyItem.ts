@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { format, parse } from 'date-fns';
+import { formatISO, parse } from 'date-fns';
 
 import { createMoneyItem } from '@/api/endpoints/money';
 import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
@@ -19,17 +19,16 @@ const getCurrentCareGroupId = () =>
 
 function formatForPayload(draft: MoneyDraft): CreateMoneyItemPayLoad {
   const parsedDate = parse(
-    `${draft.dateValue} ${draft.timeValue}`,
-    'yyyy/MM/dd HH:mm',
+    `${draft.dateValue.replace(/\//g, '-')} ${draft.timeValue}`,
+    'yyyy-MM-dd HH:mm',
     new Date(),
   );
-
   return {
     title: draft.title,
     amount: Number(draft.amount) || 0,
     category: draft.category ?? 'other',
     notes: draft.notes,
-    expenseDate: format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss"),
+    expenseDate: formatISO(parsedDate),
     splitStatus: draft.needsSplit ? 'pending' : 'none',
   };
 }

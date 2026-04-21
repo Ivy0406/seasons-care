@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
 import Calendar from '@/components/common/Calendar';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import {
   EXPENSE_CATEGORY_CONFIGS,
@@ -14,14 +15,18 @@ import useSelectedDate from '@/features/money/hooks/useSelectedDate';
 import type { CategoryWithAmount } from '@/features/money/types';
 import cn from '@/lib/utils';
 
+import SplitDialog from './SplitDialog';
+
 function DailyContent() {
   const { selectedDate, setSelectedDate } = useSelectedDate();
   const [visibleMonth, setVisibleMonth] = useState<Date>(selectedDate);
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false);
+  const [splitSuccessOpen, setSplitSuccessOpen] = useState(false);
   const visibleMonthStr = format(visibleMonth, 'yyyy-MM');
   const { expenses } = useExpenses(visibleMonthStr);
 
   const markedDates = useMemo(
-    () => expenses.map((e) => new Date(e.expenseDate.replace('Z', ''))),
+    () => expenses.map((e) => parseISO(e.expenseDate)),
     [expenses],
   );
 
@@ -113,7 +118,32 @@ function DailyContent() {
         )}
       </div>
 
-      <RoundedButtonPrimary className="mt-4">當日分帳</RoundedButtonPrimary>
+      <RoundedButtonPrimary
+        className="mt-4"
+        disabled={dailyExpenses.every((e) => e.splitStatus !== 'pending')}
+        onClick={() => setSplitDialogOpen(true)}
+      >
+        當日分帳
+      </RoundedButtonPrimary>
+
+      <SplitDialog
+        open={splitDialogOpen}
+        onOpenChange={setSplitDialogOpen}
+        scope="daily"
+        onSuccess={() => {
+          setSplitDialogOpen(false);
+          setSplitSuccessOpen(true);
+        }}
+      />
+
+      <Modal
+        open={splitSuccessOpen}
+        variant="success"
+        title="分帳完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setSplitSuccessOpen(false)}
+      />
     </div>
   );
 }

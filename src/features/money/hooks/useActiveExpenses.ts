@@ -19,7 +19,7 @@ function useActiveExpenses() {
     useExpenses(dailyMonth);
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const dailyExpenses = dailyMonthExpenses.filter((e) =>
-    e.expenseDate.replace('Z', '').startsWith(selectedDateStr),
+    e.expenseDate.startsWith(selectedDateStr),
   );
 
   const cardListItems = activeTab === 'daily' ? dailyExpenses : monthlyExpenses;

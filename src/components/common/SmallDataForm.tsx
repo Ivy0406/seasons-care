@@ -1,3 +1,4 @@
+import getAvatarSrcByKey from '@/assets/images/avatars';
 import {
   ListFormDateTimeRow,
   ListFormImportantRow,
@@ -12,6 +13,7 @@ import type { HealthDraft } from '@/features/health/types';
 import type { MoneyCategoryValue, MoneyDraft } from '@/features/money/types';
 import cn from '@/lib/utils';
 import type { DiaryDraft } from '@/pages/CareLog/types';
+import type { GroupMember } from '@/types/group';
 
 import type { UseFormRegister } from 'react-hook-form';
 
@@ -120,6 +122,9 @@ type JournalDataSmallFormProps = {
   className?: string;
   value: DiaryDraft;
   onChange: (updates: Partial<DiaryDraft>) => void;
+  groupMembers?: GroupMember[];
+  participantIds?: string[];
+  onParticipantsChange?: (ids: string[]) => void;
 };
 
 type HealthDataFormField =
@@ -240,11 +245,19 @@ function JournalDataSmallForm({
   className,
   value,
   onChange,
+  groupMembers = [],
+  participantIds = [],
+  onParticipantsChange,
 }: JournalDataSmallFormProps) {
+  const memberOptions = groupMembers.map((m) => ({
+    id: m.userId,
+    name: m.username,
+    avatar: getAvatarSrcByKey(m.avatarKey),
+  }));
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
-        label="日誌名稱"
+        label="任務名稱"
         inputProps={{
           value: value.title,
           onChange: (event) => onChange({ title: event.target.value }),
@@ -262,7 +275,13 @@ function JournalDataSmallForm({
         onChange={(repeatPattern) => onChange({ repeatPattern })}
         className="border-neutral-900"
       />
-      <ListFormParticipantsRow label="參與者" className="border-neutral-900" />
+      <ListFormParticipantsRow
+        label="參與者"
+        members={memberOptions}
+        selectedIds={participantIds}
+        onSelectedChange={onParticipantsChange ?? (() => {})}
+        className="border-neutral-900"
+      />
       <ListFormImportantRow
         label="是否標記為重要"
         checked={value.isImportant}

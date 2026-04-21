@@ -134,7 +134,7 @@ function QRCodeScannerPanel({ onBack, onDetected }: QRCodeScannerPanelProps) {
       <div className="relative mx-auto w-full max-w-50 overflow-hidden rounded-xl border-2 border-neutral-900 bg-neutral-800">
         <div
           id={scannerElementId}
-          className="aspect-square w-full [&>div]:!h-full [&>div]:!w-full [&_canvas]:!h-full [&_canvas]:!w-full [&_video]:!h-full [&_video]:!w-full [&_video]:object-cover"
+          className="aspect-square w-full [&_canvas]:!h-full [&_canvas]:!w-full [&_video]:!h-full [&_video]:!w-full [&_video]:object-cover [&>div]:!h-full [&>div]:!w-full"
         />
         <div className="pointer-events-none absolute inset-2 rounded-xl border-2 border-dashed border-neutral-50" />
       </div>
