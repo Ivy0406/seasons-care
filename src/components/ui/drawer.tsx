@@ -50,8 +50,10 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & {
+    handleClassName?: string;
+  }
+>(({ className, children, handleClassName, ...props }, ref) => (
   <DrawerPortal data-slot="drawer-portal">
     <DrawerOverlay />
     <DrawerPrimitive.Content
@@ -63,7 +65,12 @@ const DrawerContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="mx-auto mt-2 hidden h-1 w-10 shrink-0 rounded-full bg-neutral-700 group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+      <DrawerPrimitive.Handle
+        className={cn(
+          'mx-auto mt-2 hidden h-1 w-10 shrink-0 rounded-full bg-neutral-700 group-data-[vaul-drawer-direction=bottom]/drawer-content:block',
+          handleClassName,
+        )}
+      />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>

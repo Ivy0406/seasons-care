@@ -10,12 +10,14 @@ type DynamicUserGroupProps = {
   children: ReactNode;
   onArrowClick?: () => void;
   showArrow?: boolean;
+  className?: string;
 };
 
 function DynamicUserGroup({
   children,
   onArrowClick,
   showArrow = true,
+  className,
 }: DynamicUserGroupProps) {
   const childArray = Children.toArray(children).filter(isValidElement);
   const count = childArray.length;
@@ -28,7 +30,12 @@ function DynamicUserGroup({
   }
 
   return (
-    <div className="flex h-11 w-full max-w-25 items-center justify-between rounded-full bg-neutral-800 p-2">
+    <div
+      className={cn(
+        'flex h-11 w-full max-w-25 items-center justify-between rounded-full bg-neutral-800 p-2',
+        className,
+      )}
+    >
       <AvatarGroup
         className={cn(
           'flex w-fit flex-row-reverse justify-end space-x-reverse',
@@ -53,13 +60,19 @@ function UserGroup({
   children,
   onArrowClick,
   showArrow = true,
+  className,
 }: {
   children?: ReactNode;
   onArrowClick?: () => void;
   showArrow?: boolean;
+  className?: string;
 }) {
   return (
-    <DynamicUserGroup onArrowClick={onArrowClick} showArrow={showArrow}>
+    <DynamicUserGroup
+      onArrowClick={onArrowClick}
+      showArrow={showArrow}
+      className={className}
+    >
       {children}
     </DynamicUserGroup>
   );

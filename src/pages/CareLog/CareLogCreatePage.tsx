@@ -1,56 +1,71 @@
 import { useState } from 'react';
 
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 import CareLogFormCard from '@/pages/CareLog/components/CareLogFormCard';
 import CareLogModal, {
   type CareLogModalVariant,
 } from '@/pages/CareLog/components/CareLogModal';
-import {
-  saveCareLogEntries,
-  getStoredCareLogEntries,
-} from '@/pages/CareLog/data/careLogStorage';
-import type { CareLogEntry } from '@/pages/CareLog/data/mockCareLogEntries';
+import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import type { CareLogEntry } from '@/pages/CareLog/types';
+import createDraftCareLogEntry from '@/pages/CareLog/utils/createDraftCareLogEntry';
 
-const defaultParticipant = {
-  id: 'current-user',
-  name: '王希銘',
-  src: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqrpYjz-y8bMs_qvQFR_w4vW_HEUAsQwzgMSbzLMJFytcdMUrY4M25Jx7EjoGDbvSIRaagzEacgR2hIhCLy39aMqWGH9cR-MQ3LjZzljWWCoDjzgU2y7G9nisZk47dRYesEYrG9Bg79XhA/s400/nigaoe_nakajima_atsushi.png',
-};
+function getSelectedDateFromState(state: unknown) {
+  if (!state || typeof state !== 'object' || !('selectedDate' in state)) {
+    return undefined;
+  }
 
-function createDraftCareLogEntry(): CareLogEntry {
-  const startsAt = new Date();
+  const { selectedDate } = state as { selectedDate?: unknown };
 
-  return {
-    id: globalThis.crypto?.randomUUID?.() ?? `diary-${Date.now()}`,
-    title: '',
-    description: '',
-    startsAt: format(startsAt, "yyyy-MM-dd'T'HH:mm:ssxxx"),
-    repeatPattern: 'none',
-    participants: [defaultParticipant],
-    status: 'pending',
-    isImportant: false,
-  };
+  if (selectedDate instanceof Date) {
+    return isValid(selectedDate) ? selectedDate : undefined;
+  }
+
+  if (typeof selectedDate !== 'string') {
+    return undefined;
+  }
+
+  const parsedDate = parseISO(selectedDate);
+
+  return isValid(parsedDate) ? parsedDate : undefined;
 }
 
 function CareLogCreatePage() {
+  const location = useLocation();
   const navigate = useNavigate();
-  const [draftEntry] = useState<CareLogEntry>(createDraftCareLogEntry);
+  const { isLoading, handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const initialSelectedDate = getSelectedDateFromState(location.state);
+  const [draftEntry] = useState<CareLogEntry>(() =>
+    createDraftCareLogEntry(initialSelectedDate),
+  );
   const [modalKey, setModalKey] = useState<CareLogModalVariant | null>(null);
   const [createdEntry, setCreatedEntry] = useState<CareLogEntry | null>(null);
 
   const handleClose = () => {
-    navigate('/calendar-page');
+    navigate('/calendar-page', {
+      state: initialSelectedDate
+        ? {
+            selectedDate: format(
+              initialSelectedDate,
+              "yyyy-MM-dd'T'HH:mm:ssxxx",
+            ),
+          }
+        : null,
+    });
   };
 
-  const handleCreate = (entry: CareLogEntry) => {
+  const handleCreate = async (entry: CareLogEntry) => {
     try {
-      const nextEntries = [entry, ...getStoredCareLogEntries()];
+      const createdCareLogEntry = await handleCreateCareLogEntry(entry);
 
-      saveCareLogEntries(nextEntries);
-      setCreatedEntry(entry);
+      if (createdCareLogEntry === null) {
+        setModalKey('createError');
+        return;
+      }
+
+      setCreatedEntry(createdCareLogEntry);
       setModalKey('createSuccess');
     } catch {
       setModalKey('createError');
@@ -76,6 +91,7 @@ function CareLogCreatePage() {
           entry={draftEntry}
           title="新增日誌"
           submitLabel="新增日誌"
+          isSubmitting={isLoading}
           onClose={handleClose}
           onSubmit={handleCreate}
         />

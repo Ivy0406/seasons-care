@@ -20,6 +20,7 @@ export type DiaryCardItem = {
   title: string;
   description: string;
   startsAt: string;
+  updatedAt?: string;
   repeatPattern?: 'none' | 'daily' | 'weeklyDay' | 'monthly';
   participants: CalendarDiaryCardParticipant[];
   status: DiaryCardStatus;
@@ -31,18 +32,22 @@ type DiaryCardProps = {
   className?: string;
   onClick?: () => void;
   onMoreClick?: () => void;
+  onStatusChange?: (checked: boolean) => Promise<boolean> | boolean;
+  isStatusUpdating?: boolean;
 };
 
 function DiaryCardContent({
   item,
   isChecked,
-  setIsChecked,
+  onCheckedChange,
   onMoreClick,
+  isStatusUpdating = false,
 }: {
   item: DiaryCardItem;
   isChecked: boolean;
-  setIsChecked: (v: boolean) => void;
+  onCheckedChange: (checked: boolean) => void;
   onMoreClick?: () => void;
+  isStatusUpdating?: boolean;
 }) {
   const startTime = parseISO(item.startsAt);
   const displayTime = format(startTime, 'HH:mm');
@@ -97,8 +102,9 @@ function DiaryCardContent({
         <CheckBoxButton
           size="md"
           checked={isChecked}
-          onCheckedChange={setIsChecked}
+          onCheckedChange={onCheckedChange}
           onClick={(event) => event.stopPropagation()}
+          disabled={isStatusUpdating}
           aria-label={`標記${item.title}完成`}
           checkedClassName="bg-neutral-900 text-neutral-50  "
           uncheckedClassName="border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
@@ -110,12 +116,29 @@ function DiaryCardContent({
   );
 }
 
-function DiaryCard({ item, className, onClick, onMoreClick }: DiaryCardProps) {
+function DiaryCard({
+  item,
+  className,
+  onClick,
+  onMoreClick,
+  onStatusChange,
+  isStatusUpdating = false,
+}: DiaryCardProps) {
   const [isChecked, setIsChecked] = useState(item.status === 'completed');
 
   useEffect(() => {
     setIsChecked(item.status === 'completed');
   }, [item.status]);
+
+  const handleCheckedChange = async (checked: boolean) => {
+    setIsChecked(checked);
+
+    const didUpdate = await onStatusChange?.(checked);
+
+    if (didUpdate === false) {
+      setIsChecked(item.status === 'completed');
+    }
+  };
 
   const sharedClassName = cn(
     'flex w-full flex-col gap-5 border-l-2 border-neutral-900 bg-neutral-100 py-1 pr-4 pl-3 text-neutral-900 text-left',
@@ -142,8 +165,9 @@ function DiaryCard({ item, className, onClick, onMoreClick }: DiaryCardProps) {
         <DiaryCardContent
           item={item}
           isChecked={isChecked}
-          setIsChecked={setIsChecked}
+          onCheckedChange={handleCheckedChange}
           onMoreClick={onMoreClick}
+          isStatusUpdating={isStatusUpdating}
         />
       </div>
     );
@@ -154,8 +178,9 @@ function DiaryCard({ item, className, onClick, onMoreClick }: DiaryCardProps) {
       <DiaryCardContent
         item={item}
         isChecked={isChecked}
-        setIsChecked={setIsChecked}
+        onCheckedChange={handleCheckedChange}
         onMoreClick={onMoreClick}
+        isStatusUpdating={isStatusUpdating}
       />
     </div>
   );

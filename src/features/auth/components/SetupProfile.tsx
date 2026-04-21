@@ -98,7 +98,7 @@ const SetupProfile = ({ onSubmit, isLoading }: SetupProfileProps) => {
                     <SingleAvatar
                       key={avatar.id}
                       src={avatar.url}
-                      name={currentName || avatar.name}
+                      name={currentName || '照護者'}
                       isSelected={tempSelectedAvatar.id === avatar.id}
                       onClick={() => setTempSelectedAvatar(avatar)}
                     />
