@@ -8,6 +8,7 @@ type GroupManageContentProps = {
   isSelected: boolean;
   onSelect: () => void;
   onManage: () => void;
+  showManageButton?: boolean;
 };
 
 function GroupManageContent({
@@ -15,6 +16,7 @@ function GroupManageContent({
   isSelected,
   onSelect,
   onManage,
+  showManageButton = true,
 }: GroupManageContentProps) {
   return (
     <div
@@ -53,17 +55,19 @@ function GroupManageContent({
             <Check />
           </span>
         ) : null}
-        <button
-          type="button"
-          aria-label={`管理${group.name}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            onManage();
-          }}
-          className="inline-flex size-8 items-center justify-center text-neutral-900"
-        >
-          <Ellipsis />
-        </button>
+        {showManageButton ? (
+          <button
+            type="button"
+            aria-label={`管理${group.name}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onManage();
+            }}
+            className="inline-flex size-8 items-center justify-center text-neutral-900"
+          >
+            <Ellipsis />
+          </button>
+        ) : null}
       </div>
     </div>
   );

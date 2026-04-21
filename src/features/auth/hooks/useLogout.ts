@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useQueryClient } from '@tanstack/react-query';
 import Cookie from 'js-cookie';
 
 import TOKEN_KEY, {
@@ -10,13 +11,15 @@ import TOKEN_KEY, {
 
 function useLogout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     Cookie.remove(TOKEN_KEY);
     window.localStorage.removeItem(CURRENT_USER_KEY);
     window.localStorage.removeItem(CURRENT_USER_ID_KEY);
     window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
-    navigate('/login');
+    queryClient.clear();
+    navigate('/');
   };
 
   return handleLogout;

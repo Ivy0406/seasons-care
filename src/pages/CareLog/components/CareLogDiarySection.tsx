@@ -5,6 +5,7 @@ import { parseISO } from 'date-fns';
 import DiaryCard from '@/components/common/DiaryCard';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
+import type { RecurringEditMode } from '@/features/calendar/useDiaryCardActions';
 import useDiaryCardActions from '@/features/calendar/useDiaryCardActions';
 import CareLogEmptyState from '@/pages/CareLog/components/CareLogEmptyState';
 import type { CareLogEntry, CareLogFilterValue } from '@/pages/CareLog/types';
@@ -12,7 +13,10 @@ import type { CareLogEntry, CareLogFilterValue } from '@/pages/CareLog/types';
 type CareLogDiarySectionProps = {
   items: CareLogEntry[];
   selectedDate?: Date;
-  onUpdateEntry: (entry: CareLogEntry) => Promise<boolean> | boolean;
+  onUpdateEntry: (
+    entry: CareLogEntry,
+    editMode?: RecurringEditMode,
+  ) => Promise<boolean> | boolean;
   onDeleteEntry: (entryId: string) => Promise<boolean> | boolean;
   onToggleStatus: (
     entryId: string,
@@ -21,6 +25,7 @@ type CareLogDiarySectionProps = {
   onCreateEntry: (date?: Date) => void;
   isUpdatingEntry?: boolean;
   isDeletingEntry?: boolean;
+  initialDetailEntryId?: string;
 };
 
 const statusFilterOptions = [
@@ -39,6 +44,7 @@ function CareLogDiarySection({
   onCreateEntry,
   isUpdatingEntry = false,
   isDeletingEntry = false,
+  initialDetailEntryId,
 }: CareLogDiarySectionProps) {
   const [statusFilter, setStatusFilter] = useState<CareLogFilterValue>('all');
   const diaryCardActions = useDiaryCardActions({
@@ -47,6 +53,7 @@ function CareLogDiarySection({
     onDeleteEntry,
     isUpdatingEntry,
     isDeletingEntry,
+    initialDetailEntryId,
   });
   const now = new Date();
   const activeItems = items;
@@ -107,7 +114,11 @@ function CareLogDiarySection({
               key={item.id}
               item={item}
               onClick={() => diaryCardActions.openDetail(item.id)}
-              onMoreClick={() => diaryCardActions.openActions(item.id)}
+              onMoreClick={
+                item.sourceType === 'event-series'
+                  ? undefined
+                  : () => diaryCardActions.openActions(item.id)
+              }
               isStatusUpdating={isUpdatingEntry}
               onStatusChange={(checked) =>
                 onToggleStatus(item.id, checked ? 'completed' : 'pending')

@@ -7,6 +7,7 @@ type FixedBottomButtonProps = {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  ref?: React.Ref<HTMLDivElement>;
 };
 
 function FixedBottomButton({
@@ -14,9 +15,10 @@ function FixedBottomButton({
   onClick,
   disabled = false,
   className,
+  ref,
 }: FixedBottomButtonProps) {
   return (
-    <div className="fixed right-6 bottom-6 z-10">
+    <div ref={ref} className="fixed right-6 bottom-6 z-10">
       <button
         type="button"
         onClick={onClick}
