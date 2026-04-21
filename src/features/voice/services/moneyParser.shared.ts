@@ -190,7 +190,7 @@ function hasGlobalSplitIntent(transcript: string): boolean {
 function splitMoneySegments(transcript: string): string[] {
   const normalized = transcript.trim();
 
-  const amountCount = (normalized.match(/\d{1,6}(?:元|塊|塊錢)/g) ?? []).length;
+  const amountCount = (normalized.match(/\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢)/g) ?? []).length;
   if (amountCount <= 1) return [normalized];
 
   // 切在「金額 + 後綴詞之後」、「下一筆支出開頭之前」（買/購買，或「品項+花了/費」）
