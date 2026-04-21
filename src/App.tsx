@@ -11,7 +11,9 @@ function App() {
     pathname === '/calendar-page' ||
     pathname === '/calendar-page/new' ||
     pathname === '/data-form' ||
-    pathname === '/health-report';
+    pathname === '/health-report' ||
+    pathname === '/money' ||
+    pathname === '/homepage';
 
   return (
     <div

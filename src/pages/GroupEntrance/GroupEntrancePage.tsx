@@ -13,6 +13,14 @@ function GroupEntrancePage() {
   const [isGroupInviteDrawerOpen, setIsGroupInviteDrawerOpen] = useState(false);
   const navigate = useNavigate();
 
+  const handleGroupInviteDrawerChange = (open: boolean) => {
+    setIsGroupInviteDrawerOpen(open);
+
+    if (!open) {
+      navigate('/homepage');
+    }
+  };
+
   return (
     <>
       <GroupEntranceLayout
@@ -35,7 +43,7 @@ function GroupEntrancePage() {
 
       <GroupInviteDrawer
         open={isGroupInviteDrawerOpen}
-        onOpenChange={setIsGroupInviteDrawerOpen}
+        onOpenChange={handleGroupInviteDrawerChange}
       />
     </>
   );
