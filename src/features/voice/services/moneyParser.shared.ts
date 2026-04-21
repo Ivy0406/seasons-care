@@ -1,5 +1,7 @@
 import type { MoneyCategoryValue, MoneyDraft } from '@/features/money/types';
 
+const MONEY_AMOUNT_PATTERN = /\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢)/g;
+
 function padTimeUnit(value: number) {
   return value.toString().padStart(2, '0');
 }
@@ -184,26 +186,28 @@ function mergeMoneyDraft(
 }
 
 function hasGlobalSplitIntent(transcript: string): boolean {
-  return /都要分帳|全部要分帳|全部分帳|通通要分帳|都分帳|一起分帳/.test(transcript);
+  return /都要分帳|全部要分帳|全部分帳|通通要分帳|都分帳|一起分帳/.test(
+    transcript,
+  );
 }
 
 function splitMoneySegments(transcript: string): string[] {
   const normalized = transcript.trim();
 
-  const amountCount = (normalized.match(/\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢)/g) ?? []).length;
+  const amountCount = (normalized.match(MONEY_AMOUNT_PATTERN) ?? []).length;
   if (amountCount <= 1) return [normalized];
 
-  // 切在「金額 + 後綴詞之後」、「下一筆支出開頭之前」（買/購買，或「品項+花了/費」）
+  // 切在「金額之後」、「下一筆支出開頭之前」（支援 800塊 / 800元 / $800）
   const segments = normalized.split(
-    /(?<=\d{1,6}(?:元|塊|塊錢)\S*)[，,；;。\s]+(?=(?:買|購買)|\p{Script=Han}{1,8}(?:花了|費用|支出|費\d))/u,
+    /(?<=(?:\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢))\S*)[，,；;。\s]+(?=(?:買|購買)|\p{Script=Han}{1,8}(?:花了|費用|支出|費\d))/u,
   );
 
   if (segments.length > 1) {
     return segments.map((s) => s.trim()).filter(Boolean);
   }
 
-  // fallback：用金額切（較不精確，不含後綴詞）
-  const parts = normalized.split(/(\d{1,6}(?:元|塊|塊錢))/);
+  // fallback：用金額切（較不精確）
+  const parts = normalized.split(/(\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢))/);
   const result: string[] = [];
   for (let i = 0; i + 1 < parts.length; i += 2) {
     const segment = (parts[i] + parts[i + 1]).trim();
