@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
 import { getGroupDetail } from '@/api/endpoints/group';
+import { TOKEN_KEY } from '@/constants/auth';
 import type { GroupMember } from '@/types/group';
 
 function useGetGroupMembers(groupId: string) {
@@ -18,7 +20,7 @@ function useGetGroupMembers(groupId: string) {
         return [];
       }
     },
-    enabled: hasGroupId,
+    enabled: hasGroupId && !!Cookies.get(TOKEN_KEY),
   });
 }
 

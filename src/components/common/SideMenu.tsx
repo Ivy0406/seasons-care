@@ -1,8 +1,11 @@
+import { useState } from 'react';
+
 import { Link } from 'react-router-dom';
 
 import { ChevronRight } from 'lucide-react';
 
 import BrandMark from '@/components/common/BrandMark';
+import Modal from '@/components/common/Modal';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -32,8 +35,10 @@ const SIDE_MENU_ITEMS: SideMenuItem[] = [
 
 function SideMenu({ open, onOpenChange }: SideMenuProps) {
   const handleLogout = useLogout();
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   return (
+    <>
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="bg-neutral-800 text-neutral-100 data-[side=right]:w-7/8 data-[side=right]:gap-7 data-[side=right]:rounded-l-xl data-[side=right]:border-0 data-[side=right]:px-2 data-[side=right]:sm:max-w-none">
         <SheetHeader className="pt-16.75 pb-0">
@@ -66,12 +71,23 @@ function SideMenu({ open, onOpenChange }: SideMenuProps) {
               </li>
             ))}
           </ul>
-          <button onClick={handleLogout} className="w-fit pr-3">
+          <button onClick={() => setIsLogoutConfirmOpen(true)} className="w-fit pr-3">
             <p className="text-error font-label-lg">登出</p>
           </button>
         </div>
       </SheetContent>
     </Sheet>
+
+    <Modal
+      open={isLogoutConfirmOpen}
+      variant="confirm"
+      title="確定要登出帳號嗎？"
+      confirmText="登出"
+      cancelText="取消"
+      onConfirm={handleLogout}
+      onClose={() => setIsLogoutConfirmOpen(false)}
+    />
+    </>
   );
 }
 

@@ -87,7 +87,7 @@ function CreateEntryDrawer({
           <div className="w-10" />
         </div>
 
-        <div className="divide-y divide-neutral-400 overflow-hidden rounded-[8px] bg-neutral-300">
+        <div className="divide-y divide-neutral-400 overflow-hidden rounded-lg bg-neutral-300">
           <ActionButton
             label="任務"
             icon={<NotebookText className="size-6" strokeWidth={2} />}

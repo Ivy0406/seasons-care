@@ -18,7 +18,11 @@ type CreateDataCardProps = {
   initialDate?: Date;
 };
 
-function CreateDataCard({ onClose, onSuccess, initialDate }: CreateDataCardProps) {
+function CreateDataCard({
+  onClose,
+  onSuccess,
+  initialDate,
+}: CreateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => {
     const base = createEmptyMoneyDraft();
     const now = initialDate ?? new Date();
