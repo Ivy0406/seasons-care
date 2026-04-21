@@ -218,7 +218,7 @@ type MoneyExtractionResult = {
   timeValue: string;
   category: 'none' | 'medical' | 'food' | 'traffic' | 'other';
   needsSplit: 'true' | 'false';
-  note: string;
+  notes: string;
   summary: string;
 };
 
@@ -257,7 +257,7 @@ const MONEY_EXTRACTION_SCHEMA = {
       description:
         'Return true only if the transcript explicitly says this expense should be split.',
     },
-    note: {
+    notes: {
       type: 'string',
       description:
         'Expense note in zh-TW. Return an empty string if not mentioned.',
@@ -275,7 +275,7 @@ const MONEY_EXTRACTION_SCHEMA = {
     'timeValue',
     'category',
     'needsSplit',
-    'note',
+    'notes',
     'summary',
   ],
 } as const;
@@ -292,7 +292,7 @@ const MONEY_EXTRACTION_PROMPT = `
 6. timeValue 格式固定 HH:MM，使用 24 小時制。
 7. category 只允許 none、medical、food、traffic、other。分類判斷依據：medical = 醫療相關（掛號、藥品、復健、醫療用品如尿布、奶粉、輔具、拐杖等照護耗材）；food = 飲食（餐點、飲料、食材）；traffic = 交通（車費、停車、油錢）；other = 其餘日常支出；none = 真的無法判斷時才使用。
 8. needsSplit 只回傳 true 或 false 字串。判斷依據：出現「要分帳、分帳、平分、平攤、AA、一起出、大家分、分攤」等詞語時回傳 true，否則回傳 false。每筆帳目獨立判斷，不要因為其他筆有分帳就套用。
-9. note 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 note，也不要讓 note 和 title 重複。
+9. notes 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 notes，也不要讓 notes 和 title 重複。
 10. summary 用繁體中文，簡短描述已抽取到的帳目內容。
 `;
 
@@ -316,7 +316,7 @@ function isMoneyExtractionResult(
       result.category === 'traffic' ||
       result.category === 'other') &&
     (result.needsSplit === 'true' || result.needsSplit === 'false') &&
-    typeof result.note === 'string' &&
+    typeof result.notes === 'string' &&
     typeof result.summary === 'string'
   );
 }
