@@ -24,7 +24,7 @@ const OnboardingPage = () => {
       description: '數位化追蹤生理指標與用藥，\n精準掌握健康趨勢。',
       buttonText: '讚！',
       image:
-        'https://img.ltn.com.tw/Upload/health/page/800/2022/07/13/phps6VEfF.jpg',
+        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
     },
     {
       id: 1,
@@ -32,7 +32,7 @@ const OnboardingPage = () => {
       description: 'AI 整合各類照護紀錄，\n產出關鍵指標統計報告。',
       buttonText: '好酷！',
       image:
-        'https://blog.tpisoftware.com/wp-content/uploads/2023/02/%E6%96%B0%E8%81%9E%E7%A8%BF_%E7%A4%BE%E7%BE%A41920x1080px-%E8%A4%87%E6%9C%AC.jpg',
+        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
     },
     {
       id: 2,
@@ -40,7 +40,7 @@ const OnboardingPage = () => {
       description: '共享行事曆與照護計畫，\n確保照護流程不中斷。',
       buttonText: '等不及要開始使用了！',
       image:
-        'https://www.airltc.com/photos/new_shares/1100524-retirement-1.jpg',
+        'https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp',
     },
   ];
 
@@ -50,7 +50,7 @@ const OnboardingPage = () => {
     if (currentStep < mockSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate('/login');
+      navigate('/group-entrance');
     }
   };
 
@@ -86,12 +86,12 @@ const OnboardingPage = () => {
 
   return (
     <div
-      className="flex h-screen w-full flex-col items-center justify-center bg-neutral-100 p-6"
+      className="flex h-screen w-full flex-col items-center justify-end bg-neutral-100 pb-18"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className="relative mt-15 mb-10 h-120 w-full overflow-hidden bg-neutral-200">
+      <div className="h-120 w-full overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -99,14 +99,14 @@ const OnboardingPage = () => {
         />
       </div>
 
-      <div className="flex h-[106px] w-full flex-col items-center gap-4 text-center">
+      <div className="flex h-26.5 w-full flex-col items-center gap-4 text-center">
         <h2 className="font-heading-lg text-neutral-900">{title}</h2>
         <p className="font-paragraph-md h-13 whitespace-pre-line text-neutral-600">
           {description}
         </p>
       </div>
 
-      <div className="mt-8 mb-auto flex gap-2">
+      <div className="flex gap-2 py-5">
         {mockSteps.map((step) => (
           <button
             key={step.id}
@@ -120,7 +120,7 @@ const OnboardingPage = () => {
         ))}
       </div>
 
-      <div className="w-full pb-12">
+      <div className="w-full">
         <RoundedButtonPrimary onClick={nextStep}>
           {buttonText}
         </RoundedButtonPrimary>

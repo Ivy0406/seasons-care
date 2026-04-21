@@ -5,10 +5,10 @@ function Landing() {
         <p className="font-heading-lg text-neutral-900">細心灌溉每一份日常</p>
         <p className="font-heading-lg text-neutral-900">讓陪伴緩緩紮根</p>
       </div>
-      <div className="h-39 w-25">
+      <div className="h-40 w-30">
         <img
-          className="w-full object-cover"
-          src="https://cdn.hikka.io/content/characters/pakkun-fe0824/4PC19q5uQm9vr2ot8KgEUw.jpg"
+          className="w-full object-cover object-center"
+          src="https://res.cloudinary.com/dyothufps/image/upload/v1774850087/%E5%89%8D%E5%B0%8E1_ejw28k.webp"
           alt="品牌主視覺"
         />
       </div>
