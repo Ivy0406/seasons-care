@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
@@ -20,6 +21,7 @@ type LoginData = {
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (data: LoginData) => {
@@ -37,8 +39,10 @@ const useLogin = () => {
 
       if (defaultCareGroupId) {
         window.localStorage.setItem(CURRENT_GROUP_ID_KEY, defaultCareGroupId);
+        queryClient.setQueryData([CURRENT_GROUP_ID_KEY], defaultCareGroupId);
       } else {
         window.localStorage.removeItem(CURRENT_GROUP_ID_KEY);
+        queryClient.setQueryData([CURRENT_GROUP_ID_KEY], '');
       }
 
       if (careGroupCount === 0) {
