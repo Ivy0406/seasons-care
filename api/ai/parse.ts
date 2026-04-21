@@ -290,8 +290,8 @@ const MONEY_EXTRACTION_PROMPT = `
 4. amount 只回傳數字字串，不要含幣別或標點。
 5. dateValue 格式固定 YYYY-MM-DD。
 6. timeValue 格式固定 HH:MM，使用 24 小時制。
-7. category 只允許 none、medical、food、traffic、other。
-8. needsSplit 只回傳 true 或 false 字串。
+7. category 只允許 none、medical、food、traffic、other。分類判斷依據：medical = 醫療相關（掛號、藥品、復健、醫療用品如尿布、奶粉、輔具、拐杖等照護耗材）；food = 飲食（餐點、飲料、食材）；traffic = 交通（車費、停車、油錢）；other = 其餘日常支出；none = 真的無法判斷時才使用。
+8. needsSplit 只回傳 true 或 false 字串。判斷依據：出現「要分帳、分帳、平分、平攤、AA、一起出、大家分、分攤」等詞語時回傳 true，否則回傳 false。每筆帳目獨立判斷，不要因為其他筆有分帳就套用。
 9. note 只放 title 以外的補充細節，不要把整段逐字稿原樣貼進 note，也不要讓 note 和 title 重複。
 10. summary 用繁體中文，簡短描述已抽取到的帳目內容。
 `;
