@@ -1,5 +1,8 @@
+import { useState } from 'react';
+
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import FilterDropdownButton from '@/components/common/FilterDropdownButton';
+import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import UserGroup from '@/components/common/UserGroup';
@@ -19,6 +22,8 @@ import cn from '@/lib/utils';
 import useExpenses from '../hooks/useExpenses';
 import useSelectedMonth, { MONTH_OPTIONS } from '../hooks/useSelectedMonth';
 
+import SplitDialog from './SplitDialog';
+
 function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
   const totals = { ...INITIAL_CATEGORY_TOTALS };
   expenses.forEach((expense) => {
@@ -28,6 +33,8 @@ function calculateCategoryTotals(expenses: ExpenseItem[]): CategoryTotals {
 }
 
 function MonthlyContent() {
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false);
+  const [splitSuccessOpen, setSplitSuccessOpen] = useState(false);
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
   const { expenses } = useExpenses(selectedMonth);
   const { currentGroupId } = useCurrentGroupId();
@@ -105,7 +112,31 @@ function MonthlyContent() {
         ))}
       </ul>
 
-      <RoundedButtonPrimary onClick={() => {}}>一鍵分帳</RoundedButtonPrimary>
+      <RoundedButtonPrimary
+        disabled={expenses.every((e) => e.splitStatus !== 'pending')}
+        onClick={() => setSplitDialogOpen(true)}
+      >
+        一鍵分帳
+      </RoundedButtonPrimary>
+
+      <SplitDialog
+        open={splitDialogOpen}
+        onOpenChange={setSplitDialogOpen}
+        scope="monthly"
+        onSuccess={() => {
+          setSplitDialogOpen(false);
+          setSplitSuccessOpen(true);
+        }}
+      />
+
+      <Modal
+        open={splitSuccessOpen}
+        variant="success"
+        title="分帳完成！"
+        statusLayout="icon-first"
+        autoCloseMs={1500}
+        onClose={() => setSplitSuccessOpen(false)}
+      />
     </div>
   );
 }

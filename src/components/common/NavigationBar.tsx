@@ -140,7 +140,7 @@ function NavigationMenuButton({
       aria-label="開啟選單"
       onClick={onClick}
       className={cn(
-        'inline-flex size-12 items-center justify-center bg-transparent text-black',
+        'inline-flex size-8 items-center justify-center bg-transparent text-black',
         className,
       )}
     >
@@ -160,7 +160,7 @@ function NavigationNotificationButton({
       aria-label={hasNotification ? '查看通知，有未讀項目' : '查看通知'}
       onClick={onClick}
       className={cn(
-        'inline-flex size-12 items-center justify-center bg-transparent text-neutral-900',
+        'inline-flex size-8 items-center justify-center bg-transparent text-neutral-900',
         className,
       )}
     >
@@ -169,10 +169,10 @@ function NavigationNotificationButton({
           src={notificationBellBadge}
           alt=""
           aria-hidden="true"
-          className="size-8"
+          className="size-6"
         />
       ) : (
-        <Bell className="size-8" strokeWidth={1.5} />
+        <Bell className="size-6" strokeWidth={1.5} />
       )}
     </button>
   );
@@ -281,13 +281,8 @@ function HomepageNavigationBar({
   className,
 }: HomepageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
-      <div
-        className={cn(
-          'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
-          className,
-        )}
-      >
+    <div className={cn('border-b-2 border-neutral-900', className)}>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
         <NavigationDateBadge
           selectedDate={selectedDate}
           onClick={onDateClick}
@@ -320,13 +315,8 @@ function PageNavigationBar({
   centerBrandLinkToHomepage = true,
 }: PageNavigationBarProps) {
   return (
-    <div className="border-b-2 border-neutral-900">
-      <div
-        className={cn(
-          'grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5',
-          className,
-        )}
-      >
+    <div className={cn('border-b-2 border-neutral-900', className)}>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
         {showTitle ? (
           <NavigationTitle
             as="span"

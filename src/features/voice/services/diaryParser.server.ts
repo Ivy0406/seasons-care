@@ -18,6 +18,9 @@ function isDiaryDraft(value: unknown): value is DiaryDraft {
       draft.repeatPattern === 'weeklyDay' ||
       draft.repeatPattern === 'monthly') &&
     typeof draft.note === 'string' &&
+    (draft.participantIds === undefined ||
+      (Array.isArray(draft.participantIds) &&
+        draft.participantIds.every((item) => typeof item === 'string'))) &&
     typeof draft.isImportant === 'boolean' &&
     typeof draft.transcript === 'string' &&
     typeof draft.summary === 'string'
@@ -49,7 +52,10 @@ const parseDiaryTranscriptWithServer: ParseDiaryTranscript = async (
     throw new Error('diary-parser-server-invalid-response');
   }
 
-  return parsedResponse;
+  return parsedResponse.map((draft) => ({
+    ...draft,
+    participantIds: draft.participantIds ?? [],
+  }));
 };
 
 export default parseDiaryTranscriptWithServer;

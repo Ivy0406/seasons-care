@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 
+import type { HealthDraft } from '@/features/health/types';
+
 import useCreateBloodOxygen from './useCreateBloodOxygen';
 import useCreateBloodPressure from './useCreateBloodPressure';
 import useCreateBloodSugar from './useCreateBloodSugar';
@@ -40,16 +42,17 @@ function useCreateHealthData({
   const [recordTime, setRecordTime] = useState(defaultTime);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch } = useForm<HealthDataFormValues>({
-    defaultValues: {
-      systolic: '',
-      diastolic: '',
-      temperature: '',
-      spO2: '',
-      weight: '',
-      glucoseLevel: '',
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<HealthDataFormValues>({
+      defaultValues: {
+        systolic: '',
+        diastolic: '',
+        temperature: '',
+        spO2: '',
+        weight: '',
+        glucoseLevel: '',
+      },
+    });
 
   const bloodOxygen = useCreateBloodOxygen();
   const bloodPressure = useCreateBloodPressure();
@@ -65,8 +68,10 @@ function useCreateHealthData({
   const hasAnyValue =
     Object.values(watchedValues).some((v) => v !== '') && bloodPressureValid;
 
-  const onSubmit = async (values: HealthDataFormValues) => {
-    const isoDate = toISODate(recordDate, recordTime);
+  function buildHealthSubmissions(
+    values: HealthDataFormValues,
+    isoDate: string,
+  ): Promise<unknown>[] {
     const promises: Promise<unknown>[] = [];
 
     if (values.spO2) {
@@ -106,6 +111,15 @@ function useCreateHealthData({
       );
     }
 
+    return promises;
+  }
+
+  const onSubmit = async (values: HealthDataFormValues) => {
+    const promises = buildHealthSubmissions(
+      values,
+      toISODate(recordDate, recordTime),
+    );
+
     if (promises.length === 0) return;
 
     setIsSubmitting(true);
@@ -122,6 +136,51 @@ function useCreateHealthData({
     }
   };
 
+  const submitFromDraft = async (draft: HealthDraft) => {
+    const promises = buildHealthSubmissions(
+      {
+        spO2: draft.bloodOxygen,
+        systolic: draft.systolic,
+        diastolic: draft.diastolic,
+        temperature: draft.temperature,
+        weight: draft.weight,
+        glucoseLevel: draft.bloodSugar,
+      },
+      toISODate(draft.dateValue, draft.timeValue),
+    );
+
+    if (promises.length === 0) return { success: true };
+
+    const results = await Promise.allSettled(promises);
+
+    return { success: results.every((r) => r.status === 'fulfilled') };
+  };
+
+  const applyVoiceDraft = (draft: HealthDraft, transcript: string) => {
+    if (
+      /(今天|明天|後天|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[/月]\d{1,2})/u.test(
+        transcript,
+      )
+    ) {
+      setRecordDate(draft.dateValue.replaceAll('-', '/'));
+    }
+
+    if (
+      /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/u.test(
+        transcript,
+      )
+    ) {
+      setRecordTime(draft.timeValue);
+    }
+
+    setValue('systolic', draft.systolic);
+    setValue('diastolic', draft.diastolic);
+    setValue('temperature', draft.temperature);
+    setValue('spO2', draft.bloodOxygen);
+    setValue('weight', draft.weight);
+    setValue('glucoseLevel', draft.bloodSugar);
+  };
+
   return {
     register,
     handleSubmit: handleSubmit(onSubmit),
@@ -131,6 +190,8 @@ function useCreateHealthData({
     recordTime,
     setRecordDate,
     setRecordTime,
+    applyVoiceDraft,
+    submitFromDraft,
   };
 }
 

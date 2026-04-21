@@ -83,7 +83,7 @@ function CareLogDiarySection({
         />
       );
     } else {
-      emptyState = <CareLogEmptyState message="目前沒有符合篩選條件的日誌。" />;
+      emptyState = <CareLogEmptyState message="目前沒有符合篩選條件的任務。" />;
     }
   }
   return (
@@ -91,7 +91,7 @@ function CareLogDiarySection({
       {selectedDate ? (
         <header className="flex items-start justify-between">
           <div className="flex flex-col justify-between">
-            <p className="font-heading-md">日誌列表</p>
+            <p className="font-heading-md">任務列表</p>
           </div>
           <FilterDropdownButton
             value={statusFilter}

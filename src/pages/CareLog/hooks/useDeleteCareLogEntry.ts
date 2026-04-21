@@ -26,7 +26,7 @@ function useDeleteCareLogEntry() {
     const careGroupId = getCurrentCareGroupId();
 
     if (!careGroupId) {
-      toast.error('尚未選擇照護群組，無法刪除日誌');
+      toast.error('尚未選擇照護群組，無法刪除任務');
       return false;
     }
 
@@ -41,16 +41,16 @@ function useDeleteCareLogEntry() {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 401:
-            toast.error(detail ?? '請先登入後再刪除日誌');
+            toast.error(detail ?? '請先登入後再刪除任務');
             break;
           case 403:
-            toast.error(detail ?? '你沒有權限刪除此日誌');
+            toast.error(detail ?? '你沒有權限刪除此任務');
             break;
           case 404:
-            toast.error(detail ?? '找不到要刪除的日誌');
+            toast.error(detail ?? '找不到要刪除的任務');
             break;
           default:
-            toast.error(detail ?? '刪除日誌失敗，請稍後再試');
+            toast.error(detail ?? '刪除任務失敗，請稍後再試');
             break;
         }
       }

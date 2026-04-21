@@ -6,26 +6,22 @@ import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
-import VoiceCTA from '@/components/common/voiceCTA';
+import VoiceFormSection from '@/components/common/VoiceFormSection';
 import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
 import type { MoneyDraft } from '@/features/money/types';
+import handleMoneyVoiceFinish from '@/features/money/utils/moneyVoice';
 import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 
 type CreateDataCardProps = {
   onClose: () => void;
-  onVoiceInput?: () => void;
+  onSuccess: () => void;
+  initialDate?: Date;
 };
 
-type ResultModal = {
-  open: boolean;
-  variant: 'success' | 'error';
-  message?: string;
-};
-
-function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
+function CreateDataCard({ onClose, onSuccess, initialDate }: CreateDataCardProps) {
   const [draft, setDraft] = useState<MoneyDraft>(() => {
     const base = createEmptyMoneyDraft();
-    const now = new Date();
+    const now = initialDate ?? new Date();
     return {
       ...base,
       dateValue: format(now, 'yyyy/MM/dd'),
@@ -33,10 +29,10 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
     };
   });
 
-  const [resultModal, setResultModal] = useState<ResultModal>({
-    open: false,
-    variant: 'success',
-  });
+  const [errorModal, setErrorModal] = useState<{
+    open: boolean;
+    message?: string;
+  }>({ open: false });
 
   const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
 
@@ -50,19 +46,42 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
     setDraft((prev) => ({ ...prev, ...updates }));
   };
 
+  const applyVoiceDraft = (nextDraft: MoneyDraft, transcript: string) => {
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      title:
+        nextDraft.title.trim() !== '' ? nextDraft.title : currentDraft.title,
+      amount:
+        nextDraft.amount.trim() !== '' ? nextDraft.amount : currentDraft.amount,
+      dateValue:
+        /(今天|明天|後天|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[/月]\d{1,2})/u.test(
+          transcript,
+        )
+          ? nextDraft.dateValue.replaceAll('-', '/')
+          : currentDraft.dateValue,
+      timeValue:
+        /(?:早上|上午|中午|下午|晚上)\s*\d{1,2}(?:[:：點時]\d{1,2})?(?:分)?|\d{1,2}[:：]\d{2}/u.test(
+          transcript,
+        )
+          ? nextDraft.timeValue
+          : currentDraft.timeValue,
+      category: nextDraft.category ?? currentDraft.category,
+      needsSplit: nextDraft.needsSplit,
+      notes:
+        nextDraft.notes.trim() !== '' ? nextDraft.notes : currentDraft.notes,
+      transcript: nextDraft.transcript,
+      summary: nextDraft.summary,
+    }));
+  };
+
   const handleSubmit = async (event: React.SubmitEvent) => {
     event.preventDefault();
     const result = await handleCreateMoneyItem(draft);
-    setResultModal({
-      open: true,
-      variant: result.success ? 'success' : 'error',
-      message: result.success ? undefined : result.message,
-    });
-  };
-
-  const handleModalClose = () => {
-    setResultModal((prev) => ({ ...prev, open: false }));
-    if (resultModal.variant === 'success') onClose();
+    if (result.success) {
+      onSuccess();
+    } else {
+      setErrorModal({ open: true, message: result.message });
+    }
   };
 
   return (
@@ -75,17 +94,23 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
           contentClassName="p-0"
         >
           <DataFormCard.Content>
-            <VoiceCTA
-              className="bg-primary-default"
+            <VoiceFormSection
               title="記帳"
               onClose={onClose}
-              onInputClick={() => onVoiceInput?.()}
-            />
-            <MoneyDataSmallForm
-              className="w-full border-0 bg-neutral-50 px-3 pt-3"
-              value={draft}
-              onChange={handleChange}
-            />
+              ctaClassName="bg-primary-default"
+              onVoiceFinish={({ transcript }) =>
+                handleMoneyVoiceFinish({
+                  transcript,
+                  applyVoiceDraft,
+                })
+              }
+            >
+              <MoneyDataSmallForm
+                className="w-full border-0 bg-neutral-50 px-3 pt-3"
+                value={draft}
+                onChange={handleChange}
+              />
+            </VoiceFormSection>
           </DataFormCard.Content>
           <DataFormCard.Footer>
             <RoundedButtonPrimary
@@ -100,17 +125,12 @@ function CreateDataCard({ onClose, onVoiceInput }: CreateDataCardProps) {
       </form>
 
       <Modal
-        open={resultModal.open}
-        variant={resultModal.variant}
-        title={
-          resultModal.variant === 'success'
-            ? '帳目建立完成！'
-            : '帳目建立失敗！'
-        }
-        description={resultModal.message}
+        open={errorModal.open}
+        variant="error"
+        title="帳目建立失敗！"
+        description={errorModal.message}
         statusLayout="icon-first"
-        autoCloseMs={resultModal.variant === 'success' ? 1500 : undefined}
-        onClose={handleModalClose}
+        onClose={() => setErrorModal({ open: false })}
       />
     </>
   );

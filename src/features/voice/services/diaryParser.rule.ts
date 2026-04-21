@@ -4,6 +4,7 @@ import {
   getDiaryDraftSummarySource,
   normalizeDiaryTitleAndNote,
   resolveDiaryDateValue,
+  resolveDiaryParticipantIds,
   resolveDiaryTimeValue,
   splitDiaryTranscriptIntoSegments,
 } from '@/features/voice/services/diaryParser.shared';
@@ -37,36 +38,46 @@ function extractTitle(transcript: string) {
 
 const parseDiaryTranscriptWithRule: ParseDiaryTranscript = async (
   transcript,
+  options,
 ) => {
   const normalizedTranscript = transcript.trim();
+  const shouldForceParse = options?.forceParse === true;
 
-  if (!hasDiaryIntent(normalizedTranscript)) {
+  if (!shouldForceParse && !hasDiaryIntent(normalizedTranscript)) {
     return [];
   }
 
-  return splitDiaryTranscriptIntoSegments(normalizedTranscript)
-    .filter((segment) => hasDiaryIntent(segment))
-    .map((segment) => {
-      const emptyDraft = createEmptyDiaryDraft();
-      const title = extractTitle(segment);
-      const { note } = normalizeDiaryTitleAndNote(title, '', segment);
-      const baseDraft = {
-        ...getDiaryDraftSummarySource(emptyDraft),
-        transcript: segment,
-        title,
-        dateValue: resolveDiaryDateValue(segment, emptyDraft.dateValue),
-        timeValue: resolveDiaryTimeValue(segment, emptyDraft.timeValue),
-        repeatPattern: extractRepeatPattern(segment),
-        note,
-        isImportant: /重要|緊急|記得|一定要|務必/.test(segment),
-      };
+  const segments = splitDiaryTranscriptIntoSegments(normalizedTranscript);
+  let filteredSegments = segments.filter((segment) => hasDiaryIntent(segment));
 
-      return {
-        id: emptyDraft.id,
-        ...baseDraft,
-        summary: buildDiaryDraftSummary(baseDraft),
-      };
-    });
+  if (shouldForceParse) {
+    filteredSegments = segments.length > 0 ? segments : [normalizedTranscript];
+  }
+
+  return filteredSegments.map((segment) => {
+    const emptyDraft = createEmptyDiaryDraft();
+    const title = extractTitle(segment);
+    const { note } = normalizeDiaryTitleAndNote(title, '', segment);
+    const baseDraft = {
+      ...getDiaryDraftSummarySource(emptyDraft),
+      transcript: segment,
+      title,
+      dateValue: resolveDiaryDateValue(segment, emptyDraft.dateValue),
+      timeValue: resolveDiaryTimeValue(segment, emptyDraft.timeValue),
+      repeatPattern: extractRepeatPattern(segment),
+      note,
+      participantIds: resolveDiaryParticipantIds(options?.groupMembers ?? [], {
+        transcript: segment,
+      }),
+      isImportant: /重要|緊急|記得|一定要|務必/.test(segment),
+    };
+
+    return {
+      id: emptyDraft.id,
+      ...baseDraft,
+      summary: buildDiaryDraftSummary(baseDraft),
+    };
+  });
 };
 
 export default parseDiaryTranscriptWithRule;
