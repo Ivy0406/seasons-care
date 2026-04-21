@@ -183,6 +183,31 @@ function mergeMoneyDraft(
   };
 }
 
+function splitMoneySegments(transcript: string): string[] {
+  const normalized = transcript.trim();
+
+  const amountCount = (normalized.match(/\d{1,6}(?:元|塊|塊錢)/g) ?? []).length;
+  if (amountCount <= 1) return [normalized];
+
+  // 切在「金額 + 後綴詞（如要分帳）之後」、「下一個買/購買之前」
+  const segments = normalized.split(
+    /(?<=\d{1,6}(?:元|塊|塊錢)\S*)[，,；;。\s]+(?=買|購買)/,
+  );
+
+  if (segments.length > 1) {
+    return segments.map((s) => s.trim()).filter(Boolean);
+  }
+
+  // fallback：用金額切（較不精確，不含後綴詞）
+  const parts = normalized.split(/(\d{1,6}(?:元|塊|塊錢))/);
+  const result: string[] = [];
+  for (let i = 0; i + 1 < parts.length; i += 2) {
+    const segment = (parts[i] + parts[i + 1]).trim();
+    if (segment !== '') result.push(segment);
+  }
+  return result.length > 1 ? result : [normalized];
+}
+
 export {
   buildMoneyDraftSummary,
   createEmptyMoneyDraft,
@@ -190,4 +215,5 @@ export {
   hasMoneyDraftContent,
   mergeMoneyDraft,
   normalizeMoneyTitleAndNote,
+  splitMoneySegments,
 };

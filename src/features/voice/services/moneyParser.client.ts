@@ -8,6 +8,7 @@ import {
   createEmptyMoneyDraft,
   mergeMoneyDraft,
   normalizeMoneyTitleAndNote,
+  splitMoneySegments,
 } from '@/features/voice/services/moneyParser.shared';
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
 import { hasMoneyIntent } from '@/features/voice/services/voiceIntent';
@@ -68,19 +69,24 @@ async function fetchMoneyExtractionWithProvider(transcript: string) {
 const parseMoneyTranscriptWithClient: ParseMoneyTranscript = async (
   transcript,
 ) => {
-  if (!hasMoneyIntent(transcript)) {
-    return {
-      ...createEmptyMoneyDraft(),
-      transcript: transcript.trim(),
-    };
+  const normalizedTranscript = transcript.trim();
+
+  if (!hasMoneyIntent(normalizedTranscript)) {
+    return [{ ...createEmptyMoneyDraft(), transcript: normalizedTranscript }];
   }
 
   try {
-    const extraction = await fetchMoneyExtractionWithProvider(transcript);
-
-    return createMoneyDraftFromAIResult(transcript, extraction);
+    const segments = splitMoneySegments(normalizedTranscript);
+    const drafts = await Promise.all(
+      segments.map((segment) =>
+        fetchMoneyExtractionWithProvider(segment).then((extraction) =>
+          createMoneyDraftFromAIResult(segment, extraction),
+        ),
+      ),
+    );
+    return drafts;
   } catch {
-    return parseMoneyTranscriptWithRule(transcript);
+    return parseMoneyTranscriptWithRule(normalizedTranscript);
   }
 };
 

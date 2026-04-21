@@ -74,14 +74,14 @@ function DataFormCardCarousel() {
   const [fallbackDiaryDraft, setFallbackDiaryDraft] = useState<DiaryDraft>(
     createEmptyDiaryDraft(),
   );
-  const [fallbackMoneyDraft, setFallbackMoneyDraft] = useState<MoneyDraft>(
+  const [fallbackMoneyDrafts, setFallbackMoneyDrafts] = useState<MoneyDraft[]>([
     createEmptyMoneyDraft(),
-  );
+  ]);
   const {
     transcript,
     healthDraft,
     diaryDrafts,
-    moneyDraft,
+    moneyDrafts,
     groupMembers,
     setVoiceTranscript,
     updateHealthDraft,
@@ -97,7 +97,7 @@ function DataFormCardCarousel() {
   const activeDiaryDrafts = hasVoiceTranscript
     ? diaryDrafts
     : [fallbackDiaryDraft];
-  const activeMoneyDraft = hasVoiceTranscript ? moneyDraft : fallbackMoneyDraft;
+  const activeMoneyDrafts = hasVoiceTranscript ? moneyDrafts : fallbackMoneyDrafts;
   const shouldShowHealthForm = hasVoiceTranscript
     ? hasHealthDraftContent(activeHealthDraft)
     : true;
@@ -112,8 +112,11 @@ function DataFormCardCarousel() {
   if (hasVoiceTranscript) {
     renderedDiaryDrafts = visibleDiaryDrafts;
   }
+  const visibleMoneyDrafts = hasVoiceTranscript
+    ? activeMoneyDrafts.filter(hasMoneyDraftContent)
+    : activeMoneyDrafts;
   const shouldShowMoneyForm = hasVoiceTranscript
-    ? hasMoneyDraftContent(activeMoneyDraft)
+    ? visibleMoneyDrafts.length > 0
     : true;
 
   const handleHealthDraftChange = (updates: Partial<HealthDraft>) => {
@@ -140,14 +143,16 @@ function DataFormCardCarousel() {
     );
   };
 
-  const handleMoneyDraftChange = (updates: Partial<MoneyDraft>) => {
+  const handleMoneyDraftChange = (index: number, updates: Partial<MoneyDraft>) => {
     if (hasVoiceTranscript) {
-      updateMoneyDraft(updates);
+      updateMoneyDraft(index, updates);
       return;
     }
 
-    setFallbackMoneyDraft((currentDraft) =>
-      mergeMoneyDraft(currentDraft, updates),
+    setFallbackMoneyDrafts((currentDrafts) =>
+      currentDrafts.map((draft, i) =>
+        i === index ? mergeMoneyDraft(draft, updates) : draft,
+      ),
     );
   };
 
@@ -180,17 +185,17 @@ function DataFormCardCarousel() {
           ),
         }))
       : []),
-    shouldShowMoneyForm
-      ? {
-          key: 'money',
+    ...(shouldShowMoneyForm
+      ? visibleMoneyDrafts.map((draft, index) => ({
+          key: `money-${index}`,
           content: (
             <MoneyDataFormCard
-              value={activeMoneyDraft}
-              onChange={handleMoneyDraftChange}
+              value={draft}
+              onChange={(updates) => handleMoneyDraftChange(index, updates)}
             />
           ),
-        }
-      : null,
+        }))
+      : []),
   ].filter((slide) => slide !== null);
 
   const isLastSlide = activeIndex === visibleSlides.length - 1;
@@ -198,7 +203,7 @@ function DataFormCardCarousel() {
   const { isSubmitting, handleSaveAll } = useVoiceDraftSubmit({
     healthDraft: activeHealthDraft,
     diaryDrafts: renderedDiaryDrafts,
-    moneyDraft: activeMoneyDraft,
+    moneyDrafts: visibleMoneyDrafts,
     groupMembers,
     shouldSubmitHealth: shouldShowHealthForm,
     shouldSubmitMoney: shouldShowMoneyForm,
