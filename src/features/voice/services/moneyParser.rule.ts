@@ -49,7 +49,7 @@ function parseMoneySegment(segment: string): MoneyDraft {
     title,
     amount: extractMoneyAmount(segment),
     category: extractMoneyCategory(segment),
-    needsSplit: /分帳|平分|一起出/.test(segment),
+    needsSplit: /分(?:[帳賬]|錢)|平分|一起出/.test(segment),
     notes,
   };
   return { ...baseDraft, summary: buildMoneyDraftSummary(baseDraft) };
