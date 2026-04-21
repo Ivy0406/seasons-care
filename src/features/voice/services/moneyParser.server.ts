@@ -1,4 +1,5 @@
 import type { MoneyDraft } from '@/features/money/types';
+import parseMoneyTranscriptWithRule from '@/features/voice/services/moneyParser.rule';
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
 
 function isMoneyDraft(value: unknown): value is MoneyDraft {
@@ -28,25 +29,27 @@ function isMoneyDraft(value: unknown): value is MoneyDraft {
 const parseMoneyTranscriptWithServer: ParseMoneyTranscript = async (
   transcript,
 ) => {
-  const response = await fetch('/api/money-extract', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ transcript }),
-  });
+  try {
+    const response = await fetch('/api/money-extract', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript }),
+    });
 
-  if (!response.ok) {
-    throw new Error('money-parser-server-request-failed');
+    if (!response.ok) {
+      throw new Error('money-parser-server-request-failed');
+    }
+
+    const parsedResponse = (await response.json()) as unknown;
+
+    if (!isMoneyDraft(parsedResponse)) {
+      throw new Error('money-parser-server-invalid-response');
+    }
+
+    return [parsedResponse];
+  } catch {
+    return parseMoneyTranscriptWithRule(transcript);
   }
-
-  const parsedResponse = (await response.json()) as unknown;
-
-  if (!isMoneyDraft(parsedResponse)) {
-    throw new Error('money-parser-server-invalid-response');
-  }
-
-  return parsedResponse;
 };
 
 export default parseMoneyTranscriptWithServer;

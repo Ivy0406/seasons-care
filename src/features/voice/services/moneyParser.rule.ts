@@ -3,7 +3,9 @@ import {
   buildMoneyDraftSummary,
   createEmptyMoneyDraft,
   getMoneyDraftSummarySource,
+  hasGlobalSplitIntent,
   normalizeMoneyTitleAndNote,
+  splitMoneySegments,
 } from '@/features/voice/services/moneyParser.shared';
 import type { ParseMoneyTranscript } from '@/features/voice/services/moneyParser.types';
 import { hasMoneyIntent } from '@/features/voice/services/voiceIntent';
@@ -38,39 +40,36 @@ function extractMoneyAmount(transcript: string) {
   return matchedAmount;
 }
 
+function parseMoneySegment(segment: string): MoneyDraft {
+  const emptyDraft = createEmptyMoneyDraft();
+  const { title, notes } = normalizeMoneyTitleAndNote('', '', segment);
+  const baseDraft: Omit<MoneyDraft, 'summary'> = {
+    ...getMoneyDraftSummarySource(emptyDraft),
+    transcript: segment,
+    title,
+    amount: extractMoneyAmount(segment),
+    category: extractMoneyCategory(segment),
+    needsSplit: /分帳|平分|一起出/.test(segment),
+    notes,
+  };
+  return { ...baseDraft, summary: buildMoneyDraftSummary(baseDraft) };
+}
+
 const parseMoneyTranscriptWithRule: ParseMoneyTranscript = async (
   transcript,
 ) => {
-  const emptyDraft = createEmptyMoneyDraft();
   const normalizedTranscript = transcript.trim();
 
   if (!hasMoneyIntent(normalizedTranscript)) {
-    return {
-      ...emptyDraft,
-      transcript: normalizedTranscript,
-    };
+    return [{ ...createEmptyMoneyDraft(), transcript: normalizedTranscript }];
   }
 
-  const { title, notes } = normalizeMoneyTitleAndNote(
-    '',
-    '',
-    normalizedTranscript,
-  );
-
-  const baseDraft: Omit<MoneyDraft, 'summary'> = {
-    ...getMoneyDraftSummarySource(emptyDraft),
-    transcript: normalizedTranscript,
-    title,
-    amount: extractMoneyAmount(normalizedTranscript),
-    category: extractMoneyCategory(normalizedTranscript),
-    needsSplit: /分帳|平分|一起出/.test(normalizedTranscript),
-    notes,
-  };
-
-  return {
-    ...baseDraft,
-    summary: buildMoneyDraftSummary(baseDraft),
-  };
+  const segments = splitMoneySegments(normalizedTranscript);
+  const globalSplit = hasGlobalSplitIntent(normalizedTranscript);
+  return segments.map((segment) => {
+    const draft = parseMoneySegment(segment);
+    return globalSplit ? { ...draft, needsSplit: true } : draft;
+  });
 };
 
 export default parseMoneyTranscriptWithRule;

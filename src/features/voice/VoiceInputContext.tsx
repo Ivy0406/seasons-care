@@ -38,12 +38,12 @@ type VoiceInputContextValue = {
   transcript: string;
   healthDraft: HealthDraft;
   diaryDrafts: DiaryDraft[];
-  moneyDraft: MoneyDraft;
+  moneyDrafts: MoneyDraft[];
   groupMembers: GroupMember[];
   setVoiceTranscript: (transcript: string) => Promise<SetVoiceTranscriptResult>;
   updateHealthDraft: (updates: Partial<HealthDraft>) => void;
   updateDiaryDraft: (id: string, updates: Partial<DiaryDraft>) => void;
-  updateMoneyDraft: (updates: Partial<MoneyDraft>) => void;
+  updateMoneyDraft: (index: number, updates: Partial<MoneyDraft>) => void;
   clearVoiceInput: () => void;
 };
 
@@ -70,9 +70,9 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
   const [diaryDrafts, setDiaryDrafts] = useState<DiaryDraft[]>([
     createEmptyDiaryDraft(),
   ]);
-  const [moneyDraft, setMoneyDraft] = useState<MoneyDraft>(
+  const [moneyDrafts, setMoneyDrafts] = useState<MoneyDraft[]>([
     createEmptyMoneyDraft(),
-  );
+  ]);
 
   const setVoiceTranscript = useCallback(
     async (nextTranscript: string) => {
@@ -91,13 +91,17 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
           ? parsedDiaryDrafts
           : [createEmptyDiaryDraft()],
       );
-      setMoneyDraft(parsedMoneyDraft);
+      setMoneyDrafts(
+        parsedMoneyDraft.length > 0
+          ? parsedMoneyDraft
+          : [createEmptyMoneyDraft()],
+      );
 
       return {
         hasDetectedContent:
           hasHealthDraftContent(parsedHealthDraft) ||
           parsedDiaryDrafts.length > 0 ||
-          hasMoneyDraftContent(parsedMoneyDraft),
+          parsedMoneyDraft.some(hasMoneyDraftContent),
       };
     },
     [groupMembers],
@@ -118,15 +122,22 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const updateMoneyDraft = useCallback((updates: Partial<MoneyDraft>) => {
-    setMoneyDraft((currentDraft) => mergeMoneyDraft(currentDraft, updates));
-  }, []);
+  const updateMoneyDraft = useCallback(
+    (index: number, updates: Partial<MoneyDraft>) => {
+      setMoneyDrafts((currentDrafts) =>
+        currentDrafts.map((draft, i) =>
+          i === index ? mergeMoneyDraft(draft, updates) : draft,
+        ),
+      );
+    },
+    [],
+  );
 
   const clearVoiceInput = useCallback(() => {
     setTranscript('');
     setHealthDraft(createEmptyHealthDraft());
     setDiaryDrafts([createEmptyDiaryDraft()]);
-    setMoneyDraft(createEmptyMoneyDraft());
+    setMoneyDrafts([createEmptyMoneyDraft()]);
   }, []);
 
   const value = useMemo(
@@ -134,7 +145,7 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
       transcript,
       healthDraft,
       diaryDrafts,
-      moneyDraft,
+      moneyDrafts,
       groupMembers,
       setVoiceTranscript,
       updateHealthDraft,
@@ -146,7 +157,7 @@ function VoiceInputProvider({ children }: { children: ReactNode }) {
       transcript,
       healthDraft,
       diaryDrafts,
-      moneyDraft,
+      moneyDrafts,
       groupMembers,
       setVoiceTranscript,
       updateHealthDraft,
