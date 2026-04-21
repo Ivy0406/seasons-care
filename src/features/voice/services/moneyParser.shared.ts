@@ -17,7 +17,7 @@ function formatTimeValue(date: Date) {
 function stripMoneyLeadIn(text: string) {
   return text
     .replace(
-      /^(幫我記帳|幫我新增帳目|新增帳目|記帳|紀錄帳目|記一下支出|幫我記錄支出)\s*/u,
+      /^(幫我記[帳賬]|幫我新增[帳賬]目|新增[帳賬]目|記[帳賬]|紀錄[帳賬]目|記一下支出|幫我記錄支出)\s*/u,
       '',
     )
     .trim();
@@ -186,7 +186,7 @@ function mergeMoneyDraft(
 }
 
 function hasGlobalSplitIntent(transcript: string): boolean {
-  return /都要分帳|全部要分帳|全部分帳|通通要分帳|都分帳|一起分帳/.test(
+  return /都要分(?:[帳賬]|錢)|全部要分(?:[帳賬]|錢)|全部分(?:[帳賬]|錢)|通通要分(?:[帳賬]|錢)|都分(?:[帳賬]|錢)|一起分(?:[帳賬]|錢)/.test(
     transcript,
   );
 }
@@ -199,7 +199,7 @@ function splitMoneySegments(transcript: string): string[] {
 
   // 切在「金額之後」、「下一筆支出開頭之前」（支援 800塊 / 800元 / $800）
   const segments = normalized.split(
-    /(?<=(?:\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢))\S*)[，,；;。\s]+(?=(?:買|購買)|\p{Script=Han}{1,8}(?:花了|費用|支出|費\d))/u,
+    /(?<=(?:\$\s*\d{1,6}|\d{1,6}(?:元|塊|塊錢))(?:\s*(?:要分(?:[帳賬]|錢)|需分(?:[帳賬]|錢)|分(?:[帳賬]|錢)|平分|平攤|AA|一起出|大家分|分攤))?)[，,；;。\s]+(?=(?:買|購買)|\p{Script=Han}{1,8}(?:花了|費用|支出|費\d))/u,
   );
 
   if (segments.length > 1) {
