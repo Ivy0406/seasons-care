@@ -1,20 +1,24 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
 
 import { createGroup } from '@/api/endpoints/group';
-import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import type { CreateGroupPayload } from '@/types/group';
 
 const useCreateGroup = () => {
+  const queryClient = useQueryClient();
+  const { setCurrentGroupId } = useCurrentGroupId();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateGroup = async (payload: CreateGroupPayload) => {
     setIsLoading(true);
     try {
       const res = await createGroup(payload);
-      window.localStorage.setItem(CURRENT_GROUP_ID_KEY, res.data.data.id);
+      setCurrentGroupId(res.data.data.id);
+      await queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast.success(res.data.message);
       return res.data.data;
     } catch (error) {

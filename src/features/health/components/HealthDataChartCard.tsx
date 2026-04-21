@@ -28,16 +28,6 @@ type SingleValueVariant = BaseProps & {
 
 type HealthDataChartCardProps = DualValueVariant | SingleValueVariant;
 
-const DEFAULT_SPARKLINE: SparklinePoint[] = [
-  { day: '週一', value: 25 },
-  { day: '週二', value: 18 },
-  { day: '週三', value: 8 },
-  { day: '週四', value: 14 },
-  { day: '週五', value: 28 },
-  { day: '週六', value: 22 },
-  { day: '週日', value: 18 },
-];
-
 function Sparkline({
   data,
   domain,
@@ -65,7 +55,7 @@ function Sparkline({
 function HealthDataChartCard({
   title = '血壓',
   status = '維持良好',
-  sparklineData = DEFAULT_SPARKLINE,
+  sparklineData = [],
   chartDomain,
   className,
   ...rest
@@ -100,7 +90,13 @@ function HealthDataChartCard({
           </div>
         </div>
         <div className="self-center">
-          <Sparkline data={sparklineData} domain={chartDomain} />
+          {sparklineData.length >= 2 ? (
+            <Sparkline data={sparklineData} domain={chartDomain} />
+          ) : (
+            <p className="font-paragraph-sm w-30 text-center text-neutral-500">
+              目前沒有趨勢
+            </p>
+          )}
         </div>
       </div>
     </div>

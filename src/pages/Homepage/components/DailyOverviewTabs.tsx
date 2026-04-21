@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 
 import ViewMoreButton from '@/components/common/ViewMoreButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import HealthSummary from '@/features/health/HealthSummary';
+import HealthDataCarousel from '@/features/health/HealthDataCarousel';
 import cn from '@/lib/utils';
 
 import DiarySummary from './DiarySummary';
@@ -72,7 +72,9 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
           className="bg-primary-default flex flex-col gap-5 border-x-2 border-neutral-900 px-6 pt-7 pb-17"
         >
           <DiarySummary selectedDate={selectedDate} />
-          <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          <div className="flex justify-center">
+            <ViewMoreButton onClick={() => navigate('/calendar-page')} />
+          </div>
         </TabsContent>
 
         <TabsContent
@@ -86,7 +88,7 @@ function DailyOverviewTabs({ selectedDate }: DailyOverviewTabsProps) {
         </TabsContent>
 
         <TabsContent value="health" className="bg-neutral-800 pt-7 pb-17">
-          <HealthSummary />
+          <HealthDataCarousel />
 
           <div className="mt-5 flex justify-center">
             <ViewMoreButton onClick={() => navigate('/health-report')} />

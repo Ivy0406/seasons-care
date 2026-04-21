@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import cn from '@/lib/utils';
 
-import ProBadge from './ProBadge';
+import NewBadge from './NewBadge';
 
 type RoundedButtonProps = {
   children: React.ReactNode;
@@ -70,7 +70,7 @@ function RoundedButtonDisabled({
   );
 }
 
-function RoundedButtonPro({
+function RoundedButtonNew({
   children,
   onClick,
   className,
@@ -87,7 +87,7 @@ function RoundedButtonPro({
       onClick={onClick}
       disabled={disabled}
     >
-      <ProBadge />
+      <NewBadge />
       {children}
     </Button>
   );
@@ -97,5 +97,5 @@ export {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
   RoundedButtonDisabled,
-  RoundedButtonPro,
+  RoundedButtonNew,
 };

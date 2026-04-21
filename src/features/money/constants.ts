@@ -14,4 +14,11 @@ const INITIAL_CATEGORY_TOTALS: CategoryTotals = {
   other: 0,
 };
 
-export { EXPENSE_CATEGORY_CONFIGS, INITIAL_CATEGORY_TOTALS };
+const CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
+  EXPENSE_CATEGORY_CONFIGS.map(({ category, label }) => [category, label]),
+);
+
+const getCategoryLabel = (category: string) =>
+  CATEGORY_LABEL[category] ?? category;
+
+export { EXPENSE_CATEGORY_CONFIGS, INITIAL_CATEGORY_TOTALS, getCategoryLabel };

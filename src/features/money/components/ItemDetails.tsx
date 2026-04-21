@@ -9,6 +9,7 @@ import {
 import SingleAvatar from '@/components/common/SingleAvatar';
 import { AlertDialogClose } from '@/components/ui/alert-dialog';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
+import { getCategoryLabel } from '@/features/money/constants';
 import type { ExpenseItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 
@@ -24,7 +25,10 @@ function ItemDetails({ item }: { item: ExpenseItem }) {
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
 
   const hashColor = SPLIT_HASH_COLOR[item.splitStatus] ?? 'text-neutral-900';
-  const displayDate = format(new Date(item.expenseDate), 'yyyy/MM/dd HH:mm');
+  const displayDate = format(
+    new Date(item.expenseDate.replace('Z', '')),
+    'yyyy/MM/dd HH:mm',
+  );
 
   return (
     <div>
@@ -55,7 +59,7 @@ function ItemDetails({ item }: { item: ExpenseItem }) {
           <p>類別</p>
           <p>
             <span className={`font-label-lg ${hashColor}`}>#</span>{' '}
-            {item.category}
+            {getCategoryLabel(item.category)}
           </p>
         </div>
         <div className="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 
 import useCreateBloodOxygen from './useCreateBloodOxygen';
@@ -32,8 +33,8 @@ function useCreateHealthData({
   onError,
 }: UseCreateHealthDataOptions = {}) {
   const today = new Date();
-  const defaultDate = today.toISOString().slice(0, 10).replace(/-/g, '/');
-  const defaultTime = today.toTimeString().slice(0, 5);
+  const defaultDate = format(today, 'yyyy/MM/dd');
+  const defaultTime = format(today, 'HH:mm');
 
   const [recordDate, setRecordDate] = useState(defaultDate);
   const [recordTime, setRecordTime] = useState(defaultTime);
