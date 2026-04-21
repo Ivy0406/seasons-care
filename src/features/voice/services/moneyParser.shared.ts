@@ -193,9 +193,9 @@ function splitMoneySegments(transcript: string): string[] {
   const amountCount = (normalized.match(/\d{1,6}(?:元|塊|塊錢)/g) ?? []).length;
   if (amountCount <= 1) return [normalized];
 
-  // 切在「金額 + 後綴詞（如要分帳）之後」、「下一個買/購買之前」
+  // 切在「金額 + 後綴詞之後」、「下一筆支出開頭之前」（買/購買，或「品項+花了/費」）
   const segments = normalized.split(
-    /(?<=\d{1,6}(?:元|塊|塊錢)\S*)[，,；;。\s]+(?=買|購買)/,
+    /(?<=\d{1,6}(?:元|塊|塊錢)\S*)[，,；;。\s]+(?=(?:買|購買)|\p{Script=Han}{1,8}(?:花了|費用|支出|費\d))/u,
   );
 
   if (segments.length > 1) {
