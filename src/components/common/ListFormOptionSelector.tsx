@@ -12,6 +12,7 @@ type ListFormOptionSelectorProps<T extends string> = {
   value: T;
   options: ListFormOptionSelectorOption<T>[];
   onChange: (value: T) => void;
+  placeholder?: string;
   className?: string;
   triggerClassName?: string;
   menuClassName?: string;
@@ -21,6 +22,7 @@ function ListFormOptionSelector<T extends string>({
   value,
   options,
   onChange,
+  placeholder,
   className,
   triggerClassName,
   menuClassName,
@@ -64,7 +66,9 @@ function ListFormOptionSelector<T extends string>({
         )}
         onClick={() => setOpen((previous) => !previous)}
       >
-        <span className="truncate">{selectedOption?.label}</span>
+        <span className={cn('truncate', !selectedOption && 'text-neutral-400')}>
+          {selectedOption?.label ?? placeholder}
+        </span>
         <span className="flex size-4 shrink-0 items-center justify-center">
           <img
             src={chevronsUpDownIcon}

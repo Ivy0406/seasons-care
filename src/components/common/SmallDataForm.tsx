@@ -135,6 +135,8 @@ type HealthDataFormProps = {
   register?: UseFormRegister<Record<HealthDataFormField, string>>;
   recordDate?: string;
   recordTime?: string;
+  onDateChange?: (value: string) => void;
+  onTimeChange?: (value: string) => void;
   onDateClick?: () => void;
   onTimeClick?: () => void;
 };
@@ -144,6 +146,8 @@ function HealthDataForm({
   register,
   recordDate = '',
   recordTime = '',
+  onDateChange,
+  onTimeChange,
   onDateClick,
   onTimeClick,
 }: HealthDataFormProps) {
@@ -153,6 +157,8 @@ function HealthDataForm({
         label="時間"
         dateValue={recordDate}
         timeValue={recordTime}
+        onDateChange={onDateChange}
+        onTimeChange={onTimeChange}
         onDateClick={onDateClick}
         onTimeClick={onTimeClick}
         className="border-neutral-900"
@@ -310,17 +316,19 @@ function MoneyDataSmallForm({
         label="時間"
         dateValue={value.dateValue}
         timeValue={value.timeValue}
+        onDateChange={(dateValue) => onChange({ dateValue })}
+        onTimeChange={(timeValue) => onChange({ timeValue })}
         className="border-neutral-900"
       />
       <ListFormSelectRow
         label="類別"
-        value={value.category}
+        value={value.category ?? ''}
+        placeholder="請選擇類別"
         options={[
-          { value: 'none', label: '無' },
           { value: 'medical', label: '醫療支出' },
           { value: 'food', label: '飲食支出' },
           { value: 'traffic', label: '交通費用' },
-          { value: 'other', label: '生活支出' },
+          { value: 'other', label: '生活雜支' },
         ]}
         onChange={(category) =>
           onChange({ category: category as MoneyCategoryValue })

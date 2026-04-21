@@ -1,21 +1,27 @@
-import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createBloodOxygen } from '@/api/endpoints/health';
+import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import type { BloodOxygensPayload } from '@/types/health';
 
+import healthKeys from '../queryKeys';
+
 function useCreateBloodOxygen() {
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const { currentGroupId } = useCurrentGroupId();
 
-  const submit = async (payload: BloodOxygensPayload) => {
-    setIsLoading(true);
-    try {
-      await createBloodOxygen(payload);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (payload: BloodOxygensPayload) => createBloodOxygen(payload),
+    onSuccess: () => {
+      if (currentGroupId) {
+        queryClient.invalidateQueries({
+          queryKey: healthKeys.bloodOxygen(currentGroupId),
+        });
+      }
+    },
+  });
 
-  return { submit, isLoading };
+  return { submit: mutateAsync, isLoading: isPending };
 }
 
 export default useCreateBloodOxygen;

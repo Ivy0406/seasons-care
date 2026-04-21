@@ -31,7 +31,7 @@ function CalendarMonthCaption({
     children ??
     `${calendarMonth.date.getFullYear()}.${String(calendarMonth.date.getMonth() + 1).padStart(2, '0')}`;
   const avatarSlot = (
-    <UserGroup className="w-full max-w-25 min-w-0">
+    <UserGroup className="w-full max-w-25 min-w-0" showArrow={false}>
       {groupMembers.map((member) => (
         <SingleAvatar
           key={member.userId}

@@ -26,8 +26,7 @@ const createBloodOxygen = (payload: BloodOxygensPayload) => {
   );
 };
 
-const getBloodOxygens = () => {
-  const careGroupId = localStorage.getItem('currentGroupId');
+const getBloodOxygens = (careGroupId: string) => {
   return apiClient.get<GetBloodOxygensResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-oxygens`,
   );
@@ -41,8 +40,7 @@ const createBloodPressure = (payload: BloodPressuresPayload) => {
   );
 };
 
-const getBloodPressures = () => {
-  const careGroupId = localStorage.getItem('currentGroupId');
+const getBloodPressures = (careGroupId: string) => {
   return apiClient.get<GetBloodPressuresResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-pressures`,
   );
@@ -56,8 +54,7 @@ const createBloodSugar = (payload: BloodSugarPayload) => {
   );
 };
 
-const getBloodSugars = () => {
-  const careGroupId = localStorage.getItem('currentGroupId');
+const getBloodSugars = (careGroupId: string) => {
   return apiClient.get<GetBloodSugarsResponse>(
     `/api/care-groups/${careGroupId}/health-records/blood-sugars`,
   );
@@ -71,8 +68,7 @@ const createWeight = (payload: WeightPayload) => {
   );
 };
 
-const getWeights = () => {
-  const careGroupId = localStorage.getItem('currentGroupId');
+const getWeights = (careGroupId: string) => {
   return apiClient.get<GetWeightsResponse>(
     `/api/care-groups/${careGroupId}/health-records/weights`,
   );
@@ -86,8 +82,7 @@ const createTemperature = (payload: temperturesPayload) => {
   );
 };
 
-const getTemperatures = () => {
-  const careGroupId = localStorage.getItem('currentGroupId');
+const getTemperatures = (careGroupId: string) => {
   return apiClient.get<GetTemperaturesResponse>(
     `/api/care-groups/${careGroupId}/health-records/temperatures`,
   );
