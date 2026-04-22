@@ -34,7 +34,7 @@ const swiperConfig = {
 function HealthSummaryCarousel() {
   const { bloodPressure, temperature, bloodOxygen, weight, bloodSugar } =
     useHealth();
-  const { data: todaySummary } = useGetTodayInsight();
+  const { data: todaySummary, isPending: isTodaySummaryPending } = useGetTodayInsight();
 
   return (
     <section className="pt-3">
@@ -49,6 +49,7 @@ function HealthSummaryCarousel() {
             category="AI分析摘要"
             className="w-full"
             content={todaySummary ?? '--'}
+            isLoading={isTodaySummaryPending}
           />
         </SwiperSlide>
         <SwiperSlide style={{ width: '166px' }}>
