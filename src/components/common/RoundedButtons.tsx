@@ -6,7 +6,7 @@ import NewBadge from './NewBadge';
 type RoundedButtonProps = {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: 'button' | 'submit';
   disabled?: boolean;
 };
