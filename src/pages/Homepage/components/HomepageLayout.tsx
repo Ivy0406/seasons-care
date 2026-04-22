@@ -25,11 +25,13 @@ import {
   AlertDialogPortal,
 } from '@/components/ui/alert-dialog';
 import Calendar from '@/components/ui/calendar';
+import Spinner from '@/components/ui/spinner';
 import { CURRENT_USER_KEY } from '@/constants/auth';
 import useDeleteGroupMember from '@/features/groups/hooks/useDeleteGroupMember';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import CreateHealthDataCard from '@/features/health/components/CreateDataCard';
+import useGetTodayInsight from '@/features/health/hooks/useGetTodayInsight';
 import CreateMoneyDataCard from '@/features/money/components/CreateDataCard';
 import RecordingDrawer from '@/features/voice/components/RecordingDrawer';
 import { useVoiceInput } from '@/features/voice/VoiceInputContext';
@@ -43,9 +45,12 @@ import useNotificationBadge from '@/pages/Notification/hooks/useNotificationBadg
 import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
+import useUpcomingImportantEntry from '../hooks/useUpcomingImportantEntry';
+
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
+import UpcomingImportantEntryNotice from './UpcomingImportantEntryNotice';
 import OnboardingOverlay from './OnboardingOverlay';
 
 type HomepageLayoutProps = {
@@ -113,6 +118,9 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     null,
   );
   const { setVoiceTranscript, clearVoiceInput } = useVoiceInput();
+  const { data: todayInsight, isLoading: isTodayInsightLoading } =
+    useGetTodayInsight();
+  const upcomingImportantEntry = useUpcomingImportantEntry(selectedDate);
 
   const {
     rootRef: mainRef,
@@ -388,7 +396,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
       <main
         ref={mainRef}
         className={cn(
-          'snap-smooth mx-auto h-screen max-w-200 snap-y snap-mandatory overflow-y-scroll bg-neutral-200 text-neutral-900 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          'snap-smooth mx-auto h-screen w-full max-w-200 snap-y snap-mandatory overflow-y-scroll bg-neutral-200 text-neutral-900 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           className,
         )}
       >
@@ -448,23 +456,34 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             </div>
           </div>
 
-          <div className="bg-primary-default mx-6 mt-5 flex gap-5 overflow-hidden rounded-xl border-2 border-neutral-900 px-3 py-5">
-            <SingleAvatar
-              src={currentUserAvatarSrc}
-              name={currentUser?.userName ?? ''}
-              className="size-18.25 ring-2 ring-neutral-900"
-            />
-            <div className="flex-1">
-              <div className="flex flex-col">
-                <p className="font-label-md self-start bg-neutral-800 px-2 py-1 text-neutral-50">
-                  今日分析摘要
-                </p>
-                <p className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
-                  下午已完成血壓測量，數值偏高，建議傍晚減少咖啡因攝取。今日復健進度已達成
-                  80%，再加油一點點！
-                </p>
+          <div className="bg-primary-default mx-6 mt-5 flex flex-col gap-3 overflow-hidden rounded-xl border-2 border-neutral-900 px-3 py-5">
+            <div className="flex gap-5">
+              <SingleAvatar
+                src={currentUserAvatarSrc}
+                name={currentUser?.userName ?? ''}
+                className="size-18.25 ring-2 ring-neutral-900"
+              />
+              <div className="flex-1">
+                <div className="flex flex-col">
+                  <p className="font-label-md self-start bg-neutral-800 px-2 py-1 text-neutral-50">
+                    今日分析摘要
+                  </p>
+                  <div className="font-paragraph-md min-h-30 w-full border-2 border-neutral-900 bg-neutral-50 p-3 text-neutral-900">
+                    {isTodayInsightLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Spinner className="size-4 shrink-0 text-neutral-700" />
+                        <span>正在整理當日健康摘要...</span>
+                      </div>
+                    ) : (
+                      (todayInsight ?? '當日尚無健康摘要')
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
+            {upcomingImportantEntry ? (
+              <UpcomingImportantEntryNotice entry={upcomingImportantEntry} />
+            ) : null}
           </div>
 
           <div ref={micButtonRef} className="mx-6 mt-7 mb-11 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
