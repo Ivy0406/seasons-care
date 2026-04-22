@@ -5,12 +5,16 @@ import { useNavigate } from 'react-router';
 import BaseDrawer from '@/components/common/BaseDrawer';
 import GroupEntryDrawer from '@/features/groups/components/GroupEntryDrawer';
 import GroupInviteDrawer from '@/features/groups/components/GroupInviteDrawer';
+import GroupJoinDrawer from '@/features/groups/components/GroupJoinDrawer';
+import useGetGroups from '@/features/groups/hooks/useGetGroups';
 
 import GroupEntranceLayout from './components/GroupEntranceLayout';
 
 function GroupEntrancePage() {
+  useGetGroups();
   const [isGroupEntryDrawerOpen, setIsGroupEntryDrawerOpen] = useState(false);
   const [isGroupInviteDrawerOpen, setIsGroupInviteDrawerOpen] = useState(false);
+  const [isGroupJoinDrawerOpen, setIsGroupJoinDrawerOpen] = useState(false);
   const [createdInviteCode, setCreatedInviteCode] = useState('');
   const navigate = useNavigate();
 
@@ -20,6 +24,11 @@ function GroupEntrancePage() {
     if (!open) {
       navigate('/homepage');
     }
+  };
+
+  const handleOpenJoinGroup = () => {
+    setIsGroupEntryDrawerOpen(false);
+    setIsGroupJoinDrawerOpen(true);
   };
 
   return (
@@ -39,6 +48,7 @@ function GroupEntrancePage() {
             setIsGroupEntryDrawerOpen(false);
             setIsGroupInviteDrawerOpen(true);
           }}
+          onJoinGroup={handleOpenJoinGroup}
           onComplete={() => navigate('/homepage')}
         />
       </BaseDrawer>
@@ -47,6 +57,12 @@ function GroupEntrancePage() {
         open={isGroupInviteDrawerOpen}
         onOpenChange={handleGroupInviteDrawerChange}
         inviteCode={createdInviteCode}
+      />
+
+      <GroupJoinDrawer
+        open={isGroupJoinDrawerOpen}
+        onOpenChange={setIsGroupJoinDrawerOpen}
+        onSuccess={() => navigate('/homepage')}
       />
     </>
   );

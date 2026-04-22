@@ -13,9 +13,10 @@ async function handleMoneyVoiceFinish({
   transcript: string;
   applyVoiceDraft: (draft: MoneyDraft, transcript: string) => void;
 }) {
-  const parsedDraft = await parseMoneyTranscript(transcript);
+  const parsedDrafts = await parseMoneyTranscript(transcript);
+  const parsedDraft = parsedDrafts[0];
 
-  if (!hasMoneyDraftContent(parsedDraft)) {
+  if (!parsedDraft || !hasMoneyDraftContent(parsedDraft)) {
     toast.error('這段語音暫時無法辨識成帳目內容，請重新錄製或手動輸入。');
     return { shouldClose: false };
   }

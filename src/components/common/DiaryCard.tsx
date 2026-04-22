@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { format, parseISO } from 'date-fns';
-import { Check, EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, Repeat } from 'lucide-react';
 
-import { CheckBoxButton } from '@/components/common/CircleIButton';
+import { CardLabelPrimary } from '@/components/common/CardLabel';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import cn from '@/lib/utils';
+
+import { RoundedButtonPrimary, RoundedButtonSecondary } from './RoundedButtons';
 
 export type CalendarDiaryCardParticipant = {
   id: string;
@@ -25,6 +27,8 @@ export type DiaryCardItem = {
   participants: CalendarDiaryCardParticipant[];
   status: DiaryCardStatus;
   isImportant?: boolean;
+  sourceType?: 'care-log' | 'event-series';
+  sourceId?: string;
 };
 
 type DiaryCardProps = {
@@ -45,7 +49,7 @@ function DiaryCardContent({
 }: {
   item: DiaryCardItem;
   isChecked: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void;
   onMoreClick?: () => void;
   isStatusUpdating?: boolean;
 }) {
@@ -67,25 +71,38 @@ function DiaryCardContent({
           <div className="mb-2 flex items-center gap-2 text-neutral-900">
             <span className={cn('size-3 rounded-full', getDotColor())} />
             <p className="font-label-lg">{displayTime}</p>
+            {item.isImportant ? (
+              <CardLabelPrimary>重要任務</CardLabelPrimary>
+            ) : null}
           </div>
           <div className="pl-4.5">
-            <h2 className="font-heading-sm">{item.title}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="font-heading-sm">{item.title}</h2>
+              {item.sourceType === 'event-series' ? (
+                <Repeat
+                  className="size-5 shrink-0 text-neutral-500"
+                  strokeWidth={1.5}
+                />
+              ) : null}
+            </div>
             <p className="font-paragraph-sm mt-3 text-neutral-700">
               {item.description}
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          aria-label="更多選項"
-          className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
-          onClick={(event) => {
-            event.stopPropagation();
-            onMoreClick?.();
-          }}
-        >
-          <EllipsisVertical className="size-4" strokeWidth={1.5} />
-        </button>
+        {onMoreClick ? (
+          <button
+            type="button"
+            aria-label="更多選項"
+            className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
+            onClick={(event) => {
+              event.stopPropagation();
+              onMoreClick();
+            }}
+          >
+            <EllipsisVertical className="size-4" strokeWidth={1.5} />
+          </button>
+        ) : null}
       </div>
 
       <div className="flex items-center justify-between gap-3 pl-4.5">
@@ -99,19 +116,29 @@ function DiaryCardContent({
             />
           ))}
         </div>
-        <CheckBoxButton
-          size="md"
-          checked={isChecked}
-          onCheckedChange={onCheckedChange}
-          onClick={(event) => event.stopPropagation()}
-          disabled={isStatusUpdating}
-          aria-label={`標記${item.title}完成`}
-          checkedClassName="bg-neutral-900 text-neutral-50  "
-          uncheckedClassName="border-2 border-neutral-900 bg-neutral-50 text-neutral-900"
-        >
-          <Check />
-        </CheckBoxButton>
       </div>
+      {isChecked ? (
+        <RoundedButtonPrimary
+          onClick={(e) => {
+            e.stopPropagation();
+            onCheckedChange?.(false);
+          }}
+          disabled={isStatusUpdating || onCheckedChange === undefined}
+          className="border-2 border-neutral-900 bg-neutral-400 text-neutral-900"
+        >
+          已完成
+        </RoundedButtonPrimary>
+      ) : (
+        <RoundedButtonSecondary
+          onClick={(e) => {
+            e.stopPropagation();
+            onCheckedChange?.(true);
+          }}
+          disabled={isStatusUpdating || onCheckedChange === undefined}
+        >
+          標示為完成
+        </RoundedButtonSecondary>
+      )}
     </>
   );
 }
@@ -131,9 +158,11 @@ function DiaryCard({
   }, [item.status]);
 
   const handleCheckedChange = async (checked: boolean) => {
+    if (!onStatusChange) return;
+
     setIsChecked(checked);
 
-    const didUpdate = await onStatusChange?.(checked);
+    const didUpdate = await onStatusChange(checked);
 
     if (didUpdate === false) {
       setIsChecked(item.status === 'completed');
