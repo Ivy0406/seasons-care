@@ -12,13 +12,19 @@
 [![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=react-router)](https://reactrouter.com/)
 
 
-這是一個以 React 19 與 TypeScript 開發的 SPA（單頁式應用程式）家庭共同照護工具。透過 TanStack Query 進行狀態管理，並串接 RESTful API 實現健康數據追蹤、照護日誌紀錄、群組共享與記帳功能。整合 AI 語音辨識，使用者只需口說即可自動填寫紀錄表單，大幅降低忙碌照護者輸入數據的門檻，讓紀錄變得直覺又快速。
+Seasons Care 蒔歲 是一款專為家庭設計的共同照護工具。我們希望透過簡單的技術，解決照護過程中記錄繁瑣、資訊不對稱的問題，讓家人之間的協作更輕鬆。
+
+# **為什麼使用 Seasons Care？**
+* **像 App 一樣好用**：支援 PWA 技術，你可以直接將網頁安裝到手機桌面，開啟速度快，且在離線或網路不穩時依然能流暢操作。
+* **說話就能填表單**：整合 AI 語音辨識，忙到手忙腳亂時，用說的就能自動填寫紀錄，省下打字的時間。
+* **家庭資訊同步**：建立家庭群組，讓所有成員都能隨時查看照護日誌與健康數據，溝通零時差。
 
 ---
 
-## 👀 專案預覽 
-*(預覽圖片待補充)*
-![首頁](/public/icons/LOGO.svg)
+## 💡 核心功能 
+![共同任務](/public/preview/preview-tasks.jpg)
+![健康數據](/public/preview/preview-health.jpg)
+![共同帳目](/public/preview/preview-expenses.jpg)
 
 ---
 
