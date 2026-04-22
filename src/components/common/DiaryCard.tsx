@@ -6,6 +6,7 @@ import { EllipsisVertical, Repeat } from 'lucide-react';
 import { CardLabelPrimary } from '@/components/common/CardLabel';
 import SingleAvatar from '@/components/common/SingleAvatar';
 import cn from '@/lib/utils';
+
 import { RoundedButtonPrimary, RoundedButtonSecondary } from './RoundedButtons';
 
 export type CalendarDiaryCardParticipant = {
@@ -70,7 +71,9 @@ function DiaryCardContent({
           <div className="mb-2 flex items-center gap-2 text-neutral-900">
             <span className={cn('size-3 rounded-full', getDotColor())} />
             <p className="font-label-lg">{displayTime}</p>
-            {item.isImportant ? <CardLabelPrimary>重要任務</CardLabelPrimary> : null}
+            {item.isImportant ? (
+              <CardLabelPrimary>重要任務</CardLabelPrimary>
+            ) : null}
           </div>
           <div className="pl-4.5">
             <div className="flex items-center gap-3">
