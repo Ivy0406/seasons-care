@@ -1,5 +1,6 @@
 import { Sparkles } from 'lucide-react';
 
+import Loading from '@/components/common/Loading';
 import cn from '@/lib/utils';
 
 import { CardLabelPrimary } from './CardLabel';
@@ -14,6 +15,7 @@ type DataCardBaseProps = {
 
 type SummaryCardProps = Omit<DataCardBaseProps, 'time'> & {
   content: string;
+  isLoading?: boolean;
 };
 type BloodPressureCardProps = DataCardBaseProps & {
   systolic: Measurement;
@@ -54,7 +56,7 @@ function BaseCard({
   );
 }
 
-function DataCardSummary({ category, className, content }: SummaryCardProps) {
+function DataCardSummary({ category, className, content, isLoading = false }: SummaryCardProps) {
   return (
     <div
       className={cn(
@@ -65,12 +67,18 @@ function DataCardSummary({ category, className, content }: SummaryCardProps) {
       <div className="flex h-9 w-full justify-between border-b border-neutral-900 pb-2">
         <CardLabelPrimary>{category}</CardLabelPrimary>
       </div>
-      <div className="flex gap-1.5">
-        <Sparkles size={16} className="mt-1 shrink-0" />
-        <p className="font-paragraph-md pb-4 text-justify leading-relaxed text-neutral-900">
-          {content}
-        </p>
-      </div>
+      {isLoading ? (
+        <div className="flex flex-1 items-center">
+          <Loading />
+        </div>
+      ) : (
+        <div className="flex gap-1.5">
+          <Sparkles size={16} className="mt-1 shrink-0" />
+          <p className="font-paragraph-md pb-4 text-justify leading-relaxed text-neutral-900">
+            {content}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
