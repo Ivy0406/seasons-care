@@ -227,7 +227,7 @@ function ListFormNameRow({
   return (
     <ListFormRow label={label} htmlFor={htmlFor} className={className}>
       <Input
-        placeholder="輸入名稱"
+        placeholder={inputProps?.placeholder ?? '輸入名稱'}
         className="font-paragraph-md h-auto border-0 bg-transparent px-0 py-0 pr-4 text-right text-neutral-900 shadow-none placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
         id={htmlFor}
         {...inputProps}

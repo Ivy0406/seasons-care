@@ -308,6 +308,7 @@ function GroupEntryDrawer({
             <ListFormNameRow
               label="群組名稱"
               inputProps={{
+                placeholder: '輸入群組名稱',
                 value: groupName,
                 onChange: (event) => setGroupName(event.target.value),
               }}
@@ -315,6 +316,7 @@ function GroupEntryDrawer({
             <ListFormNameRow
               label="被照護者名稱"
               inputProps={{
+                placeholder: '輸入被照護者名稱',
                 value: careRecipientName,
                 onChange: (event) => setCareRecipientName(event.target.value),
               }}
