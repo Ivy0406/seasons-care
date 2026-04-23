@@ -17,7 +17,7 @@ import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
 
-type StatusGroup = '進行中' | '未完成' | '已完成';
+type StatusGroup = '進行中' | '未開始' | '未完成' | '已完成';
 type DiarySummaryProps = {
   selectedDate: Date;
   onCreateEntry: () => void;
@@ -26,10 +26,10 @@ type DiarySummaryProps = {
 function getStatusText(card: DiaryCardItem): StatusGroup {
   if (card.status === 'completed') return '已完成';
   if (parseISO(card.startsAt).getTime() <= Date.now()) return '進行中';
-  return '未完成';
+  return '未開始';
 }
 
-const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
+const STATUS_ORDER: StatusGroup[] = ['進行中', '未開始', '未完成', '已完成'];
 
 function groupByStatus(
   cards: DiaryCardItem[],
@@ -40,7 +40,7 @@ function groupByStatus(
       totalCards[status].push(card);
       return totalCards;
     },
-    { 進行中: [], 未完成: [], 已完成: [] } as Record<
+    { 進行中: [], 未開始: [], 未完成: [], 已完成: [] } as Record<
       StatusGroup,
       DiaryCardItem[]
     >,
