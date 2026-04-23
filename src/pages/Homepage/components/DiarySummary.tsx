@@ -69,9 +69,12 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
       selectedDate,
       groupMembers,
     );
-    return [...entries, ...recurringEntries].filter((entry) =>
-      isSameDay(parseISO(entry.startsAt), selectedDate),
-    );
+    return [...entries, ...recurringEntries]
+      .filter((entry) => isSameDay(parseISO(entry.startsAt), selectedDate))
+      .sort(
+        (a, b) =>
+          parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
+      );
   }, [entries, eventSeries, groupMembers, selectedDate]);
   const grouped = useMemo(() => {
     return groupByStatus(filteredEntries);
