@@ -14,7 +14,7 @@ import type { GroupMember } from '@/types/group';
 type UseVoiceDraftSubmitOptions = {
   healthDraft: HealthDraft;
   diaryDrafts: DiaryDraft[];
-  moneyDraft: MoneyDraft;
+  moneyDrafts: MoneyDraft[];
   groupMembers: GroupMember[];
   shouldSubmitHealth: boolean;
   shouldSubmitMoney: boolean;
@@ -34,7 +34,7 @@ function isFailedResult(result: PromiseSettledResult<unknown>): boolean {
 function useVoiceDraftSubmit({
   healthDraft,
   diaryDrafts,
-  moneyDraft,
+  moneyDrafts,
   groupMembers,
   shouldSubmitHealth,
   shouldSubmitMoney,
@@ -56,7 +56,9 @@ function useVoiceDraftSubmit({
             diaryDraftToCareLogEntry(draft, groupMembers),
           ),
         ),
-        ...(shouldSubmitMoney ? [handleCreateMoneyItem(moneyDraft)] : []),
+        ...(shouldSubmitMoney
+          ? moneyDrafts.map((draft) => handleCreateMoneyItem(draft))
+          : []),
       ];
 
       const results = await Promise.allSettled(submissions);

@@ -27,7 +27,7 @@ type SubmitModalState = {
 };
 
 function HealthReportPage() {
-  const { data: weeklyInsight } = useGetWeeklyInsight();
+  const { data: weeklyInsight, isPending: isWeeklyInsightPending } = useGetWeeklyInsight();
   const { currentGroupId } = useCurrentGroupId();
   const { data: groups } = useGetGroups();
   const patientName =
@@ -56,6 +56,7 @@ function HealthReportPage() {
             summary={weeklyInsight?.overallSummary ?? ''}
             keyInsight={weeklyInsight?.keyInsight ?? ''}
             actionSuggestion={weeklyInsight?.actionSuggestion ?? ''}
+            isLoading={isWeeklyInsightPending}
             onViewHistory={() => setShowUpgradeCTA(true)}
           />
         </div>
