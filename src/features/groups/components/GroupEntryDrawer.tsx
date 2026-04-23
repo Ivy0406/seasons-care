@@ -170,16 +170,16 @@ function GroupEntryDrawer({
   const [step, setStep] = useState<DrawerStep>(initialStep);
   const [createdInviteCode, setCreatedInviteCode] = useState('');
   const [groupName, setGroupName] = useState(initialGroupName);
-  const [careRecipientName, setCareRecipientName] = useState('');
+  const [careRecipientName, setCareRecipientName] =
+    useState(initialRecipientName);
   const [gender, setGender] = useState(initialRecipientGender);
   const [birthDate, setBirthDate] = useState(initialRecipientBirthDate);
   const [description] = useState(initialDescription);
   const [healthStatus] = useState(initialHealthStatus);
   const isEditMode = mode === 'edit';
   const isSubmitting = isLoading || isUpdating;
-  const canSubmit = isEditMode
-    ? groupName.trim().length > 0
-    : careRecipientName.trim().length > 0;
+  const canSubmit =
+    groupName.trim().length > 0 && careRecipientName.trim().length > 0;
   const successTitle = isEditMode ? '編輯完成！' : '創建完成！';
   const formTitle = isEditMode ? '編輯群組' : '建立照護群組';
   const formDescription = isEditMode
@@ -244,7 +244,7 @@ function GroupEntryDrawer({
     }
 
     const result = await handleCreateGroup({
-      name: careRecipientName,
+      name: groupName,
       recipientName: careRecipientName,
       recipientGender: gender,
       recipientBirthDate: birthDate,
@@ -305,23 +305,22 @@ function GroupEntryDrawer({
 
         <div className="flex flex-col">
           <div className="mb-20 flex flex-col gap-2">
-            {isEditMode ? (
-              <ListFormNameRow
-                label="群組名稱"
-                inputProps={{
-                  value: groupName,
-                  onChange: (event) => setGroupName(event.target.value),
-                }}
-              />
-            ) : (
-              <ListFormNameRow
-                label="被照護者名稱"
-                inputProps={{
-                  value: careRecipientName,
-                  onChange: (event) => setCareRecipientName(event.target.value),
-                }}
-              />
-            )}
+            <ListFormNameRow
+              label="群組名稱"
+              inputProps={{
+                placeholder: '輸入群組名稱',
+                value: groupName,
+                onChange: (event) => setGroupName(event.target.value),
+              }}
+            />
+            <ListFormNameRow
+              label="被照護者名稱"
+              inputProps={{
+                placeholder: '輸入被照護者名稱',
+                value: careRecipientName,
+                onChange: (event) => setCareRecipientName(event.target.value),
+              }}
+            />
             <ListFormGenderRow
               label="被照護者性別"
               value={gender}
