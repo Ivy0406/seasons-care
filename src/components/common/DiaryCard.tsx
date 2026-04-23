@@ -124,7 +124,7 @@ function DiaryCardContent({
             onCheckedChange?.(false);
           }}
           disabled={isStatusUpdating || onCheckedChange === undefined}
-          className="border-2 border-neutral-900 bg-neutral-400 text-neutral-900"
+          className="border-2 border-neutral-200 bg-neutral-200 text-neutral-900"
         >
           已完成
         </RoundedButtonPrimary>
@@ -135,6 +135,7 @@ function DiaryCardContent({
             onCheckedChange?.(true);
           }}
           disabled={isStatusUpdating || onCheckedChange === undefined}
+          className="border-2 border-neutral-900 bg-neutral-800 text-neutral-50"
         >
           標示為完成
         </RoundedButtonSecondary>
