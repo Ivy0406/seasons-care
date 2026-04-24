@@ -192,11 +192,7 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
                     isUpdatingEventSeries
                   }
                   onClick={() => diaryCardActions.openDetail(item.id)}
-                  onMoreClick={
-                    item.sourceType === 'event-series'
-                      ? undefined
-                      : () => diaryCardActions.openActions(item.id)
-                  }
+                  onMoreClick={() => diaryCardActions.openDetail(item.id)}
                   onStatusChange={async (checked) => {
                     if (item.sourceType === 'event-series') {
                       const persistedEntry = await handleUpdateEventOccurrence({
