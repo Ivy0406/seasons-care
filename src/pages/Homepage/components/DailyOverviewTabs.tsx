@@ -6,7 +6,6 @@ import BackToTopButton from '@/components/common/BackToTopButton';
 import ViewMoreButton from '@/components/common/ViewMoreButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import HealthDataSummary from '@/features/health/components/HealthDataSummary';
-import HealthDataCarousel from '@/features/health/HealthDataCarousel';
 import cn from '@/lib/utils';
 
 import DiarySummary from './DiarySummary';
