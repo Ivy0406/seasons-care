@@ -144,7 +144,7 @@ function NavigationMenuButton({
         className,
       )}
     >
-      <Menu className="size-8" strokeWidth={1.5} />
+      <Menu className="size-6" strokeWidth={1.5} />
     </button>
   );
 }

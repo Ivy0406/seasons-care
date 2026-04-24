@@ -415,7 +415,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
               onNotificationClick={() => navigate('/notifications')}
               onMenuClick={() => setIsSideMenuOpen(true)}
               selectedDate={selectedDate}
-              onDateClick={() => setIsDateDrawerOpen(true)}
+              onDateClick={undefined}
             />
           )}
         </div>
