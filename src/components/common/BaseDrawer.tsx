@@ -42,7 +42,7 @@ function BaseDrawer({
 
       <DrawerContent
         className={cn(
-          'rounded-t-3xl border-0 bg-neutral-100 px-6 pb-7',
+          'mx-auto w-full max-w-[800px] rounded-t-3xl border-0 bg-neutral-100 px-6 pb-7',
           className,
         )}
         handleClassName={handleClassName}
