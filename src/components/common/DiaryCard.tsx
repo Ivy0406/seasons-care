@@ -100,7 +100,7 @@ function DiaryCardContent({
               onMoreClick();
             }}
           >
-            <EllipsisVertical className="size-4" strokeWidth={1.5} />
+            <EllipsisVertical className="size-6" strokeWidth={2} />
           </button>
         ) : null}
       </div>
