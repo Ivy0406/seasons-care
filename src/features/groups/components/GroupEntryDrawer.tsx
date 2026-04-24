@@ -287,17 +287,33 @@ function GroupEntryDrawer({
   if (step === 'create') {
     return (
       <div className="flex flex-col text-neutral-900">
-        <div className="relative mb-5 flex items-center justify-center py-2">
-          <button
-            type="button"
-            aria-label="關閉建立群組視窗"
-            onClick={onClose}
-            className="absolute left-0 inline-flex size-10 items-center justify-center"
-          >
-            <X className="size-8" strokeWidth={2} />
-          </button>
-          <h2 className="font-label-lg">{formTitle}</h2>
-        </div>
+        {isEditMode ? (
+          <div className="mb-5 flex items-center justify-between py-2">
+            <button
+              type="button"
+              aria-label="關閉編輯群組視窗"
+              onClick={onClose}
+              className="inline-flex size-10 items-center justify-center"
+            >
+              <X className="size-8" strokeWidth={2} />
+            </button>
+            <h2 className="font-label-lg text-right">
+              {groupName.trim() || formTitle}
+            </h2>
+          </div>
+        ) : (
+          <div className="relative mb-5 flex items-center justify-center py-2">
+            <button
+              type="button"
+              aria-label="關閉建立群組視窗"
+              onClick={onClose}
+              className="absolute left-0 inline-flex size-10 items-center justify-center"
+            >
+              <X className="size-8" strokeWidth={2} />
+            </button>
+            <h2 className="font-label-lg">{formTitle}</h2>
+          </div>
+        )}
 
         <p className="font-paragraph-md mx-auto pb-3 text-neutral-900">
           {formDescription}
