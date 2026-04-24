@@ -303,15 +303,16 @@ function GroupEntryDrawer({
           </div>
         ) : (
           <div className="relative mb-5 flex items-center justify-center py-2">
+            <div className="absolute left-0 size-10" aria-hidden="true" />
+            <h2 className="font-label-lg">{formTitle}</h2>
             <button
               type="button"
               aria-label="關閉建立群組視窗"
               onClick={onClose}
-              className="absolute left-0 inline-flex size-10 items-center justify-center"
+              className="absolute right-0 inline-flex size-10 items-center justify-center"
             >
               <X className="size-8" strokeWidth={2} />
             </button>
-            <h2 className="font-label-lg">{formTitle}</h2>
           </div>
         )}
 
