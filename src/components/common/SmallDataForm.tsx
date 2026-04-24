@@ -1,3 +1,5 @@
+import { Controller } from 'react-hook-form';
+
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import {
   ListFormDateTimeRow,
@@ -15,7 +17,7 @@ import cn from '@/lib/utils';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 import type { GroupMember } from '@/types/group';
 
-import type { UseFormRegister } from 'react-hook-form';
+import type { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 
 type BaseFormCardProps = {
   children: React.ReactNode;
@@ -301,34 +303,75 @@ function JournalDataSmallForm({
   );
 }
 
+type MoneyFormFields = {
+  title: string;
+  amount: string;
+  category: string;
+};
+
 type MoneyDataSmallFormProps = {
   className?: string;
   value: MoneyDraft;
   onChange: (updates: Partial<MoneyDraft>) => void;
+  register?: UseFormRegister<MoneyFormFields>;
+  control?: Control<MoneyFormFields>;
+  errors?: FieldErrors<MoneyFormFields>;
 };
+
+const MONEY_CATEGORY_OPTIONS = [
+  { value: 'medical', label: '醫療支出' },
+  { value: 'food', label: '飲食支出' },
+  { value: 'traffic', label: '交通費用' },
+  { value: 'other', label: '生活雜支' },
+];
 
 function MoneyDataSmallForm({
   className,
   value,
   onChange,
+  register,
+  control,
+  errors,
 }: MoneyDataSmallFormProps) {
   return (
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="帳目名稱"
-        inputProps={{
-          value: value.title,
-          onChange: (event) => onChange({ title: event.target.value }),
-        }}
+        required
+        inputProps={
+          register
+            ? register('title', { required: '帳目名稱為必填' })
+            : {
+                value: value.title,
+                onChange: (e) => onChange({ title: e.target.value }),
+              }
+        }
+        error={errors?.title?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
         label="金額"
+        required
         inputProps={{
-          value: value.amount,
-          inputMode: 'numeric',
-          onChange: (event) => onChange({ amount: event.target.value }),
+          type: 'number',
+          min: '0',
+          step: 'any',
+          className:
+            '[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+          ...(register
+            ? register('amount', {
+                required: '金額為必填',
+                validate: (v) => {
+                  const num = Number(v);
+                  return (!Number.isNaN(num) && num > 0) || '請輸入有效數值';
+                },
+              })
+            : {
+                value: value.amount,
+                onChange: (e) => onChange({ amount: e.target.value }),
+              }),
         }}
+        error={errors?.amount?.message}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
@@ -339,21 +382,36 @@ function MoneyDataSmallForm({
         onTimeChange={(timeValue) => onChange({ timeValue })}
         className="border-neutral-900"
       />
-      <ListFormSelectRow
-        label="類別"
-        value={value.category ?? ''}
-        placeholder="請選擇類別"
-        options={[
-          { value: 'medical', label: '醫療支出' },
-          { value: 'food', label: '飲食支出' },
-          { value: 'traffic', label: '交通費用' },
-          { value: 'other', label: '生活雜支' },
-        ]}
-        onChange={(category) =>
-          onChange({ category: category as MoneyCategoryValue })
-        }
-        className="border-neutral-900"
-      />
+      {control ? (
+        <Controller
+          name="category"
+          control={control}
+          rules={{ required: '類別為必填' }}
+          render={({ field }) => (
+            <ListFormSelectRow
+              label="類別"
+              required
+              value={field.value}
+              placeholder="請選擇類別"
+              options={MONEY_CATEGORY_OPTIONS}
+              onChange={field.onChange}
+              error={errors?.category?.message}
+              className="border-neutral-900"
+            />
+          )}
+        />
+      ) : (
+        <ListFormSelectRow
+          label="類別"
+          value={value.category ?? ''}
+          placeholder="請選擇類別"
+          options={MONEY_CATEGORY_OPTIONS}
+          onChange={(category) =>
+            onChange({ category: category as MoneyCategoryValue })
+          }
+          className="border-neutral-900"
+        />
+      )}
       <ListFormImportantRow
         label="是否需分帳"
         checked={value.needsSplit}
@@ -373,6 +431,8 @@ function MoneyDataSmallForm({
     </BaseFormCard>
   );
 }
+
+export type { MoneyFormFields };
 
 export {
   HealthDataForm,

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
 import { format } from 'date-fns';
+import { useForm } from 'react-hook-form';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonPrimary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
+import type { MoneyFormFields } from '@/components/common/SmallDataForm';
 import VoiceFormSection from '@/components/common/VoiceFormSection';
 import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
-import type { MoneyDraft } from '@/features/money/types';
+import type { MoneyCategoryValue, MoneyDraft } from '@/features/money/types';
 import handleMoneyVoiceFinish from '@/features/money/utils/moneyVoice';
 import { createEmptyMoneyDraft } from '@/features/voice/services/moneyParser';
 
@@ -38,25 +40,38 @@ function CreateDataCard({
     message?: string;
   }>({ open: false });
 
-  const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors, isValid },
+  } = useForm<MoneyFormFields>({
+    mode: 'onChange',
+    defaultValues: { title: '', amount: '', category: '' },
+  });
 
-  const isSubmitDisabled =
-    isLoading ||
-    draft.title.trim() === '' ||
-    draft.amount.trim() === '' ||
-    draft.category === null;
+  const { isLoading, handleCreateMoneyItem } = useCreateMoneyItem();
 
   const handleChange = (updates: Partial<MoneyDraft>) => {
     setDraft((prev) => ({ ...prev, ...updates }));
   };
 
   const applyVoiceDraft = (nextDraft: MoneyDraft, transcript: string) => {
+    // RHF 管理的欄位用 setValue 更新，shouldValidate 確保即時重新驗證
+    if (nextDraft.title.trim()) {
+      setValue('title', nextDraft.title, { shouldValidate: true });
+    }
+    if (nextDraft.amount.trim()) {
+      setValue('amount', nextDraft.amount, { shouldValidate: true });
+    }
+    if (nextDraft.category) {
+      setValue('category', nextDraft.category, { shouldValidate: true });
+    }
+
+    // 非必填欄位維持原本 draft state 管理
     setDraft((currentDraft) => ({
       ...currentDraft,
-      title:
-        nextDraft.title.trim() !== '' ? nextDraft.title : currentDraft.title,
-      amount:
-        nextDraft.amount.trim() !== '' ? nextDraft.amount : currentDraft.amount,
       dateValue:
         /(今天|明天|後天|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[/月]\d{1,2})/u.test(
           transcript,
@@ -69,7 +84,6 @@ function CreateDataCard({
         )
           ? nextDraft.timeValue
           : currentDraft.timeValue,
-      category: nextDraft.category ?? currentDraft.category,
       needsSplit: nextDraft.needsSplit,
       notes:
         nextDraft.notes.trim() !== '' ? nextDraft.notes : currentDraft.notes,
@@ -78,9 +92,14 @@ function CreateDataCard({
     }));
   };
 
-  const handleSubmit = async (event: React.SubmitEvent) => {
-    event.preventDefault();
-    const result = await handleCreateMoneyItem(draft);
+  const onSubmit = async (formData: MoneyFormFields) => {
+    const fullDraft: MoneyDraft = {
+      ...draft,
+      title: formData.title,
+      amount: formData.amount,
+      category: formData.category as MoneyCategoryValue,
+    };
+    const result = await handleCreateMoneyItem(fullDraft);
     if (result.success) {
       onSuccess();
     } else {
@@ -90,7 +109,7 @@ function CreateDataCard({
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <DataFormCard
           title="新帳目"
           className="bg-secondary-default"
@@ -113,6 +132,9 @@ function CreateDataCard({
                 className="w-full border-0 bg-neutral-50 px-3 pt-3"
                 value={draft}
                 onChange={handleChange}
+                register={register}
+                control={control}
+                errors={errors}
               />
             </VoiceFormSection>
           </DataFormCard.Content>
@@ -120,7 +142,7 @@ function CreateDataCard({
             <RoundedButtonPrimary
               type="submit"
               className="w-full"
-              disabled={isSubmitDisabled}
+              disabled={!isValid || isLoading}
             >
               新增帳目
             </RoundedButtonPrimary>

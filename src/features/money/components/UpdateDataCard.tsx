@@ -2,14 +2,20 @@ import { useState } from 'react';
 
 import { format, parseISO } from 'date-fns';
 import { X } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import DataFormCard from '@/components/common/DataFormCard';
 import Modal from '@/components/common/Modal';
 import { RoundedButtonSecondary } from '@/components/common/RoundedButtons';
 import { MoneyDataSmallForm } from '@/components/common/SmallDataForm';
+import type { MoneyFormFields } from '@/components/common/SmallDataForm';
 import { Button } from '@/components/ui/button';
 import useUpdateMoneyItem from '@/features/money/hooks/useUpdateMoneyItem';
-import type { ExpenseItem, MoneyDraft } from '@/features/money/types';
+import type {
+  ExpenseItem,
+  MoneyCategoryValue,
+  MoneyDraft,
+} from '@/features/money/types';
 
 type UpdateDataCardProps = {
   item: ExpenseItem;
@@ -45,21 +51,38 @@ function UpdateDataCard({
     message?: string;
   }>({ open: false });
 
-  const { isLoading, handleUpdateMoneyItem } = useUpdateMoneyItem();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+  } = useForm<MoneyFormFields>({
+    mode: 'onChange',
+    defaultValues: {
+      title: item.title,
+      amount: String(item.amount),
+      category: item.category,
+    },
+  });
 
-  const isSubmitDisabled =
-    isLoading ||
-    draft.title.trim() === '' ||
-    draft.amount.trim() === '' ||
-    draft.category === null;
+  const { isLoading, handleUpdateMoneyItem } = useUpdateMoneyItem();
 
   const handleChange = (updates: Partial<MoneyDraft>) => {
     setDraft((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleSubmit = async (event: React.SubmitEvent) => {
-    event.preventDefault();
-    const result = await handleUpdateMoneyItem(item.id, draft, item.updatedAt);
+  const onSubmit = async (formData: MoneyFormFields) => {
+    const fullDraft: MoneyDraft = {
+      ...draft,
+      title: formData.title,
+      amount: formData.amount,
+      category: formData.category as MoneyCategoryValue,
+    };
+    const result = await handleUpdateMoneyItem(
+      item.id,
+      fullDraft,
+      item.updatedAt,
+    );
     if (result.success) {
       onSuccess();
     } else {
@@ -69,7 +92,7 @@ function UpdateDataCard({
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <DataFormCard
           title="編輯帳目"
           className="bg-neutral-800"
@@ -91,6 +114,9 @@ function UpdateDataCard({
               className="w-full border-0 bg-neutral-50 px-3 pt-3"
               value={draft}
               onChange={handleChange}
+              register={register}
+              control={control}
+              errors={errors}
             />
           </DataFormCard.Content>
           <DataFormCard.Footer>
@@ -106,7 +132,7 @@ function UpdateDataCard({
               <RoundedButtonSecondary
                 type="submit"
                 className="bg-secondary-default h-10 flex-1 rounded-full border-0 text-neutral-900"
-                disabled={isSubmitDisabled}
+                disabled={!isValid || isLoading}
               >
                 {isLoading ? '儲存中...' : '更新帳目'}
               </RoundedButtonSecondary>
