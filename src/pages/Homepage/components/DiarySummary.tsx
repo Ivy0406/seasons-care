@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { isSameDay, parseISO } from 'date-fns';
 
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
+import Loading from '@/components/common/Loading';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
@@ -48,9 +49,16 @@ function groupByStatus(
 }
 
 function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
-  const { entries, refetchEntries } = useGetCareLogEntries();
-  const { eventSeries, refetch: refetchEventSeries } =
-    useGetEventSeries(selectedDate);
+  const {
+    entries,
+    isFetching: isFetchingEntries,
+    refetchEntries,
+  } = useGetCareLogEntries();
+  const {
+    eventSeries,
+    isFetching: isFetchingEventSeries,
+    refetch: refetchEventSeries,
+  } = useGetEventSeries(selectedDate);
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
@@ -79,6 +87,9 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   const grouped = useMemo(() => {
     return groupByStatus(filteredEntries);
   }, [filteredEntries]);
+  const isLoadingEmptyEntries =
+    filteredEntries.length === 0 &&
+    (isFetchingEntries || isFetchingEventSeries);
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
@@ -152,7 +163,12 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   return (
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
-        {filteredEntries.length === 0 ? (
+        {isLoadingEmptyEntries ? (
+          <div className="flex min-h-32 items-center justify-center gap-2 text-neutral-700">
+            <Loading />
+          </div>
+        ) : null}
+        {!isLoadingEmptyEntries && filteredEntries.length === 0 ? (
           <CareLogEmptyState
             message="當日尚未有紀錄，快來新增吧！"
             onCreateEntry={onCreateEntry}
