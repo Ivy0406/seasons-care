@@ -18,7 +18,10 @@ function FixedBottomButton({
   ref,
 }: FixedBottomButtonProps) {
   return (
-    <div ref={ref} className="fixed right-6 bottom-6 z-10">
+    <div
+      ref={ref}
+      className="fixed right-[max(20px,calc((100vw-800px)/2+20px))] bottom-6 z-10"
+    >
       <button
         type="button"
         onClick={onClick}

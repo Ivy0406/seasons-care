@@ -71,9 +71,6 @@ function DiaryCardContent({
           <div className="mb-2 flex items-center gap-2 text-neutral-900">
             <span className={cn('size-3 rounded-full', getDotColor())} />
             <p className="font-label-lg">{displayTime}</p>
-            {item.isImportant ? (
-              <CardLabelPrimary>重要任務</CardLabelPrimary>
-            ) : null}
           </div>
           <div className="pl-4.5">
             <div className="flex items-center gap-3">
@@ -90,18 +87,25 @@ function DiaryCardContent({
             </p>
           </div>
         </div>
-        {onMoreClick ? (
-          <button
-            type="button"
-            aria-label="更多選項"
-            className="ml-7.75 inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
-            onClick={(event) => {
-              event.stopPropagation();
-              onMoreClick();
-            }}
-          >
-            <EllipsisVertical className="size-4" strokeWidth={1.5} />
-          </button>
+        {item.isImportant || onMoreClick ? (
+          <div className="ml-4 flex shrink-0 items-start gap-2">
+            {item.isImportant ? (
+              <CardLabelPrimary>重要任務</CardLabelPrimary>
+            ) : null}
+            {onMoreClick ? (
+              <button
+                type="button"
+                aria-label="更多選項"
+                className="inline-flex size-6 items-center justify-center rounded-full bg-transparent text-neutral-900"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onMoreClick();
+                }}
+              >
+                <EllipsisVertical className="size-6" strokeWidth={2} />
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
