@@ -12,7 +12,7 @@ import type { CareLogEntry, DiaryDraft } from '@/pages/CareLog/types';
 import type { GroupMember } from '@/types/group';
 
 type CareLogVoiceFieldSetters = {
-  setTitleValue: Dispatch<SetStateAction<string>>;
+  setTitleValue: (value: string) => void;
   setDateValue: Dispatch<SetStateAction<string>>;
   setTimeValue: Dispatch<SetStateAction<string>>;
   setRepeatPattern: Dispatch<SetStateAction<RepeatPatternValue>>;
