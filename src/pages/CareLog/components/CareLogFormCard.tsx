@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { format, parse, parseISO } from 'date-fns';
 import { X } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import getAvatarSrcByKey from '@/assets/images/avatars';
 import DataFormCard from '@/components/common/DataFormCard';
@@ -52,7 +53,19 @@ function CareLogFormCard({
   showVoiceInput = true,
   editMode = 'default',
 }: CareLogFormCardProps) {
-  const [titleValue, setTitleValue] = useState(entry.title);
+  const {
+    register,
+    handleSubmit: rhfHandleSubmit,
+    setValue: setTitleValue,
+    watch,
+    formState: { errors: titleErrors },
+  } = useForm<{ title: string }>({
+    mode: 'onChange',
+    defaultValues: { title: entry.title },
+  });
+
+  const titleValue = watch('title');
+
   const [dateValue, setDateValue] = useState('');
   const [timeValue, setTimeValue] = useState('');
   const [repeatPattern, setRepeatPattern] = useState<RepeatPatternValue>(
@@ -74,7 +87,7 @@ function CareLogFormCard({
   useEffect(() => {
     const startedAt = parseISO(entry.startsAt);
 
-    setTitleValue(entry.title);
+    setTitleValue('title', entry.title);
     setDateValue(format(startedAt, 'yyyy/MM/dd'));
     setTimeValue(format(startedAt, 'HH:mm'));
     setRepeatPattern(entry.repeatPattern ?? 'none');
@@ -91,9 +104,7 @@ function CareLogFormCard({
         dateValue.trim().length === 0 ||
         timeValue.trim().length === 0));
 
-  const handleSubmit = () => {
-    if (isSubmitDisabled) return;
-
+  const doSubmit = (formData: { title: string }) => {
     const startsAt =
       editMode === 'default'
         ? format(
@@ -112,7 +123,7 @@ function CareLogFormCard({
 
     onSubmit({
       ...entry,
-      title: titleValue,
+      title: formData.title,
       description: note,
       startsAt,
       status,
@@ -126,17 +137,23 @@ function CareLogFormCard({
     });
   };
 
+  const handleSubmit = () => {
+    if (isSubmitDisabled) return;
+    rhfHandleSubmit(doSubmit)();
+  };
+
   const formFields = (
     <div className="px-4 py-2">
       {editMode === 'default' ? (
         <>
           <ListFormInputRow
             label="任務名稱"
+            required
             inputProps={{
               id: `${entry.id}-title`,
-              value: titleValue,
-              onChange: (event) => setTitleValue(event.target.value),
+              ...register('title', { required: '任務名稱為必填' }),
             }}
+            error={titleErrors.title?.message}
             className="border-neutral-900"
           />
           <ListFormDateTimeRow
@@ -215,7 +232,8 @@ function CareLogFormCard({
                   transcript,
                   groupMembers,
                   setters: {
-                    setTitleValue,
+                    setTitleValue: (value: string) =>
+                      setTitleValue('title', value, { shouldValidate: true }),
                     setDateValue,
                     setTimeValue,
                     setRepeatPattern,
