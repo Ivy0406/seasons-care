@@ -415,7 +415,7 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
               onNotificationClick={() => navigate('/notifications')}
               onMenuClick={() => setIsSideMenuOpen(true)}
               selectedDate={selectedDate}
-              onDateClick={() => setIsDateDrawerOpen(true)}
+              onDateClick={undefined}
             />
           )}
         </div>
@@ -486,7 +486,10 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
             ) : null}
           </div>
 
-          <div ref={micButtonRef} className="mx-6 mt-7 mb-11 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3">
+          <div
+            ref={micButtonRef}
+            className="mx-6 mt-7 mb-11 flex items-center justify-between gap-3 rounded-full border-2 border-neutral-900 bg-neutral-50 p-3"
+          >
             <p className="font-label-md pl-6 text-neutral-900">
               {currentUser?.userName ?? ''}，你好 <br />
               今天想要記錄什麼照護資訊呢？

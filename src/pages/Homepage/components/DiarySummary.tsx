@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { isSameDay, parseISO } from 'date-fns';
 
 import DiaryCard, { type DiaryCardItem } from '@/components/common/DiaryCard';
+import Loading from '@/components/common/Loading';
 import DiaryCardActionLayer from '@/features/calendar/components/DiaryCardActionLayer';
 import useDeleteEventSeries from '@/features/calendar/hooks/useDeleteEventSeries';
 import useGetEventSeries from '@/features/calendar/hooks/useGetEventSeries';
@@ -17,7 +18,7 @@ import useDeleteCareLogEntry from '@/pages/CareLog/hooks/useDeleteCareLogEntry';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 import useUpdateCareLogEntry from '@/pages/CareLog/hooks/useUpdateCareLogEntry';
 
-type StatusGroup = '進行中' | '未完成' | '已完成';
+type StatusGroup = '進行中' | '未開始' | '未完成' | '已完成';
 type DiarySummaryProps = {
   selectedDate: Date;
   onCreateEntry: () => void;
@@ -26,10 +27,10 @@ type DiarySummaryProps = {
 function getStatusText(card: DiaryCardItem): StatusGroup {
   if (card.status === 'completed') return '已完成';
   if (parseISO(card.startsAt).getTime() <= Date.now()) return '進行中';
-  return '未完成';
+  return '未開始';
 }
 
-const STATUS_ORDER: StatusGroup[] = ['進行中', '未完成', '已完成'];
+const STATUS_ORDER: StatusGroup[] = ['進行中', '未開始', '未完成', '已完成'];
 
 function groupByStatus(
   cards: DiaryCardItem[],
@@ -40,7 +41,7 @@ function groupByStatus(
       totalCards[status].push(card);
       return totalCards;
     },
-    { 進行中: [], 未完成: [], 已完成: [] } as Record<
+    { 進行中: [], 未開始: [], 未完成: [], 已完成: [] } as Record<
       StatusGroup,
       DiaryCardItem[]
     >,
@@ -48,9 +49,16 @@ function groupByStatus(
 }
 
 function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
-  const { entries, refetchEntries } = useGetCareLogEntries();
-  const { eventSeries, refetch: refetchEventSeries } =
-    useGetEventSeries(selectedDate);
+  const {
+    entries,
+    isFetching: isFetchingEntries,
+    refetchEntries,
+  } = useGetCareLogEntries();
+  const {
+    eventSeries,
+    isFetching: isFetchingEventSeries,
+    refetch: refetchEventSeries,
+  } = useGetEventSeries(selectedDate);
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const { isLoading: isUpdatingCareLog, handleUpdateCareLogEntry } =
@@ -69,13 +77,19 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
       selectedDate,
       groupMembers,
     );
-    return [...entries, ...recurringEntries].filter((entry) =>
-      isSameDay(parseISO(entry.startsAt), selectedDate),
-    );
+    return [...entries, ...recurringEntries]
+      .filter((entry) => isSameDay(parseISO(entry.startsAt), selectedDate))
+      .sort(
+        (a, b) =>
+          parseISO(a.startsAt).getTime() - parseISO(b.startsAt).getTime(),
+      );
   }, [entries, eventSeries, groupMembers, selectedDate]);
   const grouped = useMemo(() => {
     return groupByStatus(filteredEntries);
   }, [filteredEntries]);
+  const isLoadingEmptyEntries =
+    filteredEntries.length === 0 &&
+    (isFetchingEntries || isFetchingEventSeries);
 
   const diaryCardActions = useDiaryCardActions({
     items: filteredEntries,
@@ -149,7 +163,12 @@ function DiarySummary({ selectedDate, onCreateEntry }: DiarySummaryProps) {
   return (
     <section>
       <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
-        {filteredEntries.length === 0 ? (
+        {isLoadingEmptyEntries ? (
+          <div className="flex min-h-32 items-center justify-center gap-2 text-neutral-700">
+            <Loading />
+          </div>
+        ) : null}
+        {!isLoadingEmptyEntries && filteredEntries.length === 0 ? (
           <CareLogEmptyState
             message="當日尚未有紀錄，快來新增吧！"
             onCreateEntry={onCreateEntry}

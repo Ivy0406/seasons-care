@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
 
 import { createCareLogEntry } from '@/api/endpoints/careLog';
 import { CURRENT_GROUP_ID_KEY, CURRENT_USER_KEY } from '@/constants/auth';
+import careLogKeys from '@/pages/CareLog/queryKeys';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import {
   toCareLogEntry,
@@ -44,6 +46,7 @@ function getErrorDetail(error: unknown) {
 }
 
 function useCreateCareLogEntry() {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateCareLogEntry = async (entry: CareLogEntry) => {
@@ -67,6 +70,10 @@ function useCreateCareLogEntry() {
         careGroupId,
         toCreateCareLogPayload(entry, currentUserId),
       );
+
+      await queryClient.invalidateQueries({
+        queryKey: careLogKeys.list(careGroupId),
+      });
 
       return toCareLogEntry(response.data.data, entry);
     } catch (error) {

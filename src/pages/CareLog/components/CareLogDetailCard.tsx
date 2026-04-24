@@ -24,11 +24,18 @@ function CareLogDetailCard({
   onEdit,
 }: CareLogDetailCardProps) {
   const startedAt = parseISO(entry.startsAt);
-  const statusLabel = entry.status === 'completed' ? '已完成' : '進行中';
-  const statusToneClassName =
-    entry.status === 'completed'
-      ? 'bg-primary-default'
-      : 'bg-secondary-default';
+  const isOverdue =
+    entry.status !== 'completed' && startedAt.getTime() <= Date.now();
+  let statusLabel = '未開始';
+  let statusToneClassName = 'bg-neutral-900';
+
+  if (entry.status === 'completed') {
+    statusLabel = '已完成';
+    statusToneClassName = 'bg-primary-default';
+  } else if (isOverdue) {
+    statusLabel = '未完成';
+    statusToneClassName = 'bg-neutral-500';
+  }
 
   return (
     <DataFormCard

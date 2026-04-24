@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
 
 import createEventSeries from '@/api/endpoints/eventSeries';
 import { CURRENT_GROUP_ID_KEY, CURRENT_USER_KEY } from '@/constants/auth';
+import calendarKeys from '@/features/calendar/queryKeys';
 import toCreateEventSeriesPayload from '@/features/calendar/utils/eventSeriesMappers';
 import type { CareLogEntry } from '@/pages/CareLog/types';
 import type { UserInfo } from '@/types/auth';
@@ -41,6 +43,7 @@ function getErrorDetail(error: unknown) {
 }
 
 function useCreateEventSeries() {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateEventSeries = async (entry: CareLogEntry) => {
@@ -59,6 +62,8 @@ function useCreateEventSeries() {
         careGroupId,
         toCreateEventSeriesPayload(entry, currentUserId),
       );
+
+      await queryClient.invalidateQueries({ queryKey: calendarKeys.all });
 
       return {
         startsAt:
