@@ -40,7 +40,7 @@ function UpgradeCTADrawer({ open, onOpenChange }: UpgradeCTADrawerProps) {
         </div>
       </div>
       <RoundedButtonPrimary className="font-label-md mt-5 bg-neutral-100 text-neutral-800">
-        升級 Pro 方案
+        好期待！
       </RoundedButtonPrimary>
     </BaseDrawer>
   );
