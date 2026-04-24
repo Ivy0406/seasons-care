@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import BackToTopButton from '@/components/common/BackToTopButton';
 import ViewMoreButton from '@/components/common/ViewMoreButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import HealthDataSummary from '@/features/health/components/HealthDataSummary';
 import HealthDataCarousel from '@/features/health/HealthDataCarousel';
 import cn from '@/lib/utils';
 
@@ -114,9 +115,9 @@ function DailyOverviewTabs({
 
         <TabsContent
           value="health"
-          className="flex min-h-0 w-screen max-w-200 flex-1 flex-col overflow-x-hidden overflow-y-auto border-x-2 border-neutral-900 bg-neutral-800 pt-7 pb-17"
+          className="flex min-h-0 w-screen max-w-200 flex-1 flex-col overflow-x-hidden overflow-y-auto border-x-2 border-neutral-900 bg-neutral-800 px-6 pt-7 pb-17"
         >
-          <HealthDataCarousel />
+          <HealthDataSummary />
 
           <div className="mt-5 flex flex-col items-center gap-4">
             <ViewMoreButton onClick={() => navigate('/health-report')} />
