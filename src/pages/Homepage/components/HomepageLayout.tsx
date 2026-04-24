@@ -50,8 +50,8 @@ import useUpcomingImportantEntry from '../hooks/useUpcomingImportantEntry';
 import CreateEntryDrawer from './CreateEntryDrawer';
 import DailyOverviewTabs from './DailyOverviewTabs';
 import HomepageGroupOverlays from './HomepageGroupOverlays';
-import UpcomingImportantEntryNotice from './UpcomingImportantEntryNotice';
 import OnboardingOverlay from './OnboardingOverlay';
+import UpcomingImportantEntryNotice from './UpcomingImportantEntryNotice';
 
 type HomepageLayoutProps = {
   className?: string;
