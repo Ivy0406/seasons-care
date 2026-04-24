@@ -11,6 +11,8 @@ import useCreateBloodSugar from './useCreateBloodSugar';
 import useCreateTemperature from './useCreateTemperature';
 import useCreateWeight from './useCreateWeight';
 
+import type { UseFormRegister } from 'react-hook-form';
+
 type HealthDataFormValues = {
   systolic: string;
   diastolic: string;
@@ -42,17 +44,25 @@ function useCreateHealthData({
   const [recordTime, setRecordTime] = useState(defaultTime);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, setValue, watch } =
-    useForm<HealthDataFormValues>({
-      defaultValues: {
-        systolic: '',
-        diastolic: '',
-        temperature: '',
-        spO2: '',
-        weight: '',
-        glucoseLevel: '',
-      },
-    });
+  const {
+    register: rhfRegister,
+    handleSubmit,
+    setValue,
+    watch,
+    getValues,
+    trigger,
+    formState: { errors },
+  } = useForm<HealthDataFormValues>({
+    mode: 'onChange',
+    defaultValues: {
+      systolic: '',
+      diastolic: '',
+      temperature: '',
+      spO2: '',
+      weight: '',
+      glucoseLevel: '',
+    },
+  });
 
   const bloodOxygen = useCreateBloodOxygen();
   const bloodPressure = useCreateBloodPressure();
@@ -60,13 +70,86 @@ function useCreateHealthData({
   const temperature = useCreateTemperature();
   const weight = useCreateWeight();
 
+  const customRegister = ((name: keyof HealthDataFormValues) => {
+    if (name === 'systolic') {
+      return rhfRegister('systolic', {
+        validate: (v) => {
+          if (!v) return getValues('diastolic') ? '請同時填寫收縮壓' : true;
+          const n = Number(v);
+          if (n < 50 || n > 250) return '收縮壓需介於 50 - 250 mmHg';
+          const diaStr = getValues('diastolic');
+          if (diaStr) {
+            const diaNum = Number(diaStr);
+            if (diaNum > 0 && n <= diaNum) return '收縮壓需大於舒張壓';
+          }
+          return true;
+        },
+        onChange: () => trigger('diastolic'),
+      });
+    }
+    if (name === 'diastolic') {
+      return rhfRegister('diastolic', {
+        validate: (v) => {
+          if (!v) return getValues('systolic') ? '請同時填寫舒張壓' : true;
+          const n = Number(v);
+          if (n < 30 || n > 150) return '舒張壓需介於 30 - 150 mmHg';
+          const sysStr = getValues('systolic');
+          if (sysStr) {
+            const sysNum = Number(sysStr);
+            if (sysNum > 0 && n >= sysNum) return '舒張壓需小於收縮壓';
+          }
+          return true;
+        },
+        onChange: () => trigger('systolic'),
+      });
+    }
+    if (name === 'temperature') {
+      return rhfRegister('temperature', {
+        validate: (v) => {
+          if (!v) return true;
+          const n = Number(v);
+          if (n < 33 || n > 43) return '體溫需介於 33°C - 43°C';
+          return true;
+        },
+      });
+    }
+    if (name === 'spO2') {
+      return rhfRegister('spO2', {
+        validate: (v) => {
+          if (!v) return true;
+          const n = Number(v);
+          if (n < 50 || n > 100) return '血氧需介於 50% - 100%';
+          return true;
+        },
+      });
+    }
+    if (name === 'weight') {
+      return rhfRegister('weight', {
+        validate: (v) => {
+          if (!v) return true;
+          const n = Number(v);
+          if (n < 30 || n > 300) return '體重需介於 30 - 300 kg';
+          return true;
+        },
+      });
+    }
+    if (name === 'glucoseLevel') {
+      return rhfRegister('glucoseLevel', {
+        validate: (v) => {
+          if (!v) return true;
+          const n = Number(v);
+          if (n < 40 || n > 200) return '血糖需介於 40 - 200 mg/dL';
+          return true;
+        },
+      });
+    }
+    return rhfRegister(name);
+  }) as unknown as UseFormRegister<HealthDataFormValues>;
+
   const watchedValues = watch();
-  const { systolic, diastolic } = watchedValues;
-  const bloodPressureValid =
-    (systolic === '' && diastolic === '') ||
-    (systolic !== '' && diastolic !== '');
   const hasAnyValue =
-    Object.values(watchedValues).some((v) => v !== '') && bloodPressureValid;
+    Object.values(watchedValues).some((v) => v !== '') &&
+    Object.keys(errors).length === 0;
 
   function buildHealthSubmissions(
     values: HealthDataFormValues,
@@ -182,10 +265,11 @@ function useCreateHealthData({
   };
 
   return {
-    register,
+    register: customRegister,
     handleSubmit: handleSubmit(onSubmit),
     isLoading: isSubmitting,
     hasAnyValue,
+    errors,
     recordDate,
     recordTime,
     setRecordDate,

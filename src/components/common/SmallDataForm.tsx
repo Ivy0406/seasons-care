@@ -140,6 +140,7 @@ type HealthDataFormField =
 type HealthDataFormProps = {
   className?: string;
   register?: UseFormRegister<Record<HealthDataFormField, string>>;
+  errors?: FieldErrors<Record<HealthDataFormField, string>>;
   recordDate?: string;
   recordTime?: string;
   onDateChange?: (value: string) => void;
@@ -148,9 +149,13 @@ type HealthDataFormProps = {
   onTimeClick?: () => void;
 };
 
+const NO_SPINNER_CLASS =
+  '[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
+
 function HealthDataForm({
   className,
   register,
+  errors,
   recordDate = '',
   recordTime = '',
   onDateChange,
@@ -180,8 +185,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('systolic'),
         }}
+        error={errors?.systolic?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -191,8 +198,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('diastolic'),
         }}
+        error={errors?.diastolic?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -202,8 +211,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('temperature'),
         }}
+        error={errors?.temperature?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -213,8 +224,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('spO2'),
         }}
+        error={errors?.spO2?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -224,8 +237,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('weight'),
         }}
+        error={errors?.weight?.message}
         className="border-neutral-900"
       />
       <ListFormInputRow
@@ -235,8 +250,10 @@ function HealthDataForm({
           type: 'number',
           step: 'any',
           placeholder: '—',
+          className: NO_SPINNER_CLASS,
           ...register?.('glucoseLevel'),
         }}
+        error={errors?.glucoseLevel?.message}
         className="border-b-0"
       />
     </BaseFormCard>
