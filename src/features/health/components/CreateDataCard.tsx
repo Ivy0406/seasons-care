@@ -17,6 +17,7 @@ function CreateDataCard({ onClose, onSuccess, onError }: CreateDataCardProps) {
     handleSubmit,
     isLoading,
     hasAnyValue,
+    errors,
     recordDate,
     recordTime,
     setRecordDate,
@@ -46,6 +47,7 @@ function CreateDataCard({ onClose, onSuccess, onError }: CreateDataCardProps) {
             <HealthDataForm
               className="w-full border-0 bg-neutral-50 px-3 pt-3"
               register={register}
+              errors={errors}
               recordDate={recordDate}
               recordTime={recordTime}
               onDateChange={setRecordDate}
