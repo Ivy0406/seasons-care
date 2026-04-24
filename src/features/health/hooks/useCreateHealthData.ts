@@ -75,11 +75,11 @@ function useCreateHealthData({
       return rhfRegister('systolic', {
         validate: (v) => {
           if (!v) return getValues('diastolic') ? '請同時填寫收縮壓' : true;
-          const n = Number(v);
+          const n: number = Number(v);
           if (n < 50 || n > 250) return '收縮壓需介於 50 - 250 mmHg';
           const diaStr = getValues('diastolic');
           if (diaStr) {
-            const diaNum = Number(diaStr);
+            const diaNum: number = Number(diaStr);
             if (diaNum > 0 && n <= diaNum) return '收縮壓需大於舒張壓';
           }
           return true;
