@@ -31,6 +31,7 @@ type ListFormRowProps = {
   htmlFor?: string;
   children: ReactNode;
   className?: string;
+  required?: boolean;
 };
 
 type ListFormTextRowProps = {
@@ -88,6 +89,8 @@ type ListFormInputRowProps = {
   unit?: string;
   inputProps?: InputHTMLAttributes<HTMLInputElement>;
   className?: string;
+  error?: string;
+  required?: boolean;
 };
 
 type ListFormSelectRowProps = {
@@ -97,6 +100,8 @@ type ListFormSelectRowProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  error?: string;
+  required?: boolean;
 };
 
 type RepeatPatternValue = FormDiaryRepeatValue;
@@ -193,6 +198,7 @@ function ListFormRow({
   htmlFor,
   children,
   className,
+  required,
 }: ListFormRowProps) {
   const LabelTag = htmlFor ? 'label' : 'div';
 
@@ -205,9 +211,10 @@ function ListFormRow({
     >
       <LabelTag
         {...(htmlFor ? { htmlFor } : {})}
-        className="font-label-md shrink-0 text-neutral-900"
+        className="font-label-md flex shrink-0 items-center gap-1 text-neutral-900"
       >
         {label}
+        {required && <span className="font-paragraph-sm text-error">必填</span>}
       </LabelTag>
       <div className="flex min-w-0 flex-1 items-center justify-end">
         {children}
@@ -462,22 +469,38 @@ function ListFormInputRow({
   unit,
   inputProps,
   className,
+  error,
+  required,
 }: ListFormInputRowProps) {
   const fallbackId = useId();
   const htmlFor = inputProps?.id ?? inputProps?.name ?? fallbackId;
+  const { className: inputClassName, ...restInputProps } = inputProps ?? {};
 
   return (
-    <ListFormRow label={label} htmlFor={htmlFor} className={className}>
-      <div className="flex flex-1 items-center justify-end gap-1">
-        <Input
-          id={htmlFor}
-          className="font-label-md zpy-0 h-auto border-0 bg-transparent px-0 text-right text-neutral-900 placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          {...inputProps}
-        />
-        {unit && (
-          <span className="font-paragraph-sm shrink-0 text-neutral-900">
-            {unit}
-          </span>
+    <ListFormRow
+      label={label}
+      htmlFor={htmlFor}
+      required={required}
+      className={cn(error && 'items-start pt-3', className)}
+    >
+      <div className="flex flex-col items-end">
+        <div className="flex flex-1 items-center justify-end gap-1">
+          <Input
+            id={htmlFor}
+            className={cn(
+              'font-label-md h-auto border-0 bg-transparent px-0 py-0 text-right text-neutral-900 placeholder:text-neutral-600 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0',
+              inputClassName,
+            )}
+            {...restInputProps}
+          />
+          {unit && (
+            <span className="font-paragraph-sm shrink-0 text-neutral-900">
+              {unit}
+            </span>
+          )}
+        </div>
+        {error && (
+          <p className="font-paragraph-sm text-error mt-0.5">{error}</p>
         )}
       </div>
     </ListFormRow>
@@ -491,9 +514,15 @@ function ListFormSelectRow({
   onChange,
   placeholder,
   className,
+  error,
+  required,
 }: ListFormSelectRowProps) {
   return (
-    <ListFormRow label={label} className={className}>
+    <ListFormRow
+      label={label}
+      required={required}
+      className={cn(error && 'items-start pt-3', className)}
+    >
       <div className="relative min-w-0">
         <ListFormOptionSelector
           value={value}
@@ -501,6 +530,11 @@ function ListFormSelectRow({
           onChange={onChange}
           placeholder={placeholder}
         />
+        {error && (
+          <p className="font-paragraph-sm text-error mt-0.5 text-right">
+            {error}
+          </p>
+        )}
       </div>
     </ListFormRow>
   );

@@ -47,7 +47,7 @@ function BaseCard({
         className,
       )}
     >
-      <div className="item-center flex h-9 w-full justify-between gap-10 border-b border-neutral-900 pb-2">
+      <div className="item-center flex h-9 w-full justify-between border-b border-neutral-900 pb-2">
         <CardLabelPrimary>{category}</CardLabelPrimary>
         <p className="font-paragraph-sm self-center text-neutral-900">{time}</p>
       </div>
@@ -56,7 +56,12 @@ function BaseCard({
   );
 }
 
-function DataCardSummary({ category, className, content, isLoading = false }: SummaryCardProps) {
+function DataCardSummary({
+  category,
+  className,
+  content,
+  isLoading = false,
+}: SummaryCardProps) {
   return (
     <div
       className={cn(

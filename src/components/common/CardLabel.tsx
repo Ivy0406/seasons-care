@@ -24,7 +24,7 @@ function CardLabelPrimary({ children, className }: CardLabelProps) {
   return (
     <div
       className={cn(
-        'bg-primary-default flex h-[29px] w-fit items-center justify-center px-2 py-1',
+        'bg-primary-default flex h-7.25 w-fit min-w-12.25 items-center justify-center px-2 py-1',
         className,
       )}
     >

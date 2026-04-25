@@ -9,13 +9,11 @@ import {
 } from '@/components/common/CardLabel';
 import Modal from '@/components/common/Modal';
 import SingleAvatar from '@/components/common/SingleAvatar';
-import UpdateDeleteDrawer from '@/components/common/UpdateDeleteDrawer';
 import {
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogPopup,
   AlertDialogPortal,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useDeleteMoneyItem from '@/features/money/hooks/useDeleteMoneyItem';
@@ -35,7 +33,6 @@ function EntryCard({
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(initialOpen);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [updateSuccessOpen, setUpdateSuccessOpen] = useState(false);
@@ -70,47 +67,54 @@ function EntryCard({
   return (
     <>
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogTrigger className="block w-full text-left">
-          <div className="w-full rounded-sm border-2 border-neutral-900 bg-neutral-100 p-4">
-            <div className="flex items-center justify-between border-b-2 border-neutral-900 pb-3">
-              <span className="font-label-lg text-neutral-900">
-                {item.title}
-              </span>
-              <div className="flex items-center gap-2">
-                {item.splitStatus === 'settled' && (
-                  <CardLabelPrimary>已分帳</CardLabelPrimary>
-                )}
-                {item.splitStatus === 'pending' && (
-                  <CardLabelSecondary>需分帳</CardLabelSecondary>
-                )}
-                <button
-                  type="button"
-                  aria-label="更多選項"
-                  className="flex size-6 items-center justify-center text-neutral-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDrawerOpen(true);
-                  }}
-                >
-                  <EllipsisVertical className="size-4" strokeWidth={2.5} />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="font-label-lg text-neutral-900">
-                $ {(item.amount ?? 0).toLocaleString()}
-              </span>
-              {creator && (
-                <SingleAvatar
-                  src={getAvatarSrcByKey(creator.avatarKey)}
-                  name={creator.username}
-                  className="size-7 ring-neutral-900"
-                />
+        <div
+          className="w-full rounded-sm border-2 border-neutral-900 bg-neutral-100 p-4 text-left"
+          role="button"
+          tabIndex={0}
+          onClick={() => setDialogOpen(true)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              setDialogOpen(true);
+            }
+          }}
+        >
+          <div className="flex items-center justify-between border-b-2 border-neutral-900 pb-3">
+            <span className="font-label-lg text-neutral-900">{item.title}</span>
+            <div className="flex items-center gap-2">
+              {item.splitStatus === 'settled' && (
+                <CardLabelPrimary>已分帳</CardLabelPrimary>
               )}
+              {item.splitStatus === 'pending' && (
+                <CardLabelSecondary>需分帳</CardLabelSecondary>
+              )}
+              <button
+                type="button"
+                aria-label="更多選項"
+                className="flex size-6 items-center justify-center text-neutral-900"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDialogOpen(true);
+                }}
+              >
+                <EllipsisVertical className="size-4" strokeWidth={2.5} />
+              </button>
             </div>
           </div>
-        </AlertDialogTrigger>
+
+          <div className="flex items-center justify-between pt-2">
+            <span className="font-label-lg text-neutral-900">
+              $ {(item.amount ?? 0).toLocaleString()}
+            </span>
+            {creator && (
+              <SingleAvatar
+                src={getAvatarSrcByKey(creator.avatarKey)}
+                name={creator.username}
+                className="size-7 ring-neutral-900"
+              />
+            )}
+          </div>
+        </div>
 
         <AlertDialogPortal>
           <AlertDialogBackdrop />
@@ -140,15 +144,6 @@ function EntryCard({
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
-
-      <UpdateDeleteDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        editLabel="編輯帳目"
-        deleteLabel="刪除帳目"
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-      />
 
       <Modal
         open={confirmOpen}

@@ -29,7 +29,7 @@ function AIAnalysisReport({
         <h2 className="font-heading-sm text-neutral-50">AI分析報告</h2>
         <RoundedButtonNew
           onClick={onViewHistory}
-          className="font-label-md h-8.25 w-fit px-1"
+          className="font-label-md h-8.25 w-fit px-2"
         >
           查看過往紀錄
         </RoundedButtonNew>
@@ -43,7 +43,10 @@ function AIAnalysisReport({
         ) : (
           <>
             <div className="flex gap-3 pt-3 pb-5">
-              <Sparkles size={20} className="mt-0.5 shrink-0 text-neutral-900" />
+              <Sparkles
+                size={20}
+                className="mt-0.5 shrink-0 text-neutral-900"
+              />
               <p className="font-paragraph-md text-neutral-900">
                 <span className="font-label-md">{patientName}</span>
                 {summary}

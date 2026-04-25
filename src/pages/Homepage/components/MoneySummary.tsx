@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
 
+import CreateEntryEmptyState from '@/components/common/CreateEntryEmptyState';
 import EntryCard from '@/features/money/components/EntryCard';
 import useExpenses from '@/features/money/hooks/useExpenses';
 
@@ -28,16 +28,11 @@ function MoneySummary({ selectedDate, onCreateEntry }: MoneySummaryProps) {
         </div>
       ) : (
         <div className="rounded-sm border-2 border-neutral-900 bg-neutral-100 px-5 pt-5 pb-3">
-          <button
-            type="button"
-            onClick={onCreateEntry}
-            className="flex w-full flex-col items-center justify-center gap-5 rounded-md bg-neutral-100 px-4 py-10 text-center text-neutral-700"
-          >
-            <p className="font-paragraph-md">當日尚未有帳目，快來新增吧！</p>
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-800 text-neutral-50">
-              <Plus className="size-6" strokeWidth={2} />
-            </span>
-          </button>
+          <CreateEntryEmptyState
+            message="當日尚未有帳目，快來新增吧！"
+            onCreateEntry={onCreateEntry}
+            className="border-0 bg-neutral-100"
+          />
         </div>
       )}
     </section>

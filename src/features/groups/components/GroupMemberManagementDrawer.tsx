@@ -43,22 +43,18 @@ function GroupMemberManagementDrawer({
     <BaseDrawer open={open} onOpenChange={onOpenChange}>
       <div className="flex flex-col gap-5 text-neutral-900">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-          {isEditMode ? (
-            <button
-              type="button"
-              className="font-paragraph-md justify-self-start text-neutral-900"
-              onClick={() => setIsEditMode(false)}
-            >
-              返回
-            </button>
-          ) : (
-            <div />
-          )}
+          {isEditMode ? <div /> : <div />}
           <p className="font-label-lg text-center">
             {isEditMode ? '編輯成員' : '成員管理'}
           </p>
           {isEditMode ? (
-            <div />
+            <button
+              type="button"
+              className="font-paragraph-md justify-self-end text-neutral-900"
+              onClick={() => setIsEditMode(false)}
+            >
+              返回
+            </button>
           ) : (
             <button
               type="button"
