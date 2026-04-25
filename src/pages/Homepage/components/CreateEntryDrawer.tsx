@@ -70,21 +70,17 @@ function CreateEntryDrawer({
       className={cn('px-6', className)}
     >
       <div className="flex flex-col gap-2 text-neutral-900">
-        <div className="flex items-center">
-          <div className="flex w-10 justify-start">
-            <button
-              type="button"
-              aria-label="關閉新增選單"
-              className="inline-flex size-10 items-center justify-center"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="size-8" strokeWidth={1.5} />
-            </button>
-          </div>
-          <div className="flex-1 text-center">
-            <p className="font-label-lg">建立</p>
-          </div>
-          <div className="w-10" />
+        <div className="relative flex items-center justify-center">
+          <div className="absolute left-0 size-10" aria-hidden="true" />
+          <p className="font-label-lg">建立</p>
+          <button
+            type="button"
+            aria-label="關閉新增選單"
+            className="absolute right-0 inline-flex size-10 items-center justify-center"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="size-8" strokeWidth={1.5} />
+          </button>
         </div>
 
         <div className="divide-y divide-neutral-400 overflow-hidden rounded-lg bg-neutral-300">
