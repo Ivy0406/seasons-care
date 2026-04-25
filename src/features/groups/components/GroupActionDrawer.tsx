@@ -66,6 +66,11 @@ function GroupActionDrawer({
     >
       <div className="flex flex-col gap-2 text-neutral-900">
         <div className="flex items-center justify-between">
+          {groupName ? (
+            <p className="font-label-sm text-neutral-700">{groupName}</p>
+          ) : (
+            <div />
+          )}
           <button
             type="button"
             aria-label="關閉群組操作選單"
@@ -74,9 +79,6 @@ function GroupActionDrawer({
           >
             <X className="size-8" strokeWidth={1.5} />
           </button>
-          {groupName ? (
-            <p className="font-label-sm text-neutral-700">{groupName}</p>
-          ) : null}
         </div>
 
         <div className="divide-y divide-neutral-400 overflow-hidden rounded-[8px] bg-neutral-300">
