@@ -105,12 +105,7 @@ function GroupJoinDrawer({
       return;
     }
 
-    if (onSuccess) {
-      onOpenChange(false);
-      onSuccess();
-    } else {
-      setIsJoinSuccess(true);
-    }
+    setIsJoinSuccess(true);
   };
 
   let drawerContent: React.ReactNode;
@@ -119,11 +114,12 @@ function GroupJoinDrawer({
     drawerContent = (
       <div className="flex flex-col text-neutral-900">
         <div className="relative mb-5 flex items-center justify-center py-2">
+          <div className="absolute left-0 size-10" aria-hidden="true" />
           <button
             type="button"
             aria-label="關閉加入群組視窗"
             onClick={() => onOpenChange(false)}
-            className="absolute left-0 inline-flex size-10 items-center justify-center"
+            className="absolute right-0 inline-flex size-10 items-center justify-center"
           >
             <X className="size-8" strokeWidth={1.5} />
           </button>
@@ -171,11 +167,12 @@ function GroupJoinDrawer({
     drawerContent = (
       <div className="flex flex-col text-neutral-900">
         <div className="relative flex items-center justify-center py-2">
+          <div className="absolute left-0 size-10" aria-hidden="true" />
           <button
             type="button"
             aria-label="關閉加入群組視窗"
             onClick={() => onOpenChange(false)}
-            className="absolute left-0 inline-flex size-10 items-center justify-center"
+            className="absolute right-0 inline-flex size-10 items-center justify-center"
           >
             <X className="size-8" strokeWidth={1.5} />
           </button>

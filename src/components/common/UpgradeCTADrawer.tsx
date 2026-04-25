@@ -16,10 +16,11 @@ function UpgradeCTADrawer({ open, onOpenChange }: UpgradeCTADrawerProps) {
       className="border-t-neutral-800 bg-neutral-800 ring-neutral-800"
     >
       <div className="relative mb-5 flex items-center justify-center">
+        <div className="absolute left-0 size-6" aria-hidden="true" />
         <button
           type="button"
           aria-label="關閉操作選單"
-          className="absolute left-0 inline-flex size-6 items-center justify-center text-neutral-100"
+          className="absolute right-0 inline-flex size-6 items-center justify-center text-neutral-100"
           onClick={() => onOpenChange(false)}
         >
           <X className="size-8" strokeWidth={1.5} />
