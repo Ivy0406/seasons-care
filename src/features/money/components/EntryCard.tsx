@@ -9,7 +9,6 @@ import {
 } from '@/components/common/CardLabel';
 import Modal from '@/components/common/Modal';
 import SingleAvatar from '@/components/common/SingleAvatar';
-import UpdateDeleteDrawer from '@/components/common/UpdateDeleteDrawer';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -35,7 +34,6 @@ function EntryCard({
   const { currentGroupId } = useCurrentGroupId();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId);
   const creator = groupMembers.find((m) => m.userId === item.createdBy);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(initialOpen);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [updateSuccessOpen, setUpdateSuccessOpen] = useState(false);
@@ -86,10 +84,10 @@ function EntryCard({
                 <button
                   type="button"
                   aria-label="更多選項"
-                  className="flex size-6 items-center justify-center text-neutral-600"
+                  className="flex size-6 items-center justify-center text-neutral-900"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setDrawerOpen(true);
+                    setDialogOpen(true);
                   }}
                 >
                   <EllipsisVertical className="size-4" strokeWidth={2.5} />
@@ -140,15 +138,6 @@ function EntryCard({
           </AlertDialogPopup>
         </AlertDialogPortal>
       </AlertDialog>
-
-      <UpdateDeleteDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        editLabel="編輯帳目"
-        deleteLabel="刪除帳目"
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-      />
 
       <Modal
         open={confirmOpen}
