@@ -105,12 +105,7 @@ function GroupJoinDrawer({
       return;
     }
 
-    if (onSuccess) {
-      onOpenChange(false);
-      onSuccess();
-    } else {
-      setIsJoinSuccess(true);
-    }
+    setIsJoinSuccess(true);
   };
 
   let drawerContent: React.ReactNode;
