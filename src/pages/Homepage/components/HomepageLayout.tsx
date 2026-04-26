@@ -67,6 +67,13 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
   );
   const { hasUnread } = useNotificationBadge();
+
+  useEffect(() => {
+    if (hasUnread) {
+      toast('您有新的未讀通知', { position: 'top-center' });
+    }
+  }, [hasUnread]);
+
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
