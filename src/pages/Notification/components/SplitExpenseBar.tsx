@@ -10,6 +10,7 @@ type SplitExpenseBarProps = {
   groupMembers: GroupMember[];
   label?: string;
   onClick?: () => void;
+  expenseCount?: number;
 };
 
 function SplitExpenseBar({
@@ -17,9 +18,14 @@ function SplitExpenseBar({
   groupMembers,
   label = '已執行分帳',
   onClick,
+  expenseCount,
 }: SplitExpenseBarProps) {
   const executor = groupMembers.find((m) => m.userId === expense.createdBy);
-  const title = executor ? `${executor.username} ${label}` : label;
+  const countText = expenseCount ? `${expenseCount} 筆` : '';
+  const labelWithCount = countText ? `已執行 ${countText}分帳` : label;
+  const title = executor
+    ? `${executor.username} ${labelWithCount}`
+    : labelWithCount;
 
   return (
     <NotificationBar
