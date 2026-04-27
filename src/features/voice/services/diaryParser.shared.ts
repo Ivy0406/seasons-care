@@ -1,4 +1,6 @@
+import { CURRENT_USER_KEY } from '@/constants/auth';
 import type { DiaryDraft } from '@/pages/CareLog/types';
+import type { UserInfo } from '@/types/auth';
 import type { GroupMember } from '@/types/group';
 
 const DIARY_DATE_PATTERN = /(今天|明天|後天)/u;
@@ -30,7 +32,11 @@ function padTimeUnit(value: number) {
 }
 
 function formatDateValue(date: Date) {
-  return `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
+  return `${date.getFullYear()}/${padTimeUnit(date.getMonth() + 1)}/${padTimeUnit(date.getDate())}`;
+}
+
+function normalizeDateValue(value: string) {
+  return value.replaceAll('-', '/').trim();
 }
 
 function formatTimeValue(date: Date) {
@@ -49,6 +55,27 @@ function addDays(date: Date, days: number) {
 
 function hasRelativeDiaryDate(text: string) {
   return DIARY_RELATIVE_DATE_PATTERN.test(text);
+}
+
+function getCurrentUserParticipantIds() {
+  const rawCurrentUser = window.localStorage.getItem(CURRENT_USER_KEY);
+
+  if (!rawCurrentUser) {
+    return [];
+  }
+
+  try {
+    const currentUser = JSON.parse(rawCurrentUser) as Partial<UserInfo>;
+
+    if (typeof currentUser.id !== 'string' || currentUser.id.length === 0) {
+      return [];
+    }
+
+    return [currentUser.id];
+  } catch {
+    window.localStorage.removeItem(CURRENT_USER_KEY);
+    return [];
+  }
 }
 
 function resolveNextWeekdayDate(
@@ -356,7 +383,9 @@ function resolveDiaryParticipantIds(
   });
 
   if (resolvedIds.size > 0 || !options.transcript) {
-    return [...resolvedIds];
+    return resolvedIds.size > 0
+      ? [...resolvedIds]
+      : getCurrentUserParticipantIds();
   }
 
   const normalizedTranscript = normalizeDiaryParticipantName(
@@ -374,7 +403,9 @@ function resolveDiaryParticipantIds(
     }
   });
 
-  return [...resolvedIds];
+  return resolvedIds.size > 0
+    ? [...resolvedIds]
+    : getCurrentUserParticipantIds();
 }
 
 function getDiaryDraftSummarySource(
@@ -430,7 +461,7 @@ function createEmptyDiaryDraft(date = new Date()): DiaryDraft {
     timeValue: formatTimeValue(date),
     repeatPattern: 'none',
     note: '',
-    participantIds: [],
+    participantIds: getCurrentUserParticipantIds(),
     isImportant: false,
     transcript: '',
     summary: '請先錄音或手動輸入任務內容。',
@@ -470,6 +501,7 @@ export {
   createEmptyDiaryDraft,
   formatDateValue,
   formatTimeValue,
+  normalizeDateValue,
   getDiaryDraftSummarySource,
   hasRelativeDiaryDate,
   hasDiaryDraftContent,
