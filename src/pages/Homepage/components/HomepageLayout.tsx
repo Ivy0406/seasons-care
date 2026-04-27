@@ -66,21 +66,15 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
   const [showOnboarding, setShowOnboarding] = useState(
     () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
   );
-  const { hasUnread, isLoading: isLoadingNotifications } =
-    useNotificationBadge();
-  const hasInitialized = useRef(false);
+  const { hasUnread } = useNotificationBadge();
   useEffect(() => {
-    if (isLoadingNotifications) return;
-    if (!hasInitialized.current) {
-      hasInitialized.current = true;
-      return;
-    }
     if (hasUnread) {
       toast('您有新的通知哦！', {
+        id: 'notification-badge',
         icon: <Megaphone className="size-4" />,
       });
     }
-  }, [hasUnread, isLoadingNotifications]);
+  }, [hasUnread]);
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
