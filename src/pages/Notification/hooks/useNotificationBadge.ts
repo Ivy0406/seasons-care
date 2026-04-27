@@ -68,33 +68,41 @@ function useNotificationBadge() {
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
 
-    const pendingIds = allEntries
+    const isTodayImportantEntry = (entry: (typeof allEntries)[number]) =>
+      entry.isImportant && isSameDay(parseISO(entry.startsAt), today);
+
+    const isTodaySettledBatch = (
+      expense: (typeof allExpenses)[number],
+    ): expense is typeof expense & { splitBatchId: string } =>
+      expense.splitStatus === 'settled' &&
+      !!expense.splitBatchId &&
+      expense.updatedAt.replace('Z', '').startsWith(todayStr);
+
+    const pendingImportantEntryIds = allEntries
       .filter(
-        (entry) =>
-          entry.isImportant &&
-          isSameDay(parseISO(entry.startsAt), today) &&
-          entry.status === 'pending',
+        (entry) => isTodayImportantEntry(entry) && entry.status === 'pending',
       )
       .map((entry) => entry.id);
 
-    const completedIds = allEntries
+    const completedImportantEntryIds = allEntries
       .filter(
-        (entry) =>
-          entry.isImportant &&
-          isSameDay(parseISO(entry.startsAt), today) &&
-          entry.status === 'completed',
+        (entry) => isTodayImportantEntry(entry) && entry.status === 'completed',
       )
       .map((entry) => `c_${entry.id}`);
 
-    const splitIds = allExpenses
-      .filter(
-        (expense) =>
-          expense.splitStatus === 'settled' &&
-          expense.updatedAt.replace('Z', '').startsWith(todayStr),
-      )
-      .map((expense) => `s_${expense.id}`);
+    const todaySplitBatchIds = [
+      ...new Set(
+        allExpenses
+          .filter(isTodaySettledBatch)
+          .map((expense) => `s_${expense.splitBatchId}`),
+      ),
+    ];
 
-    return computeSnapshot([...pendingIds, ...completedIds, ...splitIds]);
+    return computeSnapshot([
+      ...pendingImportantEntryIds,
+      ...completedImportantEntryIds,
+      ...todaySplitBatchIds,
+    ]);
   }, [allEntries, allExpenses]);
 
   const storageKey = getStorageKey(currentGroupId ?? '');
