@@ -251,7 +251,11 @@ function NotificationPage() {
                 key={expense.splitBatchId}
                 expense={expense}
                 groupMembers={groupMembers}
-                label="已執行分帳"
+                expenseCount={
+                  allExpenses.filter(
+                    (e) => e.splitBatchId === expense.splitBatchId,
+                  ).length
+                }
                 onClick={() => handleSplitBatchClick(expense.splitBatchId)}
               />
             ))}
