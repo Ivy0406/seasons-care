@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Mic } from 'lucide-react';
+import { Megaphone, Mic } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -66,7 +66,21 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
   const [showOnboarding, setShowOnboarding] = useState(
     () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
   );
-  const { hasUnread } = useNotificationBadge();
+  const { hasUnread, isLoading: isLoadingNotifications } =
+    useNotificationBadge();
+  const hasInitialized = useRef(false);
+  useEffect(() => {
+    if (isLoadingNotifications) return;
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      return;
+    }
+    if (hasUnread) {
+      toast('您有新的通知哦！', {
+        icon: <Megaphone className="size-4" />,
+      });
+    }
+  }, [hasUnread, isLoadingNotifications]);
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
