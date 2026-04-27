@@ -17,15 +17,18 @@ function computeSnapshot(ids: string[]) {
 
 function useNotificationBadge() {
   const { currentGroupId } = useCurrentGroupId();
-  const { entries } = useGetCareLogEntries();
+  const { entries, isLoading: isLoadingEntries } = useGetCareLogEntries();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
-  const { eventSeries: thisMonthEventSeries } = useGetEventSeries(new Date());
-  const { eventSeries: nextMonthEventSeries } = useGetEventSeries(
-    addDays(new Date(), 7),
-  );
-  const { expenses: thisMonthExpenses } = useExpenses(
-    format(new Date(), 'yyyy-MM'),
-  );
+  const {
+    eventSeries: thisMonthEventSeries,
+    isLoading: isLoadingThisMonthEvents,
+  } = useGetEventSeries(new Date());
+  const {
+    eventSeries: nextMonthEventSeries,
+    isLoading: isLoadingNextMonthEvents,
+  } = useGetEventSeries(addDays(new Date(), 7));
+  const { expenses: thisMonthExpenses, isLoading: isLoadingExpenses } =
+    useExpenses(format(new Date(), 'yyyy-MM'));
   const { expenses: nextMonthExpenses } = useExpenses(
     format(addDays(new Date(), 7), 'yyyy-MM'),
   );
@@ -114,7 +117,13 @@ function useNotificationBadge() {
     localStorage.setItem(storageKey, currentSnapshot);
   }, [storageKey, currentSnapshot]);
 
-  return { hasUnread, markAsRead };
+  const isLoading =
+    isLoadingEntries ||
+    isLoadingThisMonthEvents ||
+    isLoadingNextMonthEvents ||
+    isLoadingExpenses;
+
+  return { hasUnread, markAsRead, isLoading };
 }
 
 export default useNotificationBadge;

@@ -11,7 +11,6 @@ import {
 } from 'date-fns';
 import { Calendar, Check, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
 
 import BaseDrawer from '@/components/common/BaseDrawer';
 import { NavigationGroupTrigger } from '@/components/common/NavigationBar';
@@ -158,7 +157,6 @@ function NotificationPage() {
       });
     } else {
       setSplitRecordDialog({ open: false, isLoading: false, record: null });
-      toast.error(result.message);
     }
   };
 
