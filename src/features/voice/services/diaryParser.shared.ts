@@ -472,7 +472,6 @@ function hasDiaryDraftContent(draft: DiaryDraft) {
   return (
     draft.title.trim() !== '' ||
     draft.note.trim() !== '' ||
-    draft.participantIds.length > 0 ||
     draft.repeatPattern !== 'none' ||
     draft.isImportant
   );
