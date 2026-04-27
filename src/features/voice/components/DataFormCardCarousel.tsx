@@ -262,7 +262,7 @@ function DataFormCardCarousel() {
         <h1 className="font-label-lg text-neutral-50">錄製結果</h1>
       </div>
 
-      <div className="mt-6 flex-1 overflow-visible">
+      <div className="mt-6 mx-auto w-full max-w-[800px] flex-1 overflow-visible">
         {transcript ? (
           <section className="mx-4 mb-4 rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4">
             <p className="font-label-md mb-2 text-neutral-900">語音內容</p>
@@ -272,24 +272,26 @@ function DataFormCardCarousel() {
           </section>
         ) : null}
 
-        <Swiper
-          modules={[Pagination]}
-          {...swiperConfig}
-          onSwiper={setSwiper}
-          onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
-          className="w-full overflow-visible!"
-        >
-          {visibleSlides.map((slide) => (
-            <SwiperSlide key={slide.key} className="overflow-visible px-4">
-              {slide.content}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className="[overflow-x:clip]">
+          <Swiper
+            modules={[Pagination]}
+            {...swiperConfig}
+            onSwiper={setSwiper}
+            onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
+            className="w-full overflow-visible!"
+          >
+            {visibleSlides.map((slide) => (
+              <SwiperSlide key={slide.key} className="overflow-visible px-4">
+                {slide.content}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
         <div className="form-carousel-pagination mt-4 flex justify-center gap-2 px-4 [--swiper-pagination-bullet-inactive-color:#adb5bd] [--swiper-theme-color:#ffffff]" />
       </div>
 
-      <div className="mt-6 flex flex-col items-center gap-3 px-4">
+      <div className="mt-6 mx-auto flex w-full max-w-[800px] flex-col items-center gap-3 px-4">
         <RoundedButtonSecondary
           className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800 disabled:opacity-50"
           disabled={isSubmitting || (isLastSlide && !areVisibleSlidesValid)}
