@@ -263,26 +263,24 @@ function DataFormCardCarousel() {
         <h1 className="font-label-lg text-neutral-50">錄製結果</h1>
       </div>
 
-      <div className="mt-6 mx-auto w-full max-w-[800px] flex-1 overflow-visible">
+      <div className="mt-6 flex-1 overflow-visible">
         <section className="mx-4 mb-4 rounded-md border-2 border-neutral-900 bg-neutral-100 p-2">
           <VoiceTipCarousel />
         </section>
 
-        <div className="[overflow-x:clip]">
-          <Swiper
-            modules={[Pagination]}
-            {...swiperConfig}
-            onSwiper={setSwiper}
-            onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
-            className="w-full overflow-visible!"
-          >
-            {visibleSlides.map((slide) => (
-              <SwiperSlide key={slide.key} className="overflow-visible px-4">
-                {slide.content}
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+        <Swiper
+          modules={[Pagination]}
+          {...swiperConfig}
+          onSwiper={setSwiper}
+          onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
+          className="w-full overflow-visible!"
+        >
+          {visibleSlides.map((slide) => (
+            <SwiperSlide key={slide.key} className="overflow-visible px-4">
+              {slide.content}
+            </SwiperSlide>
+          ))}
+        </Swiper>
 
         <div className="form-carousel-pagination mt-4 flex justify-center gap-2 px-4 [--swiper-pagination-bullet-inactive-color:#adb5bd] [--swiper-theme-color:#ffffff]" />
       </div>
