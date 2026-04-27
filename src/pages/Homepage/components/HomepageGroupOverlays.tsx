@@ -123,9 +123,7 @@ function HomepageGroupOverlays({
               : 'male'
           }
           initialRecipientBirthDate={
-            groupEntryMode === 'edit'
-              ? (activeGroup?.recipientBirthDate ?? '2026-04-01')
-              : '2026-04-01'
+            groupEntryMode === 'edit' ? activeGroup?.recipientBirthDate : undefined
           }
           initialDescription={
             groupEntryMode === 'edit' ? (activeGroup?.description ?? '') : ''
