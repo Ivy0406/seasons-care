@@ -6,7 +6,7 @@ import useCreateHealthData from '@/features/health/hooks/useCreateHealthData';
 import type { HealthDraft } from '@/features/health/types';
 import useCreateMoneyItem from '@/features/money/hooks/useCreateMoneyItem';
 import type { MoneyDraft } from '@/features/money/types';
-import useCreateCareLogEntry from '@/pages/CareLog/hooks/useCreateCareLogEntry';
+import useCreateCalendarEntry from '@/pages/CareLog/hooks/useCreateCalendarEntry';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 import { diaryDraftToCareLogEntry } from '@/pages/CareLog/utils/careLogVoice';
 import type { GroupMember } from '@/types/group';
@@ -43,7 +43,7 @@ function useVoiceDraftSubmit({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitFromDraft: submitHealthDraft } = useCreateHealthData();
   const { handleCreateMoneyItem } = useCreateMoneyItem();
-  const { handleCreateCareLogEntry } = useCreateCareLogEntry();
+  const { handleCreateCalendarEntry } = useCreateCalendarEntry();
 
   const handleSaveAll = async () => {
     setIsSubmitting(true);
@@ -52,7 +52,7 @@ function useVoiceDraftSubmit({
       const submissions: Promise<unknown>[] = [
         ...(shouldSubmitHealth ? [submitHealthDraft(healthDraft)] : []),
         ...diaryDrafts.map((draft) =>
-          handleCreateCareLogEntry(
+          handleCreateCalendarEntry(
             diaryDraftToCareLogEntry(draft, groupMembers),
           ),
         ),

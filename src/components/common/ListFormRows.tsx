@@ -356,56 +356,68 @@ function ListFormParticipantsRow({
           </button>
 
           {isOpen ? (
-            <div
-              role="menu"
-              className="absolute top-full right-0 z-20 mt-2 min-w-52 overflow-hidden rounded-[8px] border-2 border-neutral-900 bg-neutral-100 shadow-[0_4px_0_0_rgba(33,37,41,0.08)]"
-            >
-              {members.length === 0 ? (
-                <p className="font-paragraph-md px-4 py-3 text-neutral-400">
-                  沒有群組成員
-                </p>
-              ) : (
-                members.map((member, index) => {
-                  const isSelected = selectedIds.includes(member.id);
-                  return (
-                    <div key={member.id} className="w-full">
-                      <button
-                        type="button"
-                        role="menuitemcheckbox"
-                        aria-checked={isSelected}
-                        onClick={() => toggleMember(member.id)}
-                        className={cn(
-                          'font-paragraph-md flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none',
-                          isSelected
-                            ? 'bg-neutral-200 font-bold text-neutral-900'
-                            : 'hover:bg-neutral-200/70',
-                        )}
-                      >
-                        <SingleAvatar
-                          src={member.avatar}
-                          name={member.name}
-                          className="size-10 shrink-0 ring-1"
-                        />
-                        <span className="flex-1 text-neutral-900">
-                          {member.name}
-                        </span>
-                        <div className="flex size-5 items-center justify-center">
-                          {isSelected && (
-                            <Check
-                              className="size-3.5 stroke-neutral-600"
-                              strokeWidth={3}
-                            />
+            <>
+              <div
+                className="fixed inset-0 z-10"
+                role="presentation"
+                onClick={() => setIsOpen(false)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape' || event.key === 'Enter') {
+                    setIsOpen(false);
+                  }
+                }}
+              />
+              <div
+                role="menu"
+                className="absolute top-full right-0 z-20 mt-2 min-w-52 overflow-hidden rounded-[8px] border-2 border-neutral-900 bg-neutral-100 shadow-[0_4px_0_0_rgba(33,37,41,0.08)]"
+              >
+                {members.length === 0 ? (
+                  <p className="font-paragraph-md px-4 py-3 text-neutral-400">
+                    沒有群組成員
+                  </p>
+                ) : (
+                  members.map((member, index) => {
+                    const isSelected = selectedIds.includes(member.id);
+                    return (
+                      <div key={member.id} className="w-full">
+                        <button
+                          type="button"
+                          role="menuitemcheckbox"
+                          aria-checked={isSelected}
+                          onClick={() => toggleMember(member.id)}
+                          className={cn(
+                            'font-paragraph-md flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none',
+                            isSelected
+                              ? 'bg-neutral-200 font-bold text-neutral-900'
+                              : 'hover:bg-neutral-200/70',
                           )}
-                        </div>
-                      </button>
-                      {index < members.length - 1 && (
-                        <div className="h-px bg-neutral-400" />
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                        >
+                          <SingleAvatar
+                            src={member.avatar}
+                            name={member.name}
+                            className="size-10 shrink-0 ring-1"
+                          />
+                          <span className="flex-1 text-neutral-900">
+                            {member.name}
+                          </span>
+                          <div className="flex size-5 items-center justify-center">
+                            {isSelected && (
+                              <Check
+                                className="size-3.5 stroke-neutral-600"
+                                strokeWidth={3}
+                              />
+                            )}
+                          </div>
+                        </button>
+                        {index < members.length - 1 && (
+                          <div className="h-px bg-neutral-400" />
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
           ) : null}
         </div>
       </div>
