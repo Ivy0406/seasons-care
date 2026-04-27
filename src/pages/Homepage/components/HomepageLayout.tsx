@@ -66,16 +66,6 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
   const [showOnboarding, setShowOnboarding] = useState(
     () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
   );
-<<<<<<< HEAD
-  const { hasUnread } = useNotificationBadge();
-
-  useEffect(() => {
-    if (hasUnread) {
-      toast('您有新的未讀通知', { position: 'top-center' });
-    }
-  }, [hasUnread]);
-
-=======
   const { hasUnread, isLoading: isLoadingNotifications } =
     useNotificationBadge();
   const hasInitialized = useRef(false);
@@ -91,7 +81,6 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
       });
     }
   }, [hasUnread, isLoadingNotifications]);
->>>>>>> feature/money-split-statement
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
