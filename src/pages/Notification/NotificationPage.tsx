@@ -21,7 +21,7 @@ import GroupManagementDrawer from '@/features/groups/components/GroupManagementD
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import useExpenses from '@/features/money/hooks/useExpenses';
-import useFetchSplitRecord from '@/features/money/hooks/useFetchSplitRecord';
+import useGetSplitRecord from '@/features/money/hooks/useGetSplitRecord';
 import type { MemberSplit, SplitItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
@@ -65,7 +65,7 @@ function NotificationPage() {
     isLoading: boolean;
     record: SplitRecordState | null;
   }>({ open: false, isLoading: false, record: null });
-  const { fetchRecord } = useFetchSplitRecord();
+  const { fetchRecord } = useGetSplitRecord();
 
   const recurringEntries = useMemo(
     () => [
