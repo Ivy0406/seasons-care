@@ -28,7 +28,8 @@ const baseRepeatPatternOptions: {
 function getWeeklyDayLabel(selectedDateValue?: string) {
   if (!selectedDateValue) return '每週幾';
 
-  const parsedDate = parse(selectedDateValue, 'yyyy/MM/dd', new Date());
+  const normalizedDateValue = selectedDateValue.replaceAll('-', '/');
+  const parsedDate = parse(normalizedDateValue, 'yyyy/MM/dd', new Date());
 
   if (Number.isNaN(parsedDate.getTime())) {
     return '每週幾';

@@ -7,6 +7,7 @@ import {
   createEmptyDiaryDraft,
   hasRelativeDiaryDate,
   mergeDiaryDraft,
+  normalizeDateValue,
   normalizeDiaryTitleAndNote,
   resolveDiaryDateValue,
   resolveDiaryParticipantIds,
@@ -39,7 +40,7 @@ function createDiaryDraftFromAIResult(
     title: normalizedContent.title,
     dateValue: hasRelativeDiaryDate(transcript)
       ? resolveDiaryDateValue(transcript, draft.dateValue)
-      : extraction.dateValue.trim() || draft.dateValue,
+      : normalizeDateValue(extraction.dateValue) || draft.dateValue,
     timeValue:
       extraction.timeValue.trim() ||
       resolveDiaryTimeValue(transcript, draft.timeValue),
