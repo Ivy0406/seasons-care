@@ -319,11 +319,11 @@ function PageNavigationBar({
 }: PageNavigationBarProps) {
   return (
     <div className={cn('border-b-2 border-neutral-900', className)}>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-2 pb-5">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-3.75 pb-6.75">
         {showTitle ? (
           <NavigationTitle
             as="span"
-            className={cn('font-label-lg justify-self-start', titleClassName)}
+            className={cn('font-heading-lg justify-self-start', titleClassName)}
           >
             {title}
           </NavigationTitle>
