@@ -112,7 +112,7 @@ function ScrollableDatePicker({
       {onChange && isOpen ? (
         <div
           data-vaul-no-drag=""
-          className="absolute right-0 bottom-full z-50 mb-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900"
+          className="absolute right-0 bottom-full z-120 mb-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900"
         >
           <div className="flex gap-2">
             <div

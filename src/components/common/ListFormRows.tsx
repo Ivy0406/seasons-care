@@ -704,7 +704,7 @@ function ListFormDateTimeRow({
             {dateValue}
           </button>
           {onDateChange && isDateOpen ? (
-            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 shadow-md ring-2 ring-neutral-900">
+            <div className="absolute top-full right-0 z-120 mt-2 rounded-sm bg-neutral-200 p-2 text-neutral-900 shadow-md ring-2 ring-neutral-900">
               <div className="flex gap-2">
                 <Select
                   value={String(selectedYear)}
@@ -772,7 +772,7 @@ function ListFormDateTimeRow({
             {timeValue}
           </button>
           {onTimeChange && isTimeOpen ? (
-            <div className="absolute top-full right-0 z-50 mt-2 rounded-sm bg-neutral-200 p-2 text-neutral-900 shadow-md ring-2 ring-neutral-900">
+            <div className="absolute top-full right-0 z-120 mt-2 rounded-sm bg-neutral-200 p-2 text-neutral-900 shadow-md ring-2 ring-neutral-900">
               <div className="flex gap-2">
                 <Select
                   value={parsedTime.period}
