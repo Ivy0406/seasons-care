@@ -11,6 +11,10 @@ import type {
   UpdateMoneyItemPayLoad,
 } from '@/types/money';
 
+type SplitPreviewByBatchParams = {
+  splitBatchId: string;
+};
+
 import apiClient from '../client';
 
 const buildMoneyItemsPath = (careGroupId: string) =>
@@ -55,6 +59,15 @@ const splitMoneyItems = (careGroupId: string, payload: SplitMoneyPayload) =>
     payload,
   );
 
+const getSplitPreviewByBatchId = (
+  careGroupId: string,
+  params: SplitPreviewByBatchParams,
+) =>
+  apiClient.get<SplitPreviewResponse>(
+    `${buildMoneyItemsPath(careGroupId)}/split-preview`,
+    { params },
+  );
+
 const getMemberTotals = (careGroupId: string, params?: MemberTotalsParams) =>
   apiClient.get<MemberTotalsResponse>(
     `${buildMoneyItemsPath(careGroupId)}/member-totals`,
@@ -68,5 +81,6 @@ export {
   deleteMoneyItem,
   splitPreview,
   splitMoneyItems,
+  getSplitPreviewByBatchId,
   getMemberTotals,
 };

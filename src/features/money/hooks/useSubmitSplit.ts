@@ -8,7 +8,7 @@ import { CURRENT_GROUP_ID_KEY } from '@/constants/auth';
 import moneyKeys from '@/features/money/queryKeys';
 
 type SubmitSplitResult =
-  | { success: true }
+  | { success: true; splitBatchId: string }
   | { success: false; message: string };
 
 const getCurrentCareGroupId = () =>
@@ -41,7 +41,7 @@ function useSubmitSplit() {
     setIsLoading(true);
 
     try {
-      await splitMoneyItems(careGroupId, {
+      const res = await splitMoneyItems(careGroupId, {
         splitMode: 'custom',
         expenseIds,
         targetUserIds,
@@ -49,7 +49,7 @@ function useSubmitSplit() {
       await queryClient.invalidateQueries({
         queryKey: moneyKeys.group(careGroupId),
       });
-      return { success: true };
+      return { success: true, splitBatchId: res.data.data.splitBatchId };
     } catch (error) {
       return { success: false, message: getErrorMessage(error) };
     } finally {

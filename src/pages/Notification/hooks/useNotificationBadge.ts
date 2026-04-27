@@ -17,15 +17,18 @@ function computeSnapshot(ids: string[]) {
 
 function useNotificationBadge() {
   const { currentGroupId } = useCurrentGroupId();
-  const { entries } = useGetCareLogEntries();
+  const { entries, isLoading: isLoadingEntries } = useGetCareLogEntries();
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
-  const { eventSeries: thisMonthEventSeries } = useGetEventSeries(new Date());
-  const { eventSeries: nextMonthEventSeries } = useGetEventSeries(
-    addDays(new Date(), 7),
-  );
-  const { expenses: thisMonthExpenses } = useExpenses(
-    format(new Date(), 'yyyy-MM'),
-  );
+  const {
+    eventSeries: thisMonthEventSeries,
+    isLoading: isLoadingThisMonthEvents,
+  } = useGetEventSeries(new Date());
+  const {
+    eventSeries: nextMonthEventSeries,
+    isLoading: isLoadingNextMonthEvents,
+  } = useGetEventSeries(addDays(new Date(), 7));
+  const { expenses: thisMonthExpenses, isLoading: isLoadingExpenses } =
+    useExpenses(format(new Date(), 'yyyy-MM'));
   const { expenses: nextMonthExpenses } = useExpenses(
     format(addDays(new Date(), 7), 'yyyy-MM'),
   );
@@ -68,33 +71,41 @@ function useNotificationBadge() {
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
 
-    const pendingIds = allEntries
+    const isTodayImportantEntry = (entry: (typeof allEntries)[number]) =>
+      entry.isImportant && isSameDay(parseISO(entry.startsAt), today);
+
+    const isTodaySettledBatch = (
+      expense: (typeof allExpenses)[number],
+    ): expense is typeof expense & { splitBatchId: string } =>
+      expense.splitStatus === 'settled' &&
+      !!expense.splitBatchId &&
+      expense.updatedAt.replace('Z', '').startsWith(todayStr);
+
+    const pendingImportantEntryIds = allEntries
       .filter(
-        (entry) =>
-          entry.isImportant &&
-          isSameDay(parseISO(entry.startsAt), today) &&
-          entry.status === 'pending',
+        (entry) => isTodayImportantEntry(entry) && entry.status === 'pending',
       )
       .map((entry) => entry.id);
 
-    const completedIds = allEntries
+    const completedImportantEntryIds = allEntries
       .filter(
-        (entry) =>
-          entry.isImportant &&
-          isSameDay(parseISO(entry.startsAt), today) &&
-          entry.status === 'completed',
+        (entry) => isTodayImportantEntry(entry) && entry.status === 'completed',
       )
       .map((entry) => `c_${entry.id}`);
 
-    const splitIds = allExpenses
-      .filter(
-        (expense) =>
-          expense.splitStatus === 'settled' &&
-          expense.updatedAt.replace('Z', '').startsWith(todayStr),
-      )
-      .map((expense) => `s_${expense.id}`);
+    const todaySplitBatchIds = [
+      ...new Set(
+        allExpenses
+          .filter(isTodaySettledBatch)
+          .map((expense) => `s_${expense.splitBatchId}`),
+      ),
+    ];
 
-    return computeSnapshot([...pendingIds, ...completedIds, ...splitIds]);
+    return computeSnapshot([
+      ...pendingImportantEntryIds,
+      ...completedImportantEntryIds,
+      ...todaySplitBatchIds,
+    ]);
   }, [allEntries, allExpenses]);
 
   const storageKey = getStorageKey(currentGroupId ?? '');
@@ -106,7 +117,13 @@ function useNotificationBadge() {
     localStorage.setItem(storageKey, currentSnapshot);
   }, [storageKey, currentSnapshot]);
 
-  return { hasUnread, markAsRead };
+  const isLoading =
+    isLoadingEntries ||
+    isLoadingThisMonthEvents ||
+    isLoadingNextMonthEvents ||
+    isLoadingExpenses;
+
+  return { hasUnread, markAsRead, isLoading };
 }
 
 export default useNotificationBadge;

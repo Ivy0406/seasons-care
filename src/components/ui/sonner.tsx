@@ -13,6 +13,7 @@ export default function Toaster(props: ToasterProps) {
 
   return (
     <Sonner
+      position="top-center"
       theme={theme as ToasterProps['theme']}
       className="toaster group"
       icons={{
