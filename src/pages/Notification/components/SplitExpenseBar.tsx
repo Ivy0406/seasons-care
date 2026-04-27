@@ -18,8 +18,8 @@ function SplitExpenseBar({
   label = '已執行分帳',
   onClick,
 }: SplitExpenseBarProps) {
-  const creator = groupMembers.find((m) => m.userId === expense.createdBy);
-  const title = creator ? `${creator.username} ${label}` : label;
+  const executor = groupMembers.find((m) => m.userId === expense.createdBy);
+  const title = executor ? `${executor.username} ${label}` : label;
 
   return (
     <NotificationBar
