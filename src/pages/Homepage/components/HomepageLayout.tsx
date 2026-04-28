@@ -384,9 +384,12 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
 
     if (!result.hasDetectedContent) {
       clearVoiceInput();
-      toast.error(
-        '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
-      );
+      toast.error('無法辨識語音內容', {
+        description: '任務目前僅支援照護相關內容，若為其他事項請手動輸入',
+        classNames: {
+          description: '!text-neutral-900',
+        },
+      });
       return { shouldClose: false };
     }
 
