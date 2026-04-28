@@ -101,7 +101,10 @@ function DrawerActionStep({
         <RoundedButtonPrimary onClick={onPrimaryClick}>
           {primaryLabel}
         </RoundedButtonPrimary>
-        <RoundedButtonSecondary onClick={onSecondaryClick}>
+        <RoundedButtonSecondary
+          className="border-0 bg-neutral-100 text-neutral-600"
+          onClick={onSecondaryClick}
+        >
           {secondaryLabel}
         </RoundedButtonSecondary>
       </div>
