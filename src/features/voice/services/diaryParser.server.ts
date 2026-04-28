@@ -1,3 +1,7 @@
+import {
+  normalizeDateValue,
+  createEmptyDiaryDraft,
+} from '@/features/voice/services/diaryParser.shared';
 import type { ParseDiaryTranscript } from '@/features/voice/services/diaryParser.types';
 import type { DiaryDraft } from '@/pages/CareLog/types';
 
@@ -54,7 +58,12 @@ const parseDiaryTranscriptWithServer: ParseDiaryTranscript = async (
 
   return parsedResponse.map((draft) => ({
     ...draft,
-    participantIds: draft.participantIds ?? [],
+    dateValue:
+      normalizeDateValue(draft.dateValue) || createEmptyDiaryDraft().dateValue,
+    participantIds:
+      draft.participantIds && draft.participantIds.length > 0
+        ? draft.participantIds
+        : createEmptyDiaryDraft().participantIds,
   }));
 };
 
