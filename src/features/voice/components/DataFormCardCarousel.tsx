@@ -35,6 +35,7 @@ import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
 import MoneyDataFormCard from './MoneyDataFormCard';
 import RecordingDrawer from './RecordingDrawer';
+import VoiceTipCarousel from './VoiceTipCarousel';
 
 import type { Swiper as SwiperClass } from 'swiper';
 
@@ -97,7 +98,9 @@ function DataFormCardCarousel() {
   const activeDiaryDrafts = hasVoiceTranscript
     ? diaryDrafts
     : [fallbackDiaryDraft];
-  const activeMoneyDrafts = hasVoiceTranscript ? moneyDrafts : fallbackMoneyDrafts;
+  const activeMoneyDrafts = hasVoiceTranscript
+    ? moneyDrafts
+    : fallbackMoneyDrafts;
   const shouldShowHealthForm = hasVoiceTranscript
     ? hasHealthDraftContent(activeHealthDraft)
     : true;
@@ -143,7 +146,10 @@ function DataFormCardCarousel() {
     );
   };
 
-  const handleMoneyDraftChange = (index: number, updates: Partial<MoneyDraft>) => {
+  const handleMoneyDraftChange = (
+    index: number,
+    updates: Partial<MoneyDraft>,
+  ) => {
     if (hasVoiceTranscript) {
       updateMoneyDraft(index, updates);
       return;
@@ -230,14 +236,9 @@ function DataFormCardCarousel() {
       </div>
 
       <div className="mt-6 flex-1 overflow-hidden">
-        {transcript ? (
-          <section className="mx-4 mb-4 rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4">
-            <p className="font-label-md mb-2 text-neutral-900">語音內容</p>
-            <p className="font-paragraph-md whitespace-pre-wrap text-neutral-700">
-              {transcript}
-            </p>
-          </section>
-        ) : null}
+        <section className="mx-4 mb-4 rounded-md border-2 border-neutral-900 bg-neutral-100 p-2">
+          <VoiceTipCarousel />
+        </section>
 
         <Swiper
           modules={[Pagination]}
