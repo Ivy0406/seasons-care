@@ -125,7 +125,7 @@ function CalendarPage() {
         onMenuClick={() => setIsSideMenuOpen(true)}
       />
 
-      <section className="bg-primary-default border-y border-neutral-900">
+      <section className="bg-primary-default border-b border-neutral-900">
         <div className="mx-auto w-full max-w-200 px-4 py-5">
           <Calendar
             mode="single"
