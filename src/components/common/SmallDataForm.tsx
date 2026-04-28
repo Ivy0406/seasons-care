@@ -120,6 +120,10 @@ function HealthDataSmallForm({
   );
 }
 
+type JournalFormFields = {
+  title: string;
+};
+
 type JournalDataSmallFormProps = {
   className?: string;
   value: DiaryDraft;
@@ -127,6 +131,10 @@ type JournalDataSmallFormProps = {
   groupMembers?: GroupMember[];
   participantIds?: string[];
   onParticipantsChange?: (ids: string[]) => void;
+  register?: UseFormRegister<JournalFormFields>;
+  errors?: FieldErrors<JournalFormFields>;
+  onDateChange?: (value: string) => void;
+  onTimeChange?: (value: string) => void;
 };
 
 type HealthDataFormField =
@@ -267,6 +275,10 @@ function JournalDataSmallForm({
   groupMembers = [],
   participantIds = [],
   onParticipantsChange,
+  register,
+  errors,
+  onDateChange,
+  onTimeChange,
 }: JournalDataSmallFormProps) {
   const memberOptions = groupMembers.map((m) => ({
     id: m.userId,
@@ -277,21 +289,34 @@ function JournalDataSmallForm({
     <BaseFormCard className={className}>
       <ListFormInputRow
         label="任務名稱"
-        inputProps={{
-          value: value.title,
-          onChange: (event) => onChange({ title: event.target.value }),
-        }}
+        required
+        inputProps={
+          register
+            ? register('title', {
+                required: '任務名稱為必填',
+                onChange: (event) =>
+                  onChange({ title: event.target.value as string }),
+              })
+            : {
+                value: value.title,
+                onChange: (event) => onChange({ title: event.target.value }),
+              }
+        }
+        error={errors?.title?.message}
         className="border-neutral-900"
       />
       <ListFormDateTimeRow
         label="時間"
         dateValue={value.dateValue}
         timeValue={value.timeValue}
+        onDateChange={onDateChange}
+        onTimeChange={onTimeChange}
         className="border-neutral-900"
       />
       <ListFormRepeatRow
         value={value.repeatPattern as RepeatPatternValue}
         onChange={(repeatPattern) => onChange({ repeatPattern })}
+        selectedDateValue={value.dateValue}
         className="border-neutral-900"
       />
       <ListFormParticipantsRow
@@ -357,7 +382,11 @@ function MoneyDataSmallForm({
         required
         inputProps={
           register
-            ? register('title', { required: '帳目名稱為必填' })
+            ? register('title', {
+                required: '帳目名稱為必填',
+                onChange: (event) =>
+                  onChange({ title: event.target.value as string }),
+              })
             : {
                 value: value.title,
                 onChange: (e) => onChange({ title: e.target.value }),
@@ -382,6 +411,8 @@ function MoneyDataSmallForm({
                   const num = Number(v);
                   return (!Number.isNaN(num) && num > 0) || '請輸入有效數值';
                 },
+                onChange: (event) =>
+                  onChange({ amount: event.target.value as string }),
               })
             : {
                 value: value.amount,
@@ -411,7 +442,10 @@ function MoneyDataSmallForm({
               value={field.value}
               placeholder="請選擇類別"
               options={MONEY_CATEGORY_OPTIONS}
-              onChange={field.onChange}
+              onChange={(nextValue) => {
+                field.onChange(nextValue);
+                onChange({ category: nextValue as MoneyCategoryValue });
+              }}
               error={errors?.category?.message}
               className="border-neutral-900"
             />
@@ -449,7 +483,7 @@ function MoneyDataSmallForm({
   );
 }
 
-export type { MoneyFormFields };
+export type { HealthDataFormField, JournalFormFields, MoneyFormFields };
 
 export {
   HealthDataForm,

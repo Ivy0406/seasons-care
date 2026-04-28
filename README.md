@@ -23,8 +23,9 @@ Seasons Care 蒔歲 是一款專為家庭設計的共同照護工具。我們希
 
 ## 💡 核心功能 
 ![共同任務](/public/preview/preview-tasks.jpg)
-![健康數據](/public/preview/preview-health.jpg)
 ![共同帳目](/public/preview/preview-expenses.jpg)
+![健康數據](/public/preview/preview-health.jpg)
+
 
 ---
 
@@ -61,7 +62,9 @@ seasons-care/
 │  │  ├─ health/          # 健康數據
 │  │  ├─ careLog/         # 照護任務
 │  │  ├─ groups/          # 照護群組管理
-│  │  └─ money/           # 記帳功能
+│  │  ├─ money/           # 記帳功能
+│  │  ├─ settings/        # 設定相關
+│  │  └─ voice/           # 語音輸入功能
 │  ├─ hooks/              # 全域自定義 Hooks 
 │  ├─ pages/              # 頁面層級組件
 │  ├─ routes/             # 路由配置
@@ -96,7 +99,7 @@ npm run dev
 | 分支類型 | 分支名稱 | 來自 | 合併至 | 說明 |
 | :--- | :--- | :--- | :--- | :--- |
 | **主分支** | `main` | - | - | 穩定版本，嚴禁直接 push。 |
-| **開發分支** | `dev` | `main` | `main` | 開發基準線。 |
+| **開發分支** | `dev` | `main` | `main` | 開發基準線，嚴禁直接 push。 |
 | **測試分支** | `qa` | `dev` | - | 模擬正式環境的測試分支。 |
 | **新增分支** | `feature` | `dev` | `dev` | 新增功能或畫面。 |
 | **更新分支** | `update` | `dev` | `dev` | 現有功能的邏輯或 UI 變更。 |

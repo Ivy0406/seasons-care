@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Mic } from 'lucide-react';
+import { Megaphone, Mic } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -67,6 +67,14 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
     () => localStorage.getItem(ONBOARDING_KEY) !== 'true',
   );
   const { hasUnread } = useNotificationBadge();
+  useEffect(() => {
+    if (hasUnread) {
+      toast('您有新的通知哦！', {
+        id: 'notification-badge',
+        icon: <Megaphone className="size-4" />,
+      });
+    }
+  }, [hasUnread]);
   const { data: groups = [] } = useGetGroups();
   const { handleDeleteGroupMember } = useDeleteGroupMember();
   const { currentGroupId, setCurrentGroupId } = useCurrentGroupId();
@@ -370,9 +378,12 @@ function HomepageLayout({ className }: HomepageLayoutProps) {
 
     if (!result.hasDetectedContent) {
       clearVoiceInput();
-      toast.error(
-        '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
-      );
+      toast.error('無法辨識語音內容', {
+        description: '任務目前僅支援照護相關內容，若為其他事項請手動輸入',
+        classNames: {
+          description: '!text-neutral-900',
+        },
+      });
       return { shouldClose: false };
     }
 

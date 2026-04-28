@@ -17,6 +17,7 @@ type MoneyItemData = {
   expenseDate: string;
   category: MoneyCategory;
   splitStatus: SplitStatus;
+  splitBatchId?: string | null;
   notes: string;
   careGroupId: string;
   createdAt: string;
@@ -54,10 +55,16 @@ type SplitMoneyPayload = {
   targetUserIds: string[];
 };
 
+type SplitResponseData = {
+  splitBatchId: string;
+  expenseCount: number;
+  totalAmount: number;
+};
+
 type SplitResponse = {
   success: boolean;
   message: string;
-  data: null;
+  data: SplitResponseData;
 };
 
 type SplitPreviewItem = {
@@ -75,10 +82,19 @@ type SplitDetail = {
   payableAmount: number;
 };
 
+type SplitExecutedBy = {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+};
+
 type SplitPreviewData = {
+  expenseCount: number;
   totalAmount: number;
   selectedExpenses: SplitPreviewItem[];
   splitDetails: SplitDetail[];
+  executedBy?: SplitExecutedBy;
+  executedAt?: string;
 };
 
 type SplitPreviewResponse = {
@@ -127,9 +143,11 @@ export type {
   UpdateMoneyItemPayLoad,
   SplitMode,
   SplitMoneyPayload,
+  SplitResponseData,
   SplitResponse,
   SplitPreviewItem,
   SplitDetail,
+  SplitExecutedBy,
   SplitPreviewData,
   SplitPreviewResponse,
   MemberTotalItem,

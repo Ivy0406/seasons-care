@@ -25,6 +25,7 @@ type ExpenseItem = {
   createdAt: string;
   updatedAt: string;
   splitStatus: SplitStatus;
+  splitBatchId?: string | null;
   createdBy: string;
 };
 

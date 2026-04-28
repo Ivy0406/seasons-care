@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ChevronLeft, RotateCw } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -35,6 +35,7 @@ import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
 import MoneyDataFormCard from './MoneyDataFormCard';
 import RecordingDrawer from './RecordingDrawer';
+import VoiceTipCarousel from './VoiceTipCarousel';
 
 import type { Swiper as SwiperClass } from 'swiper';
 
@@ -68,6 +69,9 @@ function DataFormCardCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showRecordingDrawer, setShowRecordingDrawer] = useState(false);
+  const [slideValidity, setSlideValidity] = useState<Record<string, boolean>>(
+    {},
+  );
   const [fallbackHealthDraft, setFallbackHealthDraft] = useState<HealthDraft>(
     createEmptyHealthDraft(),
   );
@@ -97,7 +101,9 @@ function DataFormCardCarousel() {
   const activeDiaryDrafts = hasVoiceTranscript
     ? diaryDrafts
     : [fallbackDiaryDraft];
-  const activeMoneyDrafts = hasVoiceTranscript ? moneyDrafts : fallbackMoneyDrafts;
+  const activeMoneyDrafts = hasVoiceTranscript
+    ? moneyDrafts
+    : fallbackMoneyDrafts;
   const shouldShowHealthForm = hasVoiceTranscript
     ? hasHealthDraftContent(activeHealthDraft)
     : true;
@@ -143,7 +149,10 @@ function DataFormCardCarousel() {
     );
   };
 
-  const handleMoneyDraftChange = (index: number, updates: Partial<MoneyDraft>) => {
+  const handleMoneyDraftChange = (
+    index: number,
+    updates: Partial<MoneyDraft>,
+  ) => {
     if (hasVoiceTranscript) {
       updateMoneyDraft(index, updates);
       return;
@@ -164,6 +173,13 @@ function DataFormCardCarousel() {
             <HealthDataFormCard
               value={activeHealthDraft}
               onChange={handleHealthDraftChange}
+              onValidityChange={(valid) =>
+                setSlideValidity((current) =>
+                  current.health === valid
+                    ? current
+                    : { ...current, health: valid },
+                )
+              }
             />
           ),
         }
@@ -181,6 +197,13 @@ function DataFormCardCarousel() {
               onParticipantsChange={(participantIds) =>
                 handleDiaryDraftChange(draft.id, { participantIds })
               }
+              onValidityChange={(valid) =>
+                setSlideValidity((current) =>
+                  current[`diary-${draft.id}`] === valid
+                    ? current
+                    : { ...current, [`diary-${draft.id}`]: valid },
+                )
+              }
             />
           ),
         }))
@@ -192,11 +215,22 @@ function DataFormCardCarousel() {
             <MoneyDataFormCard
               value={draft}
               onChange={(updates) => handleMoneyDraftChange(index, updates)}
+              onValidityChange={(valid) =>
+                setSlideValidity((current) =>
+                  current[`money-${index}`] === valid
+                    ? current
+                    : { ...current, [`money-${index}`]: valid },
+                )
+              }
             />
           ),
         }))
       : []),
   ].filter((slide) => slide !== null);
+  const areVisibleSlidesValid = useMemo(
+    () => visibleSlides.every((slide) => slideValidity[slide.key]),
+    [slideValidity, visibleSlides],
+  );
 
   const isLastSlide = activeIndex === visibleSlides.length - 1;
 
@@ -229,37 +263,34 @@ function DataFormCardCarousel() {
         <h1 className="font-label-lg text-neutral-50">錄製結果</h1>
       </div>
 
-      <div className="mt-6 flex-1 overflow-hidden">
-        {transcript ? (
-          <section className="mx-4 mb-4 rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4">
-            <p className="font-label-md mb-2 text-neutral-900">語音內容</p>
-            <p className="font-paragraph-md whitespace-pre-wrap text-neutral-700">
-              {transcript}
-            </p>
-          </section>
-        ) : null}
+      <div className="mx-auto mt-6 w-full max-w-[800px] flex-1 overflow-visible">
+        <section className="mx-4 mb-4 rounded-md border-2 border-neutral-900 bg-neutral-100 p-2">
+          <VoiceTipCarousel />
+        </section>
 
-        <Swiper
-          modules={[Pagination]}
-          {...swiperConfig}
-          onSwiper={setSwiper}
-          onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
-          className="w-full"
-        >
-          {visibleSlides.map((slide) => (
-            <SwiperSlide key={slide.key} className="px-4">
-              {slide.content}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className="[overflow-x:clip]">
+          <Swiper
+            modules={[Pagination]}
+            {...swiperConfig}
+            onSwiper={setSwiper}
+            onSlideChange={(slide) => setActiveIndex(slide.activeIndex)}
+            className="w-full overflow-visible!"
+          >
+            {visibleSlides.map((slide) => (
+              <SwiperSlide key={slide.key} className="overflow-visible px-4">
+                {slide.content}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
         <div className="form-carousel-pagination mt-4 flex justify-center gap-2 px-4 [--swiper-pagination-bullet-inactive-color:#adb5bd] [--swiper-theme-color:#ffffff]" />
       </div>
 
-      <div className="mt-6 flex flex-col items-center gap-3 px-4">
+      <div className="mx-auto mt-6 flex w-full max-w-[800px] flex-col items-center gap-3 px-4">
         <RoundedButtonSecondary
           className="h-12 max-w-[97px] border-neutral-50 bg-neutral-800 text-neutral-50 transition-colors duration-300 active:bg-neutral-50 active:text-neutral-800 disabled:opacity-50"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (isLastSlide && !areVisibleSlidesValid)}
           onClick={async () => {
             if (!isLastSlide) {
               swiper?.slideNext();
@@ -290,9 +321,12 @@ function DataFormCardCarousel() {
 
           if (!result.hasDetectedContent) {
             clearVoiceInput();
-            toast.error(
-              '這段語音內容暫時無法辨識為健康、任務或帳目，請重新錄製或手動輸入。',
-            );
+            toast.error('無法辨識語音內容', {
+              description: '任務目前僅支援照護相關內容，更多類型即將開放',
+              classNames: {
+                description: '!text-neutral-900',
+              },
+            });
             return { shouldClose: false };
           }
 

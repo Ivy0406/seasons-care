@@ -20,12 +20,22 @@ import GroupManagementDrawer from '@/features/groups/components/GroupManagementD
 import useGetGroupMembers from '@/features/groups/hooks/useGetGroupMembers';
 import useGetGroups from '@/features/groups/hooks/useGetGroups';
 import useExpenses from '@/features/money/hooks/useExpenses';
+import useGetSplitRecord from '@/features/money/hooks/useGetSplitRecord';
+import type { MemberSplit, SplitItem } from '@/features/money/types';
 import useCurrentGroupId from '@/hooks/useCurrentGroupID';
 import useGetCareLogEntries from '@/pages/CareLog/hooks/useGetCareLogEntries';
 
 import NotificationBar from './components/NotificationBar';
 import SplitExpenseBar from './components/SplitExpenseBar';
+import SplitRecordDialog from './components/SplitRecordDialog';
 import useNotificationBadge from './hooks/useNotificationBadge';
+
+type SplitRecordState = {
+  executedByName: string;
+  executedAt: string;
+  selectedItems: SplitItem[];
+  memberSplits: MemberSplit[];
+};
 
 function NotificationPage() {
   const navigate = useNavigate();
@@ -49,6 +59,12 @@ function NotificationPage() {
   );
   const { data: groupMembers = [] } = useGetGroupMembers(currentGroupId ?? '');
   const [isGroupDrawerOpen, setIsGroupDrawerOpen] = useState(false);
+  const [splitRecordDialog, setSplitRecordDialog] = useState<{
+    open: boolean;
+    isLoading: boolean;
+    record: SplitRecordState | null;
+  }>({ open: false, isLoading: false, record: null });
+  const { fetchRecord } = useGetSplitRecord();
 
   const recurringEntries = useMemo(
     () => [
@@ -107,14 +123,42 @@ function NotificationPage() {
     [thisMonthExpenses, nextMonthExpenses],
   );
 
-  const todaySplitExpenses = useMemo(() => {
+  const todaySplitBatches = useMemo(() => {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const seen = new Set<string>();
     return allExpenses.filter(
-      (expense) =>
-        expense.splitStatus === 'settled' &&
-        expense.updatedAt.replace('Z', '').startsWith(todayStr),
+      (expense): expense is typeof expense & { splitBatchId: string } => {
+        if (
+          expense.splitStatus !== 'settled' ||
+          !expense.splitBatchId ||
+          !expense.updatedAt.replace('Z', '').startsWith(todayStr)
+        )
+          return false;
+        if (seen.has(expense.splitBatchId)) return false;
+        seen.add(expense.splitBatchId);
+        return true;
+      },
     );
   }, [allExpenses]);
+
+  const handleSplitBatchClick = async (splitBatchId: string) => {
+    setSplitRecordDialog({ open: true, isLoading: true, record: null });
+    const result = await fetchRecord(splitBatchId);
+    if (result.success) {
+      setSplitRecordDialog({
+        open: true,
+        isLoading: false,
+        record: {
+          executedByName: result.executedBy.name,
+          executedAt: result.executedAt,
+          selectedItems: result.selectedItems,
+          memberSplits: result.memberSplits,
+        },
+      });
+    } else {
+      setSplitRecordDialog({ open: false, isLoading: false, record: null });
+    }
+  };
 
   const upcomingImportantEntries = useMemo(() => {
     const today = startOfDay(new Date());
@@ -163,7 +207,7 @@ function NotificationPage() {
         <h2 className="font-label-lg flex py-3">今日</h2>
         {pendingImportantEntries.length === 0 &&
         completedImportantEntries.length === 0 &&
-        todaySplitExpenses.length === 0 ? (
+        todaySplitBatches.length === 0 ? (
           <NotificationBar
             icon={<Calendar />}
             title="目前沒有收到任何通知"
@@ -200,17 +244,17 @@ function NotificationPage() {
                 }
               />
             ))}
-            {todaySplitExpenses.map((expense) => (
+            {todaySplitBatches.map((expense) => (
               <SplitExpenseBar
-                key={expense.id}
+                key={expense.splitBatchId}
                 expense={expense}
                 groupMembers={groupMembers}
-                label="已執行分帳"
-                onClick={() =>
-                  navigate('/money', {
-                    state: { date: expense.expenseDate, expenseId: expense.id },
-                  })
+                expenseCount={
+                  allExpenses.filter(
+                    (e) => e.splitBatchId === expense.splitBatchId,
+                  ).length
                 }
+                onClick={() => handleSplitBatchClick(expense.splitBatchId)}
               />
             ))}
           </>
@@ -256,6 +300,17 @@ function NotificationPage() {
           </>
         )}
       </section>
+
+      <SplitRecordDialog
+        open={splitRecordDialog.open}
+        onOpenChange={(open) =>
+          setSplitRecordDialog((prev) => ({ ...prev, open }))
+        }
+        isLoading={splitRecordDialog.isLoading}
+        executedByName={splitRecordDialog.record?.executedByName}
+        selectedItems={splitRecordDialog.record?.selectedItems}
+        memberSplits={splitRecordDialog.record?.memberSplits}
+      />
 
       <BaseDrawer open={isGroupDrawerOpen} onOpenChange={setIsGroupDrawerOpen}>
         <GroupManagementDrawer

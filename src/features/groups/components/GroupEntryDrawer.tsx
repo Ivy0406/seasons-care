@@ -161,7 +161,10 @@ function GroupEntryDrawer({
   initialGroupName = '',
   initialRecipientName = '',
   initialRecipientGender = 'male',
-  initialRecipientBirthDate = '2026-04-01',
+  initialRecipientBirthDate = (() => {
+    const d = new Date();
+    return `${d.getFullYear() - 60}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })(),
   initialDescription = '',
   initialHealthStatus = '',
 }: GroupEntryDrawerProps) {
