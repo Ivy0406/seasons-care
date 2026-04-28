@@ -35,6 +35,7 @@ import DiaryDataFormCard from './DiaryDataFormCard';
 import HealthDataFormCard from './HealthDataFormCard';
 import MoneyDataFormCard from './MoneyDataFormCard';
 import RecordingDrawer from './RecordingDrawer';
+import VoiceTipCarousel from './VoiceTipCarousel';
 
 import type { Swiper as SwiperClass } from 'swiper';
 
@@ -263,14 +264,9 @@ function DataFormCardCarousel() {
       </div>
 
       <div className="mt-6 mx-auto w-full max-w-[800px] flex-1 overflow-visible">
-        {transcript ? (
-          <section className="mx-4 mb-4 rounded-lg border-2 border-neutral-900 bg-neutral-100 p-4">
-            <p className="font-label-md mb-2 text-neutral-900">語音內容</p>
-            <p className="font-paragraph-md whitespace-pre-wrap text-neutral-700">
-              {transcript}
-            </p>
-          </section>
-        ) : null}
+        <section className="mx-4 mb-4 rounded-md border-2 border-neutral-900 bg-neutral-100 p-2">
+          <VoiceTipCarousel />
+        </section>
 
         <div className="[overflow-x:clip]">
           <Swiper
