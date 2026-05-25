@@ -15,7 +15,7 @@ function UpcomingImportantEntryNotice({
       <Bell className="size-8 shrink-0" />
       <div className="flex min-w-0 flex-col">
         <p className="font-label-md">即將到來的重要行程</p>
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center gap-1">
           <p className="font-label-md truncate">
             {format(parseISO(entry.startsAt), 'HH:mm')}
           </p>
