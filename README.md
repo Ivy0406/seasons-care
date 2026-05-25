@@ -14,8 +14,10 @@
 
 Seasons Care 蒔歲 是一款專為家庭設計的共同照護工具。我們希望透過簡單的技術，解決照護過程中記錄繁瑣、資訊不對稱的問題，讓家人之間的協作更輕鬆。
 
+[📊 專題發表簡報](https://www.figma.com/deck/waS9WBIC0OFzvg7NeHABKd/%E8%92%94%E6%AD%B2seasons-%E7%B0%A1%E5%A0%B1?node-id=1-479&t=cbpxRBlEgWZAFu8N-1) ｜ [🔗 開始體驗《蒔歲》](https://seasons-care.vercel.app/)
+
 # **為什麼使用 Seasons Care？**
-* **像 App 一樣好用**：支援 PWA 技術，你可以直接將網頁安裝到手機桌面，開啟速度快，且在離線或網路不穩時依然能流暢操作。
+* **像 App 一樣好用**：支援 PWA 技術，你可以直接將網頁安裝到手機桌面，開啟快速又方便。
 * **說話就能填表單**：整合 AI 語音辨識，忙到手忙腳亂時，用說的就能自動填寫紀錄，省下打字的時間。
 * **家庭資訊同步**：建立家庭群組，讓所有成員都能隨時查看照護日誌與健康數據，溝通零時差。
 
@@ -39,7 +41,7 @@ Seasons Care 蒔歲 是一款專為家庭設計的共同照護工具。我們希
 *   **表單驗證**：React Hook Form
 *   **數據視覺化**：Recharts
 *   **HTTP 請求**：Axios 1.13
-*   **身分驗證**：js-cookie (JWT 流程)
+*   **身分驗證**：js-cookie
 *   **UI 元件庫**：Shadcn UI, Lucide Icons, Sonner (Toast)
 
 ---
